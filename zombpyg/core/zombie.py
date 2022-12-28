@@ -2,46 +2,17 @@ import random
 import numpy
 import pygame
 
-from zombpyg.core import Thing, CircularThing, RectangularThing, FightingThing
-from zombpyg.sensor import Sensor
 from zombpyg.utils.surroundings import Color, get_movement_estimates
-from zombpyg.utils.geometry import _valid_angle, get_angle_and_distance_to_point
-from zombpyg.weapons import ZombieClaws, Knife, Axe, Gun, Rifle, Shotgun
 from zombpyg.actions import (
     MoveableThing,
     RotatableThing,
     AttackingThing,
     ExecutableAction,
     ForwardMoveAction,
-    RightMoveAction,
     BackwardMoveAction,
-    LeftMoveAction,
     RotateAction,
     AttackAction
 )
-
-# TODO: Remove the following for now
-class Box(RectangularThing):
-    """Solid box."""
-    MAX_LIFE = 10
-
-    def __init__(self, left, top, width, height):
-        super(Box, self).__init__(
-            left, top, width, height,
-            u'box', 'yellow', Box.MAX_LIFE
-        )
-
-class DeadBody(CircularThing):
-    """Dead body."""
-    def __init__(self, r, name, color, display_time=2.0):
-        super(DeadBody, self).__init__(
-            0, 0, r,
-            name, color, 0,
-        )
-        self.life = display_time
-
-    def decrement_life(self, t):
-        self.life -= t
 
 class Zombie(FightingThing, MoveableThing, RotatableThing, AttackingThing):
     MAX_LIFE = 100
@@ -279,20 +250,3 @@ class ZombieBuilder(object):
     def create_zombie(self, x, y, orientation, world):
         return Zombie(x, y, self.radius, world, orientation=orientation)
  
-class Player(FightingThing):
-    MAX_LIFE = 100
-
-    def __init__(
-        self, x, y, radius,
-        name, color, weapon=None
-    ):
-        if weapon is None:
-            weapon = random.choice([Gun, Shotgun, Rifle, Knife, Axe])()
-
-        dead_decoration = DeadBody(radius, f"dead player {name}", Color.BRONZE)
-
-        super(Player, self).__init__(
-            x, y, radius,
-            name, color, Player.MAX_LIFE, weapon, 
-            dead_decoration
-        )
