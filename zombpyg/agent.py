@@ -4,7 +4,7 @@ from zombpyg.core.bullet import Bullet
 from zombpyg.core.sensor import Sensor
 from zombpyg.utils.geometry import _valid_angle, get_angle_and_distance_to_point, calculate_distance
 from zombpyg.utils.surroundings import Color
-from zombpyg.things import Player
+from zombpyg.core.player import Player
 from zombpyg.actions import (
     MoveableThing,
     RotatableThing,

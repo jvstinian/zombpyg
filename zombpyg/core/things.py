@@ -6,7 +6,6 @@ import pygame
 from zombpyg.core.sensor import Sensor
 from zombpyg.utils.surroundings import Color, get_movement_estimates
 from zombpyg.utils.geometry import _valid_angle, get_angle_and_distance_to_point
-from zombpyg.core.weapons import ZombieClaws, Knife, Axe, Gun, Rifle, Shotgun
 from zombpyg.actions import (
     MoveableThing,
     RotatableThing,

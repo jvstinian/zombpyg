@@ -3,6 +3,9 @@ import numpy
 import pygame
 
 from zombpyg.core.wall import Wall
+from zombpyg.core.things import FightingThing, DeadBody
+from zombpyg.core.weapons import ZombieClaws
+from zombpyg.utils.geometry import _valid_angle, get_angle_and_distance_to_point
 from zombpyg.utils.surroundings import Color, get_movement_estimates
 from zombpyg.actions import (
     MoveableThing,

@@ -1,4 +1,6 @@
+from zombpyg.utils.surroundings import Color
 from zombpyg.core.things import FightingThing, DeadBody
+from zombpyg.core.weapons import Knife, Axe, Gun, Rifle, Shotgun
 
 
 class Player(FightingThing):
