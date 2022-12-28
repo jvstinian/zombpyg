@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from zombpyg.utils import calculate_distance, Color
+from zombpyg.utils.geometry import calculate_distance
+from zombpyg.utils.surroundings import Color
 from zombpyg.core import RectangularThing, CircularThing
 from zombpyg.object import Wall
 
@@ -7,7 +8,7 @@ class Objective(ABC):
     @abstractmethod
     def contains(point):
         pass
-    
+
     @abstractmethod
     def collide(self, start, end):
         pass
@@ -65,7 +66,7 @@ class CircularObjectiveLocation(CircularThing, Objective):
         return calculate_distance(self.center, point) < self.r
 
     def collide(self, start, end):
-        potential_points = getExtremePointsOnSegmentIntersectingCircle(
+        potential_points = get_extreme_points_on_segment_intersecting_circle(
             start, end, 
             self.get_position(),
             self.r

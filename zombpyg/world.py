@@ -2,7 +2,8 @@ import random
 import numpy
 import pygame
 
-from zombpyg.utils import Color, _valid_angle
+from zombpyg.utils.geometry import _valid_angle
+from zombpyg.utils.surroundings import Color
 from zombpyg.object import Wall
 from zombpyg.agent import Agent
 from zombpyg.things import Zombie

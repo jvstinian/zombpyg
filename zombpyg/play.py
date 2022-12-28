@@ -1,3 +1,4 @@
+import argparse
 from threading import Thread
 import pygame
 from zombpyg.game import Game
@@ -36,9 +37,7 @@ def render_game_in_thread(game):
             _, _, termination = game.play_action(6)
         print(f"Total Reward: {game.get_total_reward()}")
 
-if __name__ == "__main__":
-    import argparse
-
+def main(): 
     parser = argparse.ArgumentParser(description="zombpyg")
     parser.add_argument("-r", "--rules", dest="rules_id", metavar="RULES_ID", type=str, nargs=1, required=False, help="The rules id")
     parser.add_argument("-z", dest="initial_zombies", metavar="NUMBER", type=int, nargs=1, required=False, default=[5], help="The initial amount of zombies")
@@ -69,3 +68,6 @@ if __name__ == "__main__":
     t.start()
     game.reset()
     t.join()
+
+if __name__ == "__main__":
+    main()

@@ -1,6 +1,7 @@
 import numpy, pygame
 from operator import itemgetter
-from zombpyg.utils import Color, calculateIntersectPoint, calculateParameterOfPointOnSegment, getNearestPointAndDistanceToPath
+from zombpyg.utils.geometry import calculate_intersect_point, calculate_parameter_of_point_on_segment, get_nearest_point_and_distance_to_path
+from zombpyg.utils.surroundings import Color
 
 
 # class Object:
@@ -28,7 +29,7 @@ class Wall:
         pygame.draw.line(game.DISPLAYSURF, Color.WHITE, self.start, self.end, self.width)
 
     def collide(self, p1, p2):
-        point = calculateIntersectPoint(p1, p2, self.start, self.end)
+        point = calculate_intersect_point(p1, p2, self.start, self.end)
         if point is None:
             return None
         else:
@@ -56,7 +57,7 @@ class Bullet(object):
         for wall in self.world.walls:
             point = wall.collide(start, end)
             if point is not None:
-                l = calculateParameterOfPointOnSegment(start, end, point)
+                l = calculate_parameter_of_point_on_segment(start, end, point)
                 if l < min_l:
                     closest_wall_point = point
                     min_l = min(min_l, l)
@@ -83,9 +84,9 @@ class Bullet(object):
         ]
         potential_hits = []
         for fighter, fighter_type in potential_targets:
-            near_pt, fighter_dist, _ = getNearestPointAndDistanceToPath(self.current_location, end, fighter.get_position())
+            near_pt, fighter_dist, _ = get_nearest_point_and_distance_to_path(self.current_location, end, fighter.get_position())
             if fighter_dist < fighter.r:
-                ell = calculateParameterOfPointOnSegment(self.current_location, end, near_pt)
+                ell = calculate_parameter_of_point_on_segment(self.current_location, end, near_pt)
                 potential_hits.append(
                     (fighter, fighter_type, fighter_dist, ell)
                 )

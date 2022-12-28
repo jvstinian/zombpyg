@@ -1,5 +1,5 @@
 from zombpyg.rules.rules import Rules
-from zombpyg.utils import calculate_distance
+from zombpyg.utils.geometry import calculate_distance
 
 class EvacuationRules(Rules):
     """A kind of game where players must get together to be evacuated.

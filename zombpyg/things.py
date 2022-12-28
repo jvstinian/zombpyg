@@ -4,10 +4,23 @@ import pygame
 
 from zombpyg.core import Thing, CircularThing, RectangularThing, FightingThing
 from zombpyg.sensor import Sensor
-from zombpyg.utils import Color, getMovementEstimates, _valid_angle, getPointInfo
+from zombpyg.utils.surroundings import Color, get_movement_estimates
+from zombpyg.utils.geometry import _valid_angle, get_angle_and_distance_to_point
 from zombpyg.weapons import ZombieClaws, Knife, Axe, Gun, Rifle, Shotgun
+from zombpyg.actions import (
+    MoveableThing,
+    RotatableThing,
+    AttackingThing,
+    ExecutableAction,
+    ForwardMoveAction,
+    RightMoveAction,
+    BackwardMoveAction,
+    LeftMoveAction,
+    RotateAction,
+    AttackAction
+)
 
-
+# TODO: Remove the following for now
 class Box(RectangularThing):
     """Solid box."""
     MAX_LIFE = 10
@@ -29,19 +42,6 @@ class DeadBody(CircularThing):
 
     def decrement_life(self, t):
         self.life -= t
-
-from dqn.zombpyg.actions import (
-    MoveableThing,
-    RotatableThing,
-    AttackingThing,
-    ExecutableAction,
-    ForwardMoveAction,
-    RightMoveAction,
-    BackwardMoveAction,
-    LeftMoveAction,
-    RotateAction,
-    AttackAction
-)
 
 class Zombie(FightingThing, MoveableThing, RotatableThing, AttackingThing):
     MAX_LIFE = 100
@@ -112,7 +112,7 @@ class Zombie(FightingThing, MoveableThing, RotatableThing, AttackingThing):
             # else:
             #     # If wall is seen in each direction, move or re-orient with uniform probability
             #     action = random.randint(0, self.direction_actions_n + self.orientation_actions_n - 1)
-            distance_forward, has_gap_ahead, gap_ahead_width, gap_ahead_left_angle, gap_ahead_right_angle, angle_left_gap, angle_right_gap, surroundings = getMovementEstimates(
+            distance_forward, has_gap_ahead, gap_ahead_width, gap_ahead_left_angle, gap_ahead_right_angle, angle_left_gap, angle_right_gap, surroundings = get_movement_estimates(
                 self.get_position(), self.r, self.orientation, self.world.walls, self.vision_distance
             )
             if has_gap_ahead and (gap_ahead_width >= 3 * self.r):
@@ -240,7 +240,7 @@ class Zombie(FightingThing, MoveableThing, RotatableThing, AttackingThing):
         detected_player = None
         
         for player in players:
-            angle, distance, _ = getPointInfo(self.get_position(), self.orientation, player.get_position())
+            angle, distance, _ = get_angle_and_distance_to_point(self.get_position(), self.orientation, player.get_position())
             if distance >= self.vision_distance + player.r:
                 continue
             

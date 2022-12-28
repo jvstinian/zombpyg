@@ -2,7 +2,8 @@ import numpy, pygame
 import bisect
 from zombpyg.object import Bullet
 from zombpyg.sensor import Sensor
-from zombpyg.utils import Color, _valid_angle, getPointInfo, calculate_distance
+from zombpyg.utils.geometry import _valid_angle, get_angle_and_distance_to_point, calculate_distance
+from zombpyg.utils.surroundings import Color
 from zombpyg.things import Player
 from zombpyg.actions import (
     MoveableThing,
@@ -173,7 +174,7 @@ class Agent(Player, MoveableThing, RotatableThing, AttackingThing):
         found_resources = []
         
         for resource in resources:
-            angle, distance, _ = getPointInfo(self.get_position(), self.orientation, resource.get_position())
+            angle, distance, _ = get_angle_and_distance_to_point(self.get_position(), self.orientation, resource.get_position())
             if distance >= self.r + resource.r:
                 continue
             rectified_angle = numpy.rad2deg(numpy.arctan2(resource.r, distance))
@@ -189,7 +190,7 @@ class Agent(Player, MoveableThing, RotatableThing, AttackingThing):
         sensor_angles = list(map(lambda sensor: sensor.angle, self.sensors))
         
         for resource in resources:
-            angle, distance, _ = getPointInfo(self.get_position(), self.orientation, resource.get_position())
+            angle, distance, _ = get_angle_and_distance_to_point(self.get_position(), self.orientation, resource.get_position())
             if distance >= self.max_sensor_length + resource.r:
                 continue
             
@@ -212,7 +213,7 @@ class Agent(Player, MoveableThing, RotatableThing, AttackingThing):
         sensor_angles = list(map(lambda sensor: sensor.angle, self.sensors))
         
         for zombie in zombies:
-            angle, distance, _ = getPointInfo(self.get_position(), self.orientation, zombie.get_position())
+            angle, distance, _ = get_angle_and_distance_to_point(self.get_position(), self.orientation, zombie.get_position())
             if distance >= self.max_sensor_length + zombie.r:
                 continue
             rectified_angle = numpy.rad2deg(numpy.arctan2(zombie.r, distance))
@@ -238,7 +239,7 @@ class Agent(Player, MoveableThing, RotatableThing, AttackingThing):
         for player, _ in players_found:
             if player == self:
                 continue
-            angle, distance, _ = getPointInfo(self.get_position(), self.orientation, player.get_position())
+            angle, distance, _ = get_angle_and_distance_to_point(self.get_position(), self.orientation, player.get_position())
             if distance >= self.max_sensor_length + player.r:
                 continue
             rectified_angle = numpy.rad2deg(numpy.arctan2(player.r, distance))
@@ -267,7 +268,7 @@ class Agent(Player, MoveableThing, RotatableThing, AttackingThing):
             if player == self:
                 print("Cannot heal self here")
                 continue
-            angle, distance, _ = getPointInfo(self.get_position(), self.orientation, player.get_position())
+            angle, distance, _ = get_angle_and_distance_to_point(self.get_position(), self.orientation, player.get_position())
             if distance >= heal_distance:
                 continue
             

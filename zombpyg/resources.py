@@ -1,5 +1,5 @@
 from .core import CircularThing
-from .utils import Color
+from .utils.surroundings import Color
 import math
 
 class Resources(CircularThing):

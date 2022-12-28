@@ -7,7 +7,7 @@ from zombpyg.world import World
 from zombpyg.object import Wall
 from zombpyg.agent import Agent, AgentBuilder
 from zombpyg.things import ZombieBuilder
-from zombpyg.utils import Color
+from zombpyg.utils.surroundings import Color
 from zombpyg.weapons import Shotgun
 from zombpyg.players.builder import PlayerBuilder
 

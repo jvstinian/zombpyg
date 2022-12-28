@@ -1,7 +1,7 @@
 import numpy
 import random
 from zombpyg.core import Weapon
-from zombpyg.utils import getUnitVector, getPointInfo
+from zombpyg.utils.geometry import rotate_vector, get_angle_and_distance_to_point
 from zombpyg.object import Bullet
 
 
@@ -27,7 +27,7 @@ class MeleeWeapon(Weapon):
                 print("Omitting the attacker as a potential target")
                 continue
 
-            angle, distance, _ = getPointInfo(attacker.get_position(), attacker.orientation, fighter.get_position())
+            angle, distance, _ = get_angle_and_distance_to_point(attacker.get_position(), attacker.orientation, fighter.get_position())
             if distance >= self.max_range:
                 continue
             
@@ -124,7 +124,7 @@ class Firearm(Weapon):
             y + 1.01*radius*orientation_vector[1]
         )
         for angle in anglesrad:
-            direction_vector = getUnitVector(orientation_vector, angle)
+            direction_vector = rotate_vector(orientation_vector, angle)
             bullets.append(
                 Bullet(bullet_start, direction_vector, self.damage_range, self.max_total_damage, self.bullet_velocity, attacker, attacker.world)
             )

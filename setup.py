@@ -69,6 +69,7 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://caremad.io/posts/2013/07/setup-vs-requirement/
     install_requires=[
+        "numpy",
         "gym",
         "pygame"
     ],

@@ -5,8 +5,8 @@ import pygame
 from zombpyg.things import Player
 from zombpyg.object import Bullet
 from zombpyg.sensor import Sensor
-from zombpyg.utils import Color
-from zombpyg.utils import getMovementEstimates, _valid_angle, getPointInfo
+from zombpyg.utils.surroundings import Color, get_movement_estimates
+from zombpyg.utils.geometry import _valid_angle, get_angle_and_distance_to_point
 from zombpyg.weapons import Rifle
 from zombpyg.actions import (
     MoveableThing,
@@ -79,7 +79,7 @@ class Terminator(Player, MoveableThing, RotatableThing, AttackingThing):
                 self.attack_target = detected_target
                 action = AttackAction(self)
         else:
-            distance_forward, has_gap_ahead, gap_ahead_width, gap_ahead_left_angle, gap_ahead_right_angle, angle_left_gap, angle_right_gap, surroundings = getMovementEstimates(
+            distance_forward, has_gap_ahead, gap_ahead_width, gap_ahead_left_angle, gap_ahead_right_angle, angle_left_gap, angle_right_gap, surroundings = get_movement_estimates(
                 self.get_position(), self.r, self.orientation, self.world.walls, self.vision_distance
             )
             if has_gap_ahead and (gap_ahead_width >= 3 * self.r):
@@ -159,7 +159,7 @@ class Terminator(Player, MoveableThing, RotatableThing, AttackingThing):
         detected_target = None
         
         for target in targets:
-            angle, distance, _ = getPointInfo(self.get_position(), self.orientation, target.get_position())
+            angle, distance, _ = get_angle_and_distance_to_point(self.get_position(), self.orientation, target.get_position())
             if distance >= self.vision_distance + target.r:
                 continue
 

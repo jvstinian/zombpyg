@@ -1,5 +1,6 @@
 import numpy, pygame
-from zombpyg.utils import Color, calculate_distance
+from zombpyg.utils.geometry import calculate_distance
+from zombpyg.utils.surroundings import Color
 
 
 class Sensor:
