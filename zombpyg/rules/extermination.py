@@ -1,5 +1,5 @@
 from zombpyg.rules.rules import Rules
-from zombpyg.things import Zombie
+from zombpyg.core.zombie import Zombie
 
 
 class ExterminationRules(Rules):

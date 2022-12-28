@@ -4,10 +4,10 @@ import pygame
 
 from zombpyg.utils.geometry import _valid_angle
 from zombpyg.utils.surroundings import Color
-from zombpyg.object import Wall
+from zombpyg.core.wall import Wall
 from zombpyg.agent import Agent
-from zombpyg.things import Zombie
-from zombpyg.weapons import Rifle
+from zombpyg.core.zombie import Zombie
+from zombpyg.core.weapons import Rifle
 from zombpyg.players.terminator import Terminator
 
 

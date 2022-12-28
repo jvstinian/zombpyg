@@ -4,11 +4,11 @@ from pygame.locals import *
 from zombpyg.map.map import MapFactory
 from zombpyg.rules.factory import RulesFactory
 from zombpyg.world import World
-from zombpyg.object import Wall
+from zombpyg.core.wall import Wall
 from zombpyg.agent import Agent, AgentBuilder
-from zombpyg.things import ZombieBuilder
+from zombpyg.core.zombie import ZombieBuilder
 from zombpyg.utils.surroundings import Color
-from zombpyg.weapons import Shotgun
+from zombpyg.core.weapons import Shotgun
 from zombpyg.players.builder import PlayerBuilder
 
 # GYM: Decide whether to conform to gym interface

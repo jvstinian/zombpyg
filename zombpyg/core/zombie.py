@@ -2,6 +2,7 @@ import random
 import numpy
 import pygame
 
+from zombpyg.core.wall import Wall
 from zombpyg.utils.surroundings import Color, get_movement_estimates
 from zombpyg.actions import (
     MoveableThing,

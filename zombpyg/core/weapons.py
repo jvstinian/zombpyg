@@ -1,8 +1,9 @@
 import numpy
 import random
-from zombpyg.core import Weapon
+
+from zombpyg.core.things import Weapon
 from zombpyg.utils.geometry import rotate_vector, get_angle_and_distance_to_point
-from zombpyg.object import Bullet
+from zombpyg.core.bullet import Bullet
 
 
 class MeleeWeapon(Weapon):

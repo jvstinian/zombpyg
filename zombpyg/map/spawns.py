@@ -1,5 +1,5 @@
 import numpy
-from zombpyg.core import RectangularThing
+from zombpyg.core.things import RectangularThing
 
 
 class SpawnLocation(RectangularThing):

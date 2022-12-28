@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from .terminator import Terminator
-from zombpyg.weapons import WeaponFactory
+from zombpyg.core.weapons import WeaponFactory
 
 class PlayerBuilder(object):
     def __init__(self, player_id, weapon_id, radius):

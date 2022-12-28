@@ -2,12 +2,12 @@ import numpy
 import random
 import pygame
 
-from zombpyg.things import Player
-from zombpyg.object import Bullet
-from zombpyg.sensor import Sensor
+from zombpyg.core.player import Player
+from zombpyg.core.bullet import Bullet
+from zombpyg.core.sensor import Sensor
 from zombpyg.utils.surroundings import Color, get_movement_estimates
 from zombpyg.utils.geometry import _valid_angle, get_angle_and_distance_to_point
-from zombpyg.weapons import Rifle
+from zombpyg.core.weapons import Rifle
 from zombpyg.actions import (
     MoveableThing,
     RotatableThing,

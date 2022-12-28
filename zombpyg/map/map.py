@@ -1,4 +1,4 @@
-from zombpyg.object import Wall
+from zombpyg.core.wall import Wall
 from .objective import ObjectiveLocation
 from .spawns import SpawnLocation
 from .resourcespawns import ResourceSpawnLocation

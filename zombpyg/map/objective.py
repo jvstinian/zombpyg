@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from zombpyg.utils.geometry import calculate_distance
 from zombpyg.utils.surroundings import Color
-from zombpyg.core import RectangularThing, CircularThing
-from zombpyg.object import Wall
+from zombpyg.core.things import RectangularThing, CircularThing
+from zombpyg.core.wall import Wall
 
 class Objective(ABC):
     @abstractmethod

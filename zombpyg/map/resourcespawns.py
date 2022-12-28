@@ -1,6 +1,6 @@
 import numpy
-from zombpyg.core import CircularThing
-from zombpyg.resources import MedicalSupplyResource, AmmoSupplyResource
+from zombpyg.core.things import CircularThing
+from zombpyg.core.resources import MedicalSupplyResource, AmmoSupplyResource
 
 
 class ResourceSpawnLocation(CircularThing):
