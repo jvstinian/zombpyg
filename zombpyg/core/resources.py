@@ -1,5 +1,5 @@
-from .core import CircularThing
-from .utils.surroundings import Color
+from zombpyg.core.things import CircularThing
+from zombpyg.utils.surroundings import Color
 import math
 
 class Resources(CircularThing):

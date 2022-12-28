@@ -1,42 +1,15 @@
-import numpy, pygame
+import numpy
+import pygame
 from operator import itemgetter
-from zombpyg.utils.geometry import calculate_intersect_point, calculate_parameter_of_point_on_segment, get_nearest_point_and_distance_to_path
-from zombpyg.utils.surroundings import Color
 
+from zombpyg.utils.geometry import calculate_parameter_of_point_on_segment, get_nearest_point_and_distance_to_path
 
-# class Object:
-#     def __init__(self, x, y, r):
-#         self.x = x
-#         self.y = y
-#         self.r = r
-#     def get_position(self):
-#         return self.x, self.y
-#     def get_radius(self):
-#         return self.r
-#     def set_position(self, x, y):
-#         self.x = x
-#         self.y = y
-#     def draw(self):
-#         pass
-    
-class Wall:
-    def __init__(self, start, end, width=2):
-        self.start = start
-        self.end = end
-        self.width = width
-        
-    def draw(self, game):
-        pygame.draw.line(game.DISPLAYSURF, Color.WHITE, self.start, self.end, self.width)
+# TODO: Add to utils
+BulletRed = (255, 0, 0, 128)
 
-    def collide(self, p1, p2):
-        point = calculate_intersect_point(p1, p2, self.start, self.end)
-        if point is None:
-            return None
-        else:
-            return (int(point[0]), int(point[1]))
 
 class Bullet(object):
-    color = (255, 0, 0, 128)
+    color = BulletRed
     width = 6
 
     def __init__(self, start, direction, damage_range, max_total_damage, speed, agent, world):
@@ -149,7 +122,7 @@ class Bullet(object):
         pygame.draw.line(game.DISPLAYSURF, Bullet.color, display_start, display_end, Bullet.width)
 
 class BulletDecoration(object):
-    color = (255, 0, 0, 128)
+    color = BulletRed
     width = 6
 
     def __init__(self, start, end, display_duration):
