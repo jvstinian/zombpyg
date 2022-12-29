@@ -6,10 +6,10 @@ from zombpyg.game import Game
 
 def render_game_in_thread(game):
     termination = False
-    orientation_actions_n = len(AgentActions.orientation_actions)
-    no_action = AgentActions.direction_actions_n + int(orientation_actions_n/2)
-    left_rotation_action = AgentActions.direction_actions_n + int(orientation_actions_n/2) - 1
-    right_rotation_action = AgentActions.direction_actions_n + int(orientation_actions_n/2) + 1
+    # orientation_actions_n = len(AgentActions.orientation_actions)
+    # no_action = AgentActions.direction_actions_n + int(orientation_actions_n/2)
+    # left_rotation_action = AgentActions.direction_actions_n + int(orientation_actions_n/2) - 1
+    # right_rotation_action = AgentActions.direction_actions_n + int(orientation_actions_n/2) + 1
     while not termination:
         game.draw()
         if pygame.event.peek(): 
@@ -20,26 +20,46 @@ def render_game_in_thread(game):
                     elif event.key == pygame.K_0:
                         game.decrease_fps()    
                     elif event.key == pygame.K_w:
-                        _, _, termination = game.play_action(0)
+                        _, _, termination = game.play_action(
+                            AgentActions.get_forward_move_action_id()
+                        )
                     elif event.key == pygame.K_d:
-                        _, _, termination = game.play_action(1)
+                        _, _, termination = game.play_action(
+                            AgentActions.get_right_move_action_id()
+                        )
                     elif event.key == pygame.K_s:
-                        _, _, termination = game.play_action(2)
+                        _, _, termination = game.play_action(
+                            AgentActions.get_backward_move_action_id()
+                        )
                     elif event.key == pygame.K_a:
-                        _, _, termination = game.play_action(3)
+                        _, _, termination = game.play_action(
+                            AgentActions.get_left_move_action_id()
+                        )
                     elif event.key == pygame.K_RIGHT:
-                        _, _, termination = game.play_action(right_rotation_action)
+                        _, _, termination = game.play_action(
+                            AgentActions.get_smallest_right_rotation_action_id()
+                        )
                     elif event.key == pygame.K_LEFT:
-                        _, _, termination = game.play_action(left_rotation_action)
+                        _, _, termination = game.play_action(
+                            AgentActions.get_smallest_left_rotation_action_id()
+                        )
                     elif event.key == pygame.K_SPACE:
-                        _, _, termination = game.play_action(4 + orientation_actions_n)
+                        _, _, termination = game.play_action(
+                            AgentActions.get_use_weapon_action_id()
+                        )
                     elif event.key == pygame.K_h:
-                        _, _, termination = game.play_action(4 + orientation_actions_n + 1)
+                        _, _, termination = game.play_action(
+                            AgentActions.get_self_heal_action_id()
+                        )
                     elif event.key == pygame.K_g:
-                        _, _, termination = game.play_action(4 + orientation_actions_n + 2)
+                        _, _, termination = game.play_action(
+                            AgentActions.get_heal_player_action_id()
+                        )
         else:
             # No action
-            _, _, termination = game.play_action(no_action)
+            _, _, termination = game.play_action(
+                AgentActions.get_no_action_id()
+            )
         print(f"Total Reward: {game.get_total_reward()}")
 
 def main(): 

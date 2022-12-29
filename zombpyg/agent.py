@@ -29,11 +29,52 @@ class AgentActions(object):
     def get_actions_n(cls):
         return cls.direction_actions_n + len(cls.orientation_actions) + 3
 
+    @classmethod
+    def get_forward_move_action_id(cls):
+        return 0
+    
+    @classmethod
+    def get_right_move_action_id(cls):
+        return 1
+    
+    @classmethod
+    def get_backward_move_action_id(cls):
+        return 2
+    
+    @classmethod
+    def get_left_move_action_id(cls):
+        return 3
+    
+    @classmethod
+    def get_no_action_id(cls):
+        return cls.direction_actions_n + int(len(cls.orientation_actions)/2)
+    
+    @classmethod
+    def get_smallest_left_rotation_action_id(cls):
+        return AgentActions.direction_actions_n + int(len(cls.orientation_actions)/2) - 1
+    
+    @classmethod
+    def get_smallest_right_rotation_action_id(cls):
+        return AgentActions.direction_actions_n + int(len(cls.orientation_actions)/2) + 1
+    
+    @classmethod
+    def get_use_weapon_action_id(cls):
+        return cls.direction_actions_n + len(cls.orientation_actions)
+
+    @classmethod
+    def get_self_heal_action_id(cls):
+        return cls.direction_actions_n + len(cls.orientation_actions) + 1
+    
+    @classmethod
+    def get_heal_player_action_id(cls):
+        return cls.direction_actions_n + len(cls.orientation_actions) + 2
+    
+
 class Agent(Player, MoveableThing, RotatableThing, AttackingThing):
     def __init__(
         self, 
         x, y, radius, world,
-        agent_id, color, sensor_specs, # sensor_num, sensor_length, 
+        agent_id, color, sensor_specs,
         weapon=None
     ):
         super().__init__(
