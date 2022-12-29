@@ -56,24 +56,19 @@ class Terminator(Player, MoveableThing, RotatableThing, AttackingThing):
 
     def next_step(self):
         action = None
-        # Use sensors to collect data on players and agents
+        # Collect data on zombies
         detected_target, detected_distance, detected_angle = self.seek_target()
         if detected_target is not None:
             # If a player is seen, then re-orient if necessary.
             # If the angle to target is acceptable but is not in attack range, then pursue.
             # If the angle to target is acceptable and is in attack range, then attack.
             if detected_angle < -self.minimum_rotation_angle:
-                # action = self.direction_actions_n
                 orientation_action = 0
                 action = RotateAction(self, self.orientation_actions[orientation_action])
             elif detected_angle > self.minimum_rotation_angle:
-                # action = self.direction_actions_n + 2
                 orientation_action = 2
                 action = RotateAction(self, self.orientation_actions[orientation_action])
             elif detected_distance > self.weapon.max_range: 
-                # detected angle is within a reasonable range, 
-                # but the target is too far away
-                # action = 0 # move forward
                 action = ForwardMoveAction(self)
             else: 
                 self.attack_target = detected_target
@@ -175,13 +170,11 @@ class Terminator(Player, MoveableThing, RotatableThing, AttackingThing):
                     break
             if wall_point is None:
                 # no wall found betwen terminator and target
-                # found_target.append((distance, angle, target))
                 if distance < minimum_distance_to_target:
                     minimum_distance_to_target = distance
                     detected_angle = angle
                     detected_target = target
         
-        # return found_players
         return detected_target, minimum_distance_to_target, detected_angle
 
     def draw(self, game):

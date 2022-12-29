@@ -88,9 +88,10 @@ def get_intersect_point(p1, p2, p3, p4):
 # For line segments (ie not infinitely long lines) the intersect point
 # may not lay on both lines.
 #   
-# If the point where two lines intersect is inside both line's bounding
-# rectangles then the lines intersect. Returns intersect point if the line
-# intesect o None if not
+# We use a simple calculation to determine where the intersection 
+# point for the lines falls relative to each segment.  
+# If an intersection point falls on both line segments, the point is 
+# returned, otherwise None is returned.  
 def calculate_intersect_point(p1, p2, p3, p4):
     p = get_intersect_point(p1, p2, p3, p4)
     if p is not None:
@@ -102,53 +103,6 @@ def calculate_intersect_point(p1, p2, p3, p4):
         return None            
     else:
         return None
-
-    # p = getIntersectPoint(p1, p2, p3, p4)
-  
-    # if p is not None:               
-    #     width = p2[0] - p1[0]
-    #     height = p2[1] - p1[1]       
-    #     r1 = Rect(p1, (width , height))
-    #     r1.normalize()
-       
-    #     width = p4[0] - p3[0]
-    #     height = p4[1] - p3[1]
-    #     r2 = Rect(p3, (width, height))
-    #     r2.normalize()              
-    
-    #     # Ensure both rects have a width and height of at least 'tolerance' else the
-    #     # collidepoint check of the Rect class will fail as it doesn't include the bottom
-    #     # and right hand side 'pixels' of the rectangle
-    #     tolerance = 1
-    #     if r1.width < tolerance:
-    #         r1.width = tolerance
-                    
-    #     if r1.height < tolerance:
-    #         r1.height = tolerance
-        
-    #     if r2.width < tolerance:
-    #         r2.width = tolerance
-                    
-    #     if r2.height < tolerance:
-    #         r2.height = tolerance
-    
-    #     for point in p:                 
-    #         try:
-    #             point = [numpy.rint(pp) for pp in point] 
-    #             res1 = r1.collidepoint(point)
-    #             res2 = r2.collidepoint(point)
-    #             if res1 and res2:
-    #                 point = [int(pp) for pp in point]                       
-    #                 return point
-    #         except:         
-    #             print("point was invalid {}".format(point))
-                
-    #     # This is the case where the infinately long lines crossed but 
-    #     # the line segments didn't
-    #     return None            
-    
-    # else:
-    #     return None
 
 def calculate_parameter_of_point_on_segment(start, end, pt):
     if start[0] != end[0]:

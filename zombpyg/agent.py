@@ -144,7 +144,7 @@ class Agent(Player, MoveableThing, RotatableThing, AttackingThing):
         elif action_id == (self.direction_actions_n + self.orientation_actions_n + 2):
             return HealPlayerAction(self)
         else: # action_id >= self.actions_n:
-            return RotateAction(self, 0.0) # Shouldn't happend but do nothing just in case
+            return RotateAction(self, 0.0) # Shouldn't happen but do nothing just in case
 
     def move_forward(self) -> None:
         self.status = 'moving'

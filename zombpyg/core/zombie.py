@@ -52,7 +52,7 @@ class Zombie(FightingThing, MoveableThing, RotatableThing, AttackingThing):
         """Zombies attack if in range, else move in direction of a sighted player."""
 
         action = None
-        # Use sensors to collect data on players and agents
+        # Collect data on players and agents
         detected_player, detected_distance, detected_angle = self.seek_target()
         if detected_player is not None:
             print("Zombie found player!")
@@ -60,33 +60,18 @@ class Zombie(FightingThing, MoveableThing, RotatableThing, AttackingThing):
             # If the angle to target is acceptable but is not in attack range, then pursue.
             # If the angle to target is acceptable and is in attack range, then attack.
             if detected_angle < -self.sensor_angle:
-                # action = self.direction_actions_n
                 orientation_action = 0
                 action = RotateAction(self, self.orientation_actions[orientation_action])
             elif detected_angle > self.sensor_angle:
-                # action = self.direction_actions_n + 2
                 orientation_action = 2
                 action = RotateAction(self, self.orientation_actions[orientation_action])
             elif detected_distance > self.weapon.max_range: 
-                # detected angle is within a reasonable range, 
-                # but the target is too far away
-                # action = 0 # move forward
                 action = ForwardMoveAction(self)
             else: 
                 self.targeted_player = detected_player
                 action = AttackAction(self)
         else:
-            # If no player is seen, but a wall is seen, then re-orient to point away
-            # detected_walls, distances = self.detect_walls()
-            # if detected_walls[1] is None:
-            #     action = 0 # move forward
-            # elif detected_walls[0] is None:
-            #     action = self.direction_actions_n # Rotate left
-            # elif detected_walls[2] is None:
-            #     action = self.direction_actions_n + 2 # Rotate right
-            # else:
-            #     # If wall is seen in each direction, move or re-orient with uniform probability
-            #     action = random.randint(0, self.direction_actions_n + self.orientation_actions_n - 1)
+            # If no player is seen, make random choice for motion depending on positioning relative to walls
             distance_forward, has_gap_ahead, gap_ahead_width, gap_ahead_left_angle, gap_ahead_right_angle, angle_left_gap, angle_right_gap, surroundings = get_movement_estimates(
                 self.get_position(), self.r, self.orientation, self.world.walls, self.vision_distance
             )
@@ -104,13 +89,11 @@ class Zombie(FightingThing, MoveableThing, RotatableThing, AttackingThing):
                     RotateAction(self, self.orientation_actions[2])
                 ]
                 action = random.choices(
-                    # range(0, self.direction_actions_n + self.orientation_actions_n),
                     action_choices,
                     weights=[distweight, backweight, leftrotweight, noactionweight, rightrotweight],
                     k=1
                 )[0]
             else:
-                print(f"angle to left gap: {angle_left_gap}, angle to right gap: {angle_right_gap}")
                 # Note that the weight for a left rotation is the angle to the right-hand side gap, and 
                 # the weight for a right rotation is the angle to the left-hand side gap.  
                 # This means there's a higher probability of rotating to the side with an
@@ -119,49 +102,11 @@ class Zombie(FightingThing, MoveableThing, RotatableThing, AttackingThing):
                     RotateAction(self, self.orientation_actions[0]),
                     RotateAction(self, self.orientation_actions[2])
                 ]
-                # action = self.direction_actions_n + random.choices([0, 2], weights=[angle_right_gap, numpy.abs(angle_left_gap)], k=1)[0]
                 action = random.choices(
                     action_choices, weights=[angle_right_gap, numpy.abs(angle_left_gap)], k=1
                 )[0]
-                # if numpy.abs(angle_left_gap) <= angle_right_gap:
-                #     action = self.direction_actions_n # Rotate left
-                # else:
-                #     action = self.direction_actions_n + 2 # Rotate right
 
         self.play_action(action)
-
-        # # possible targets for movement and attack
-        # humans = [thing for thing in things.values()
-        #           if isinstance(thing, Player)]
-        # positions = possible_moves(self.position, things)
-
-        # if humans:
-        #     # targets available
-        #     target = closest(self, humans)
-
-        #     if distance(self.position, target.position) < self.weapon.max_range:
-        #         # target in range, attack
-        #         action = 'attack', target
-        #     else:
-        #         # target not in range, _try_ to move
-        #         if positions:
-        #             # move
-        #             best_position = closest(target, positions)
-        #             action = 'move', best_position
-        #         else:
-        #             # if blocked by obstacles, try to break them
-        #             adjacent = sort_by_distance(
-        #                 target, adjacent_positions(self))
-        #             for position in adjacent:
-        #                 thing = things.get(position)
-        #                 if isinstance(thing, (Box, Wall)):
-        #                     return 'attack', thing
-        # else:
-        #     # no targets, just wander around
-        #     if positions:
-        #         action = 'move', random.choice(positions)
-
-        # return action
 
     def update_steps(self):
         dx = int(self.step_size * numpy.sin(numpy.deg2rad(self.orientation)))
@@ -174,7 +119,6 @@ class Zombie(FightingThing, MoveableThing, RotatableThing, AttackingThing):
     def move_forward(self) -> None:
         dx, dy = self.step_forward
         x0, y0 = self.x, self.y
-        # x, y = self.world.get_valid_position(self.x, self.y, self.x+dx, self.y+dy)
         x, y = self.get_valid_position(self.x, self.y, self.x+dx, self.y+dy, self.world)
         self.set_position(x, y)
 
@@ -209,7 +153,6 @@ class Zombie(FightingThing, MoveableThing, RotatableThing, AttackingThing):
          ] + [
              player for player in self.world.players if player.life > 0
         ]
-        # found_players = []
         minimum_distance_to_player = self.vision_distance * 2.0
         detected_angle = None
         detected_player = None
@@ -230,13 +173,11 @@ class Zombie(FightingThing, MoveableThing, RotatableThing, AttackingThing):
                     break
             if wall_point is None:
                 # no wall found betwen zombie and player
-                # found_players.append((distance, angle, player))
                 if distance < minimum_distance_to_player:
                     minimum_distance_to_player = distance
                     detected_angle = angle
                     detected_player = player
         
-        # return found_players
         return detected_player, minimum_distance_to_player, detected_angle
 
     def draw(self, game):

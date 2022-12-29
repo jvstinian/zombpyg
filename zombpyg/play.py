@@ -6,10 +6,6 @@ from zombpyg.game import Game
 
 def render_game_in_thread(game):
     termination = False
-    # orientation_actions_n = len(AgentActions.orientation_actions)
-    # no_action = AgentActions.direction_actions_n + int(orientation_actions_n/2)
-    # left_rotation_action = AgentActions.direction_actions_n + int(orientation_actions_n/2) - 1
-    # right_rotation_action = AgentActions.direction_actions_n + int(orientation_actions_n/2) + 1
     while not termination:
         game.draw()
         if pygame.event.peek(): 

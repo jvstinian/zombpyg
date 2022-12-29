@@ -81,9 +81,6 @@ class RectangularThing(Thing):
         self.width = width
         self.height = height
         
-    # def get_center(self):
-    #     return self.left + self.width/2.0, self.top + self.height/2.0
-
     def draw(self, game):
         pygame.draw.rect(
             game.DISPLAYSURF, self.color, 
