@@ -25,7 +25,6 @@ class MeleeWeapon(Weapon):
         
         for fighter in potential_targets:
             if fighter == attacker:
-                print("Omitting the attacker as a potential target")
                 continue
 
             angle, distance, _ = get_angle_and_distance_to_point(attacker.get_position(), attacker.orientation, fighter.get_position())
@@ -44,7 +43,6 @@ class MeleeWeapon(Weapon):
         target = self.find_target(attacker)
         attacker.attack_count += 1
         if target is not None:
-            print(f"Found target, attacking with {self.name}")
             damage = random.randint(*self.damage_range)
             target.life -= damage
     

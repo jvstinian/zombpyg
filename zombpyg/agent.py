@@ -194,14 +194,12 @@ class Agent(Player, MoveableThing, RotatableThing, AttackingThing):
 
     def heal_self(self):
         self.status = 'healing self'
-        print("Healing self")
         if (self.life < Player.MAX_LIFE) and (self.healing_capacity > 0):
             self.life += 1
             self.healing_capacity -= 1
     
     def heal_player(self):
         self.status = 'healing player'
-        print("Attempting to healing player")
         target_player = self.find_heal_target()
         if target_player is not None:
             if (target_player.life < Player.MAX_LIFE) and (self.healing_capacity > 0):
@@ -307,7 +305,6 @@ class Agent(Player, MoveableThing, RotatableThing, AttackingThing):
         
         for player in players:
             if player == self:
-                print("Cannot heal self here")
                 continue
             angle, distance, _ = get_angle_and_distance_to_point(self.get_position(), self.orientation, player.get_position())
             if distance >= heal_distance:
@@ -356,22 +353,14 @@ class Agent(Player, MoveableThing, RotatableThing, AttackingThing):
             feedbacks[i, 0] = min(feedbacks[i, 0], distance/self.sensors[i].length)
         for i, distance in enumerate(medical_distances):
             feedbacks[i, 1] = min(feedbacks[i, 1], distance/self.sensors[i].length)
-        if feedbacks[int(len(self.sensors)/2), 0] < 1.0:
-            print("Agent sees a ammo straight ahead")
-        if feedbacks[int(len(self.sensors)/2), 1] < 1.0:
-            print("Agent sees a med kit straight ahead")
 
         zombie_distances = self.detect_zombies()
         for i, distance in enumerate(zombie_distances):
             feedbacks[i, 2] = min(feedbacks[i, 2], distance/self.sensors[i].length)
-        if feedbacks[int(len(self.sensors)/2), 2] < 1.0:
-            print("Agent sees a zombie straight ahead")
 
         player_distances = self.detect_players()
         for i, distance in enumerate(player_distances):
             feedbacks[i, 3] = min(feedbacks[i, 3], distance/self.sensors[i].length)
-        if feedbacks[int(len(self.sensors)/2), 3] < 1.0:
-            print("Agent sees a another player straight ahead")
 
         # objectives
         objective_distances_by_sensor = self.detect_objective()

@@ -40,7 +40,6 @@ class MedicalSupplyResource(Resources):
             transfer_amount = min(self.life, 100 - player.healing_capacity)
             self.life -= transfer_amount
             player.healing_capacity += transfer_amount
-            print(f"Healing capacity taken: {transfer_amount}")
 
 class AmmoSupplyResource(Resources):
     def __init__(

@@ -55,7 +55,6 @@ class Zombie(FightingThing, MoveableThing, RotatableThing, AttackingThing):
         # Collect data on players and agents
         detected_player, detected_distance, detected_angle = self.seek_target()
         if detected_player is not None:
-            print("Zombie found player!")
             # If a player is seen, then re-orient if necessary.
             # If the angle to target is acceptable but is not in attack range, then pursue.
             # If the angle to target is acceptable and is in attack range, then attack.

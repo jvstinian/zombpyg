@@ -81,10 +81,8 @@ class Bullet(object):
                 if fighter_type == "zombie":
                     self.agent.zombies_killed += 1
                 elif (fighter_type == "player") or (fighter_type == "agent"):
-                    print(f"Fratricide: {self.agent.name} killed {fighter.name}")
                     self.agent.fratricide += 1
             elif (fighter_type == "player") or (fighter_type == "agent"):
-                print(f"Friendly fire incident: {self.agent.name} hit {fighter.name}")
                 self.agent.friendly_fire += 1
 
             if self.max_total_damage <= 0:
