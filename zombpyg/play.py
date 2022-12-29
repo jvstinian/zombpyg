@@ -1,10 +1,15 @@
 import argparse
 from threading import Thread
 import pygame
+from zombpyg.agent import AgentActions
 from zombpyg.game import Game
 
 def render_game_in_thread(game):
     termination = False
+    orientation_actions_n = len(AgentActions.orientation_actions)
+    no_action = AgentActions.direction_actions_n + int(orientation_actions_n/2)
+    left_rotation_action = AgentActions.direction_actions_n + int(orientation_actions_n/2) - 1
+    right_rotation_action = AgentActions.direction_actions_n + int(orientation_actions_n/2) + 1
     while not termination:
         game.draw()
         if pygame.event.peek(): 
@@ -23,18 +28,18 @@ def render_game_in_thread(game):
                     elif event.key == pygame.K_a:
                         _, _, termination = game.play_action(3)
                     elif event.key == pygame.K_RIGHT:
-                        _, _, termination = game.play_action(7)
+                        _, _, termination = game.play_action(right_rotation_action)
                     elif event.key == pygame.K_LEFT:
-                        _, _, termination = game.play_action(5)
+                        _, _, termination = game.play_action(left_rotation_action)
                     elif event.key == pygame.K_SPACE:
-                        _, _, termination = game.play_action(9)
+                        _, _, termination = game.play_action(4 + orientation_actions_n)
                     elif event.key == pygame.K_h:
-                        _, _, termination = game.play_action(10)
+                        _, _, termination = game.play_action(4 + orientation_actions_n + 1)
                     elif event.key == pygame.K_g:
-                        _, _, termination = game.play_action(11)
+                        _, _, termination = game.play_action(4 + orientation_actions_n + 2)
         else:
             # No action
-            _, _, termination = game.play_action(6)
+            _, _, termination = game.play_action(no_action)
         print(f"Total Reward: {game.get_total_reward()}")
 
 def main(): 

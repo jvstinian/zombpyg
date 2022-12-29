@@ -23,7 +23,7 @@ from zombpyg.actions import (
 
 class AgentActions(object):
     direction_actions_n = 4
-    orientation_actions = [-5.0, -1.0, 0.0, 1.0, 5.0]
+    orientation_actions = [-30.0, -5.0, -1.0, 0.0, 1.0, 5.0, 30.0]
 
     @classmethod
     def get_actions_n(cls):
