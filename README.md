@@ -14,11 +14,11 @@ The game and underlying package offer the player or developer the ability to
 There are four different game objectives:
 
 * *Extermination*: you must kill all zombies, and at least 1 player must survive.
-* *Evacuation*: all living players must get together at any place to be evacuated,
+* *Evacuation*: all living players must gather together at any place to be evacuated,
   and at least half of the initial team must survive.
-* *Safe House*: all players must travel and get inside a safe house. At least 1 player 
+* *Safe House*: all players must get to a safe house. At least 1 player 
   must reach it, but to win, all the living players must be  inside.
-* *Survival*: There is no escape.  
+* *Survival*: survive as long as possible, as there is no escape.  
 
 This game was inspired by both the console programming game [`zombsole`](https://github.com/fisadev/zombsole), 
 as well as the author's extensions of this game [`zombsole-lib`](https://github.com/jvstinian/zombsole), 
@@ -54,6 +54,11 @@ To play an example in single-player mode, the following can be run:
 zombpyg -r extermination --players terminator:axe:1,terminator:gun:1 -n 10
 ```
 
+The command-line options of the `zombpyg` script should be easy to understand, and can be 
+found by running `zombpyg --help`.  
+
+Use the following commands to play the game: 
+
 | Action | Key |
 | ------ | --- |
 | Move forward | w |
@@ -66,16 +71,13 @@ zombpyg -r extermination --players terminator:axe:1,terminator:gun:1 -n 10
 | Heal self | h |
 | Heal player ahead | g |
 
-The command-line options of the `zombpyg` script should be easy to understand, and can be 
-found by running `zombpyg --help`.  
-
 
 Create your own players
 =======================
 
 We will only provide an overview for adding new player bots here.  
 To add a new bot, the recommended approach would be to 
-* make a copy of the file for an existing player in the directory `zombpyg/players/`, 
+* make a copy of the file for an existing player (e.g., of "terminator") in the directory `zombpyg/players/`, 
 * edit the method `next_step` as desired, making sure to call `self.play_action(action)` at 
   the end of the method, and 
 * add logic for the new player to the method `create_player` for the class `PlayerBuilder` in 
@@ -88,5 +90,7 @@ waterfall logic rather than the class name (e.g., "terminator" rather than "Term
 Creating maps
 =============
 
-TBD
-
+It is possible to build additional maps.  At this time reading a map in from file 
+(as was possible with `zombsole`) is not supported.  
+Maps are instead constructed in the code.  
+See the file `zombpyg/map/map.py` for the construction of the maps currently supported.  
