@@ -2,7 +2,6 @@ import random
 import numpy
 import pygame
 
-# from zombpyg.core import Thing, CircularThing, RectangularThing, FightingThing # TODO
 from zombpyg.core.sensor import Sensor
 from zombpyg.utils.surroundings import Color, get_movement_estimates
 from zombpyg.utils.geometry import _valid_angle, get_angle_and_distance_to_point
@@ -146,17 +145,6 @@ class FightingThing(CircularThing):
         if y >= world.h: y = world.h - 1
 
         return x, y
-
-# TODO: Remove the following for now
-class Box(RectangularThing):
-    """Solid box."""
-    MAX_LIFE = 10
-
-    def __init__(self, left, top, width, height):
-        super(Box, self).__init__(
-            left, top, width, height,
-            u'box', 'yellow', Box.MAX_LIFE
-        )
 
 class DeadBody(CircularThing):
     """Dead body."""

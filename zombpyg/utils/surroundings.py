@@ -14,12 +14,13 @@ from zombpyg.utils.geometry import (
 
 
 class Color:
-    RED   = (255, 51, 153, 220)
-    DARK_RED   = (255, 15, 63, 220)
+    RED = (255, 51, 153, 220)
+    DARK_RED = (255, 15, 63, 220)
+    PURE_RED = (255, 0, 0, 128)
     GREEN = (0, 204, 0, 220)
     BRONZE = (205, 127, 50, 128)
-    BLUE  = (10, 102, 240, 220)
-    GRAY  = (200, 200, 200, 128)
+    BLUE = (10, 102, 240, 220)
+    GRAY = (200, 200, 200, 128)
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
     BACKGROUND = BLACK
@@ -74,8 +75,6 @@ class VisibleWallSegment(object):
                 numpy.array((dx, dy))
             )
             if a > 0:
-                # maxmove = distance2 / a # TODO: Check this
-                # return max(maxmove - radius, 0)
                 maxmove = (distance2 - distance * radius) / a
                 return max(maxmove, 0.0)
             else:
@@ -90,10 +89,6 @@ class VisibleWallSegment(object):
                 distances.append(
                     self.__simple_move_distance_to_point__(center, radius, self.right_point)
                 )
-            # if len(distances) > 0:
-            #     return min(distances)
-            # else:
-            #     return 10 * radius
             return min(distances)
 
     def contains_angle(self, angle):

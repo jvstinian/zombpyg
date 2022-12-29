@@ -3,13 +3,11 @@ import pygame
 from operator import itemgetter
 
 from zombpyg.utils.geometry import calculate_parameter_of_point_on_segment, get_nearest_point_and_distance_to_path
-
-# TODO: Add to utils
-BulletRed = (255, 0, 0, 128)
+from zombpyg.utils.surroundings import Color
 
 
 class Bullet(object):
-    color = BulletRed
+    color = PURE_RED
     width = 6
 
     def __init__(self, start, direction, damage_range, max_total_damage, speed, agent, world):
@@ -122,7 +120,7 @@ class Bullet(object):
         pygame.draw.line(game.DISPLAYSURF, Bullet.color, display_start, display_end, Bullet.width)
 
 class BulletDecoration(object):
-    color = BulletRed
+    color = PURE_RED
     width = 6
 
     def __init__(self, start, end, display_duration):
