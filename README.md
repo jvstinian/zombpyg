@@ -16,8 +16,7 @@ There are four different game objectives:
 * *Extermination*: you must kill all zombies, and at least 1 player must survive.
 * *Evacuation*: all living players must gather together at any place to be evacuated,
   and at least half of the initial team must survive.
-* *Safe House*: all players must get to a safe house. At least 1 player 
-  must reach it, but to win, all the living players must be  inside.
+* *Safe House*: all living players must get to a safe house.
 * *Survival*: survive as long as possible, as there is no escape.  
 
 This game was inspired by both the console programming game [`zombsole`](https://github.com/fisadev/zombsole), 
@@ -43,7 +42,7 @@ and install with the editable flag:
 ```
 git clone https://github.com/jvstinian/zombpyg.git
 cd zombpyg
-sudo pip install -e zombpyg
+pip install -e zombpyg
 ```
 
 Single-player Mode
@@ -75,8 +74,7 @@ Use the following commands to play the game:
 Create your own players
 =======================
 
-We will only provide an overview for adding new player bots here.  
-To add a new bot, the recommended approach would be to 
+We will only provide a brief overview for adding new player bots here.  To add a new bot, the recommended approach would be to 
 * make a copy of the file for an existing player (e.g., of "terminator") in the directory `zombpyg/players/`, 
 * edit the method `next_step` as desired, making sure to call `self.play_action(action)` at 
   the end of the method, and 
