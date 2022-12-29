@@ -7,7 +7,7 @@ from zombpyg.utils.surroundings import Color
 
 
 class Bullet(object):
-    color = PURE_RED
+    color = Color.PURE_RED
     width = 6
 
     def __init__(self, start, direction, damage_range, max_total_damage, speed, agent, world):
@@ -120,7 +120,7 @@ class Bullet(object):
         pygame.draw.line(game.DISPLAYSURF, Bullet.color, display_start, display_end, Bullet.width)
 
 class BulletDecoration(object):
-    color = PURE_RED
+    color = Color.PURE_RED
     width = 6
 
     def __init__(self, start, end, display_duration):

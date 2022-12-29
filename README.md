@@ -20,9 +20,9 @@ There are four different game objectives:
   must reach it, but to win, all the living players must be  inside.
 * *Survival*: There is no escape.  
 
-This game was inspired by both the console programming game (`zombsole`)[https://github.com/fisadev/zombsole], 
-as well as the author's extensions of this game (`zombsole-lib`)[https://github.com/jvstinian/zombsole], 
-and the pellet-eating robot in the (`demo`)[https://github.com/PacktPublishing/Python-Reinforcement-Learning-Projects/tree/master/Chapter03/demo] game.  
+This game was inspired by both the console programming game [`zombsole`](https://github.com/fisadev/zombsole), 
+as well as the author's extensions of this game [`zombsole-lib`](https://github.com/jvstinian/zombsole), 
+and the pellet-eating robot in the [`demo`](https://github.com/PacktPublishing/Python-Reinforcement-Learning-Projects/tree/master/Chapter03/demo) game.  
 
 
 Installation
