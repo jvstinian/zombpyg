@@ -4,7 +4,7 @@ import pygame
 from zombpyg.agent import AgentActions
 from zombpyg.game import Game
 
-def render_game_in_thread(game):
+def render_game(game):
     termination = False
     while not termination:
         game.draw()
@@ -85,10 +85,8 @@ def main():
         player_specs=player_specs,
         verbose=verbose,
     )
-    t = Thread(target=lambda: render_game_in_thread(game))
-    t.start()
     game.reset()
-    t.join()
+    render_game(game)
 
 if __name__ == "__main__":
     main()
