@@ -1,5 +1,4 @@
 import argparse
-from threading import Thread
 import pygame
 from zombpyg.agent import AgentActions
 from zombpyg.game import Game
