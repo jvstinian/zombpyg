@@ -73,8 +73,11 @@ class Game:
         
         self.w = w
         self.h = h
-        self.DISPLAYSURF = DISPLAYSURF
-        self.fpsClock = pygame.time.Clock()
+        self.DISPLAYSURF = None
+        self.fpsClock = None
+        if DISPLAYSURF is not None:
+            self.DISPLAYSURF = DISPLAYSURF
+            self.fpsClock = pygame.time.Clock()
         self.fps = 50
         
         self.obj_radius = 10
@@ -106,6 +109,8 @@ class Game:
         self.__process_player_specs__(player_specs)
 
         self.verbose = verbose
+
+        self.continue_without_agents = False
 
         # Initialize world, players, agents
         if initialize_game:
@@ -202,7 +207,7 @@ class Game:
                 if self.verbose:
                     print(f"GAME OVER.  {description}")
             termination = 1
-        elif all([agent.life <= 0 for agent in self.world.agents]):
+        elif all([agent.life <= 0 for agent in self.world.agents]) and not self.continue_without_agents:
             if self.verbose:
                 print("GAME OVER.  All agents dead.")
             termination = 1
@@ -236,6 +241,10 @@ class Game:
     def decrease_fps(self):
         self.fps = max(1, self.fps-10)
         self.world.update_step_time_delta(1.0/self.fps)
+
+    def set_display(self, DISPLAYSURF):
+        self.DISPLAYSURF = DISPLAYSURF
+        self.fpsClock = pygame.time.Clock()
 
     def draw(self):
         # Draw objects
