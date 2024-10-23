@@ -28,12 +28,17 @@
                   };
               })
           ];
-          python3 = let
-                  self = prev.python3.override {
-                      inherit self;
-                      packageOverrides = prev.lib.composeManyExtensions final.pythonPackagesOverlays;
-                  }; 
-              in self;
+          # python3 = let
+          #         self = 
+          #             inherit self;
+          #             packageOverrides = prev.lib.composeManyExtensions final.pythonPackagesOverlays;
+          #         }; 
+          #     in self;
+          # Trying the simpler approach described in the manual at 
+          # https://nixos.org/manual/nixpkgs/unstable/#how-to-override-a-python-package-using-overlays
+          python3 = prev.python3.override {
+              packageOverrides = prev.lib.composeManyExtensions final.pythonPackagesOverlays;
+          };
 
           python3Packages = final.python3.pkgs;
       };
