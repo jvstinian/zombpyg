@@ -7,48 +7,74 @@
       url = "github:numtide/flake-utils";
     };
   };
-  outputs = { nixpkgs, flake-utils, ... }: flake-utils.lib.eachDefaultSystem (system:
-    let
-      pkgs = import nixpkgs {
-        inherit system;
-        overlays = [ ];
-      };
+  outputs = { nixpkgs, flake-utils, ... }: 
+    let 
+      python-zombpyg-overlay = final: prev: {
+          pythonPackagesOverlays = (prev.pythonPackagesOverlays or [ ]) ++ [
+              (python-final: python-prev: {
+                  zombpyg = python-final.buildPythonPackage rec {
+                      name = "zombpyg";
 
-      zombpyg = pkgs.python3Packages.buildPythonPackage rec {
-          name = "zombpyg";
+                      src = ./.;
 
-          src = ./.;
+                      # was previously using "dependencies" but the packages 
+                      # didn't appear to propagate to the output package
+                      propagatedBuildInputs = with python-final; [
+                        numpy gym pygame
+                      ];
 
-          # was previously using "dependencies" but the packages 
-	  # didn't appear to propagate to the output package
-          propagatedBuildInputs = with pkgs.python3.pkgs; [
-            numpy gym pygame
+                      # Not including "nativeCheckInputs" as there are no additional dependencies for testing
+                      doCheck = true;
+                  };
+              })
           ];
+          # python3 = let
+          #         self = 
+          #             inherit self;
+          #             packageOverrides = prev.lib.composeManyExtensions final.pythonPackagesOverlays;
+          #         }; 
+          #     in self;
+          # Trying the simpler approach described in the manual at 
+          # https://nixos.org/manual/nixpkgs/unstable/#how-to-override-a-python-package-using-overlays
+          python3 = prev.python3.override {
+              packageOverrides = prev.lib.composeManyExtensions final.pythonPackagesOverlays;
+          };
 
-          # Not including "nativeCheckInputs" as there are no additional dependencies for testing
-          doCheck = true;
+          python3Packages = final.python3.pkgs;
       };
-      dev-python-packages = ps: with ps; [
-          numpy 
-          gym 
-          pygame
-          zombpyg
-      ];
-      dev-python = pkgs.python3.withPackages dev-python-packages;
-    in rec {
-      devShell = pkgs.mkShell {
-        buildInputs = with pkgs; [
-          dev-python
-        ];
+    in 
+      flake-utils.lib.eachDefaultSystem (system: 
+        let 
+          pkgs = import nixpkgs {
+            inherit system;
+            overlays = [ python-zombpyg-overlay ];
+          };
+
+          dev-python-packages = ps: with ps; [
+              numpy 
+              gym 
+              pygame
+              zombpyg
+          ];
+    
+          dev-python = pkgs.python3.withPackages dev-python-packages;
+        in 
+          rec {
+            devShell = pkgs.mkShell {
+              buildInputs = with pkgs; [
+                dev-python
+              ];
+            };
+            packages = {
+              zombpyg = pkgs.python3Packages.zombpyg;
+              default = pkgs.python3Packages.zombpyg;
+            };
+            apps.default = {
+              type = "app";
+              program = "${packages.zombpyg}/bin/zombpyg";
+            };
+          }
+      ) // {
+        overlays.default = python-zombpyg-overlay;
       };
-      packages = {
-        zombpyg = zombpyg;
-        default = zombpyg;
-      };
-      apps.default = {
-        type = "app";
-        program = "${packages.zombpyg}/bin/zombpyg";
-      };
-    }
-  );
 }
