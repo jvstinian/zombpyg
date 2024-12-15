@@ -25,15 +25,17 @@
 
                       # Not including "nativeCheckInputs" as there are no additional dependencies for testing
                       doCheck = true;
+		      # Including pytestCheckHook in nativeCheckInputs to run pytest. 
+                      # If needed, arguments can be passed to pytest using pytestFlagsArray.  
+                      # Alternatively, checkPhase can be explicitly provided.
+                      # See https://github.com/NixOS/nixpkgs/blob/master/doc/languages-frameworks/python.section.md#using-pytestcheckhook 
+                      # for more details.
+                      nativeCheckInputs = with python-final; [
+                        pytestCheckHook 
+                      ];
                   };
               })
           ];
-          # python3 = let
-          #         self = 
-          #             inherit self;
-          #             packageOverrides = prev.lib.composeManyExtensions final.pythonPackagesOverlays;
-          #         }; 
-          #     in self;
           # Trying the simpler approach described in the manual at 
           # https://nixos.org/manual/nixpkgs/unstable/#how-to-override-a-python-package-using-overlays
           python3 = prev.python3.override {
@@ -60,10 +62,13 @@
           dev-python = pkgs.python3.withPackages dev-python-packages;
         in 
           rec {
-            devShell = pkgs.mkShell {
-              buildInputs = with pkgs; [
-                dev-python
-              ];
+            devShells = {
+              default = pkgs.mkShell {
+                buildInputs = with pkgs; [
+                  dev-python
+                ];
+                shellHook = "export PS1='\\[\\e[1;34m\\]zombpyg-dev > \\[\\e[0m\\]'";
+              };
             };
             packages = {
               zombpyg = pkgs.python3Packages.zombpyg;

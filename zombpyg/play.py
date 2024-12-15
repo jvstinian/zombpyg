@@ -60,6 +60,7 @@ def render_game(game):
 def main(): 
     parser = argparse.ArgumentParser(description="zombpyg")
     parser.add_argument("-r", "--rules", dest="rules_id", metavar="RULES_ID", type=str, nargs=1, required=False, help="The rules id")
+    parser.add_argument("-m", "--map", dest="map_id", metavar="MAP_ID", type=str, nargs=1, required=False, help="The map id")
     parser.add_argument("-z", dest="initial_zombies", metavar="NUMBER", type=int, nargs=1, required=False, default=[5], help="The initial amount of zombies")
     parser.add_argument("-n", dest="minimum_zombies", metavar="NUMBER", type=int, nargs=1, required=False, default=[0], help="The minimum amount of zombies at all times")
     parser.add_argument("--players", dest="player_specs", metavar="PLAYER_TYPE:WEAPON:COUNT,...", type=str, nargs=1, required=False, help="The players specified as a comma-separated list of player_id:weapon_id:count")
@@ -67,6 +68,7 @@ def main():
 
     args = parser.parse_args()
     rules_id = args.rules_id[0] if args.rules_id is not None else "survival"
+    map_id = args.map_id[0] if args.map_id is not None else "demo"
     initial_zombies = args.initial_zombies[0]
     minimum_zombies = args.minimum_zombies[0]
     player_specs = args.player_specs[0] if args.player_specs is not None else ""
@@ -79,6 +81,7 @@ def main():
     game = Game(
         640, 480,
         DISPLAYSURF,
+        map_id=map_id,
         initial_zombies=initial_zombies, minimum_zombies=minimum_zombies,
         rules_id=rules_id,
         player_specs=player_specs,
