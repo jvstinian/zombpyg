@@ -1,8 +1,7 @@
 #!/usr/bin/env python
-# coding: utf-8
-from os import path, system
+# from os import path, system
 # import gym
-from gym.core import Env
+# from gym.core import Env
 from gym.spaces.discrete import Discrete
 from gym.spaces.box import Box
 from gym.envs.registration import register
@@ -10,14 +9,13 @@ from gym.envs.registration import register
 # from gym.utils import closer
 from zombpyg.game import Game
 from zombpyg.agent import AgentActions
-import time
-import numpy as np
+# import time
+# import numpy as np
 
 # TODO: Other approach        
-from threading import Thread
+# from threading import Thread
 import pygame
 
-# env_closer = closer.Closer()
 
 class ZombpygGymEnv(object):
     """The main OpenAI Gym class. It encapsulates an environment with
@@ -42,40 +40,13 @@ class ZombpygGymEnv(object):
 
     The methods are accessed publicly as "step", "reset", etc...
     """
-    # Set this in SOME subclasses
-    metadata = {'render.modes': ['human', 'ansi']}
-    reward_range = (-float('inf'), float('inf'))
-    # spec = None
-
-    # TODO: Is this needed?
-    # game_actions = [
-    #     { 
-    #         'action_type': 'move',
-    #         'parameter': [0, 1]
-    #     },
-    #     { 
-    #         'action_type': 'move',
-    #         'parameter': [-1, 0]
-    #     },
-    #     { 
-    #         'action_type': 'move',
-    #         'parameter': [0, -1]
-    #     },
-    #     { 
-    #         'action_type': 'move',
-    #         'parameter': [1, 0]
-    #     },
-    #     {
-    #         'action_type': 'attack_closest'
-    #     },
-    #     {
-    #         'action_type': 'heal'
-    #     }
-    # ]
+    # See the supported modes in the render method
+    metadata = {'render.modes': ['human']}
 
     # Set these in ALL subclasses
-    # TODO: Can this be a member of the instance and not a class variable?
-    # action_space = Discrete(len(game_actions))
+    reward_range = (-float('inf'), float('inf'))
+    action_space = Discrete(AgentActions.get_actions_n())
+
     # observation_space = None
 
     def __init__(
@@ -111,46 +82,19 @@ class ZombpygGymEnv(object):
             player_specs=player_specs,
             verbose=verbose,
         )
-        # game = Game(640, 480, DISPLAYSURF, initial_zombies=8, minimum_zombies=1, rules_id="safehouse", map_id="open_room") #, player_specs="terminator:axe:1")
-        # self.t = Thread(target=lambda: _render(self.game))
-        # self.t.start()
-        
-        # game = Game(640, 480, DISPLAYSURF, initial_zombies=20, minimum_zombies=10, rules_id="safehouse")
 
         # self.action_space = Discrete(game.get_available_actions()) # TODO: See above
-        self.action_space = Discrete(AgentActions.get_actions_n()) # TODO: See above
+        # self.action_space = Discrete(AgentActions.get_actions_n()) # TODO: See above
         self.observation_space = Box(low=0.0, high=400.0, shape=self.game.get_feedback_size())
 
     def get_observation(self):
-        # TODO: make a method for retrieving state
-        # observation = {
-        #     'world': self.draw_world_simple(),
-        #     'ticks': self.world.t,
-        #     'deaths': self.world.deaths,
-        #     'players': [
-        #         (
-        #             player.name,
-        #             player.life,
-        #             player.position[0],
-        #             player.position[1],
-        #             player.weapon.name, # or 'unarmed'
-        #         ) for player in (self.players + self.agents)
-        #     ]
-        # }
-
-        # TODO: Commenting out the following
-        # observation = np.array(self.encode_world_simple())
-        # return observation.reshape( (1,) + observation.shape )
-        # TODO: Looks like the shape already has a leading (1,)
         return self.game.get_current_feedback()
     
     def get_frame_size(self):
-        # TODO: The following was commented out
-        # return tuple(reversed(self.map.size))
         return self.game.get_feedback_size()
 
 
-    def step(self, action):
+    def step(self, action_id):
         """Run one timestep of the environment's dynamics. When end of
         episode is reached, you are responsible for calling `reset()`
         to reset this environment's state.
@@ -166,11 +110,11 @@ class ZombpygGymEnv(object):
             done (bool): whether the episode has ended, in which case further step() calls will return undefined results
             info (dict): contains auxiliary diagnostic information (helpful for debugging, and sometimes learning)
         """
-
-        reward, observation, done = self.game.play_action(action)
+        reward, observation, done = self.game.play_action(action_id)
+        truncated = False # TODO: Return this from the preceding
         info = {}
             
-        return observation, reward, done, info
+        return observation, reward, done, truncated, info
 
 
     def reset(self):
@@ -187,10 +131,10 @@ class ZombpygGymEnv(object):
             observation (object): the initial observation.
         """
         self.game.reset()
-        # super(ZombsoleGymEnv, self).__initialize_world__() # TODO
         return self.get_observation()
 
     def __render_human__(self):
+        # TODO: Seems like this initialization should be moved to the contructor and reset method.
         if self.window is None:
             pygame.init()
             pygame.display.init()
@@ -199,6 +143,7 @@ class ZombpygGymEnv(object):
             self.game.set_display(self.window)
         
         self.game.draw()
+        # TODO: Seems like the following should be removed
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_9:
@@ -244,9 +189,6 @@ class ZombpygGymEnv(object):
                     super(MyEnv, self).render(mode=mode) # just raise an exception
         """
         if mode == 'human':
-            # system('clear') # TODO: What do we do with this?
-            # print(self.draw_world())
-            # self.game.draw()
             self.__render_human__()
             return None
         else:
@@ -258,11 +200,9 @@ class ZombpygGymEnv(object):
         Environments will automatically close() themselves when
         garbage collected or when the program exits.
         """
-        # pass
         if self.window is not None:
             pygame.display.quit()
             pygame.quit()
-        # self.t.join() # TODO
 
     def seed(self, seed=None):
         """Sets the seed for this env's random number generator(s).
@@ -307,6 +247,7 @@ class ZombpygGymEnv(object):
         # propagate exception
         return False
 
+# TODO: Will keep this for now, but should we register here?
 register(
     id='zombpyg/Zombpyg-v0', 
     entry_point='zombpyg.gym_env:ZombpygGymEnv', 
@@ -315,139 +256,3 @@ register(
     }
 )
 
-# class GoalEnv(Env):
-#     """A goal-based environment. It functions just as any regular OpenAI Gym environment but it
-#     imposes a required structure on the observation_space. More concretely, the observation
-#     space is required to contain at least three elements, namely `observation`, `desired_goal`, and
-#     `achieved_goal`. Here, `desired_goal` specifies the goal that the agent should attempt to achieve.
-#     `achieved_goal` is the goal that it currently achieved instead. `observation` contains the
-#     actual observations of the environment as per usual.
-#     """
-
-#     def reset(self):
-#         # Enforce that each GoalEnv uses a Goal-compatible observation space.
-#         if not isinstance(self.observation_space, gym.spaces.Dict):
-#             raise error.Error('GoalEnv requires an observation space of type gym.spaces.Dict')
-#         for key in ['observation', 'achieved_goal', 'desired_goal']:
-#             if key not in self.observation_space.spaces:
-#                 raise error.Error('GoalEnv requires the "{}" key to be part of the observation dictionary.'.format(key))
-
-#     def compute_reward(self, achieved_goal, desired_goal, info):
-#         """Compute the step reward. This externalizes the reward function and makes
-#         it dependent on a desired goal and the one that was achieved. If you wish to include
-#         additional rewards that are independent of the goal, you can include the necessary values
-#         to derive it in 'info' and compute it accordingly.
-
-#         Args:
-#             achieved_goal (object): the goal that was achieved during execution
-#             desired_goal (object): the desired goal that we asked the agent to attempt to achieve
-#             info (dict): an info dictionary with additional information
-
-#         Returns:
-#             float: The reward that corresponds to the provided achieved goal w.r.t. to the desired
-#             goal. Note that the following should always hold true:
-
-#                 ob, reward, done, info = env.step()
-#                 assert reward == env.compute_reward(ob['achieved_goal'], ob['goal'], info)
-#         """
-#         raise NotImplementedError
-
-
-# class Wrapper(Env):
-#     """Wraps the environment to allow a modular transformation.
-
-#     This class is the base class for all wrappers. The subclass could override
-#     some methods to change the behavior of the original environment without touching the
-#     original code.
-
-#     .. note::
-
-#         Don't forget to call ``super().__init__(env)`` if the subclass overrides :meth:`__init__`.
-
-#     """
-#     def __init__(self, env):
-#         self.env = env
-#         self.action_space = self.env.action_space
-#         self.observation_space = self.env.observation_space
-#         self.reward_range = self.env.reward_range
-#         self.metadata = self.env.metadata
-
-#     def __getattr__(self, name):
-#         if name.startswith('_'):
-#             raise AttributeError("attempted to get missing private attribute '{}'".format(name))
-#         return getattr(self.env, name)
-
-#     @property
-#     def spec(self):
-#         return self.env.spec
-
-#     @classmethod
-#     def class_name(cls):
-#         return cls.__name__
-
-#     def step(self, action):
-#         return self.env.step(action)
-
-#     def reset(self, **kwargs):
-#         return self.env.reset(**kwargs)
-
-#     def render(self, mode='human', **kwargs):
-#         return self.env.render(mode, **kwargs)
-
-#     def close(self):
-#         return self.env.close()
-
-#     def seed(self, seed=None):
-#         return self.env.seed(seed)
-
-#     def compute_reward(self, achieved_goal, desired_goal, info):
-#         return self.env.compute_reward(achieved_goal, desired_goal, info)
-
-#     def __str__(self):
-#         return '<{}{}>'.format(type(self).__name__, self.env)
-
-#     def __repr__(self):
-#         return str(self)
-
-#     @property
-#     def unwrapped(self):
-#         return self.env.unwrapped
-
-
-# class ObservationWrapper(Wrapper):
-#     def reset(self, **kwargs):
-#         observation = self.env.reset(**kwargs)
-#         return self.observation(observation)
-
-#     def step(self, action):
-#         observation, reward, done, info = self.env.step(action)
-#         return self.observation(observation), reward, done, info
-
-#     def observation(self, observation):
-#         raise NotImplementedError
-
-
-# class RewardWrapper(Wrapper):
-#     def reset(self, **kwargs):
-#         return self.env.reset(**kwargs)
-
-#     def step(self, action):
-#         observation, reward, done, info = self.env.step(action)
-#         return observation, self.reward(reward), done, info
-
-#     def reward(self, reward):
-#         raise NotImplementedError
-
-
-# class ActionWrapper(Wrapper):
-#     def reset(self, **kwargs):
-#         return self.env.reset(**kwargs)
-
-#     def step(self, action):
-#         return self.env.step(self.action(action))
-
-#     def action(self, action):
-#         raise NotImplementedError
-
-#     def reverse_action(self, action):
-#         raise NotImplementedError

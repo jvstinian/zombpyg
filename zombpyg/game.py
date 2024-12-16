@@ -194,11 +194,14 @@ class Game:
             print(f"Reward: {reward}")
 
         self.spawn_zombies_to_maintain_minimum()
-        
-        termination = 0
+       
+        # TODO: Switch to returning the following
+        done = False
+        truncated = False
 
         if self.rules.game_ended():
             won, description = self.rules.game_won()
+            done = True
             if won:
                 if self.verbose:
                     print(f"WIN!  {description}")
@@ -206,17 +209,18 @@ class Game:
             else:
                 if self.verbose:
                     print(f"GAME OVER.  {description}")
-            termination = 1
+            # truncated = True
         elif all([agent.life <= 0 for agent in self.world.agents]) and not self.continue_without_agents:
             if self.verbose:
                 print("GAME OVER.  All agents dead.")
-            termination = 1
+            done = True
+            # termination = True
         elif self.world.t >= 300:
             if self.verbose:
                 print("GAME OVER.  Reached 300 seconds, stopping.")
-            termination = 1
+            truncated = True
 
-        return reward, feedbacks.reshape((1, len(feedbacks), 1)), termination
+        return reward, feedbacks.reshape((1, len(feedbacks), 1)), int(termination or done)
     
     # This is used by the train method
     def get_total_reward(self):
