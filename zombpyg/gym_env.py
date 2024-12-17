@@ -1,20 +1,10 @@
 #!/usr/bin/env python
-# from os import path, system
-# import gym
-# from gym.core import Env
 from gym.spaces.discrete import Discrete
 from gym.spaces.box import Box
 from gym.envs.registration import register
-# from gym import error
-# from gym.utils import closer
+import pygame
 from zombpyg.game import Game
 from zombpyg.agent import AgentActions
-# import time
-# import numpy as np
-
-# TODO: Other approach        
-# from threading import Thread
-import pygame
 
 
 class ZombpygGymEnv(object):
