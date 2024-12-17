@@ -194,7 +194,6 @@ class Game:
 
         self.spawn_zombies_to_maintain_minimum()
        
-        # TODO: Switch to returning the following
         done = False
         truncated = False
 
