@@ -240,6 +240,8 @@ class World(object):
             # As we don't remove a dead agent from the agents list, we only draw the living agents
             if agent.life > 0.0:
                 agent.draw(game)
+            # TODO: If decorations for deceased agents are desired, it might 
+            #       be preferable to set the position elsewhere.
             # elif agent.dead_decoration.life > 0.0:
             #     agent.dead_decoration.set_position(*agent.get_position())
             #     agent.dead_decoration.draw(game)
