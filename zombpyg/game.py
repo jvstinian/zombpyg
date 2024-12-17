@@ -76,8 +76,7 @@ class Game:
         self.DISPLAYSURF = None
         self.fpsClock = None
         if DISPLAYSURF is not None:
-            self.DISPLAYSURF = DISPLAYSURF
-            self.fpsClock = pygame.time.Clock()
+            self.set_display(DISPLAYSURF)
         self.fps = 50
         
         self.obj_radius = 10
@@ -209,18 +208,16 @@ class Game:
             else:
                 if self.verbose:
                     print(f"GAME OVER.  {description}")
-            # truncated = True
         elif all([agent.life <= 0 for agent in self.world.agents]) and not self.continue_without_agents:
             if self.verbose:
                 print("GAME OVER.  All agents dead.")
             done = True
-            # termination = True
         elif self.world.t >= 300:
             if self.verbose:
                 print("GAME OVER.  Reached 300 seconds, stopping.")
             truncated = True
 
-        return reward, feedbacks.reshape((1, len(feedbacks), 1)), int(termination or done)
+        return reward, feedbacks.reshape((1, len(feedbacks), 1)), (truncated or done)
     
     # This is used by the train method
     def get_total_reward(self):
