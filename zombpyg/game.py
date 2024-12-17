@@ -217,7 +217,7 @@ class Game:
                 print("GAME OVER.  Reached 300 seconds, stopping.")
             truncated = True
 
-        return reward, feedbacks.reshape((1, len(feedbacks), 1)), (truncated or done)
+        return reward, feedbacks.reshape((1, len(feedbacks), 1)), done, truncated
     
     # This is used by the train method
     def get_total_reward(self):

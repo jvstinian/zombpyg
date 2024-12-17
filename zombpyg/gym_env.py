@@ -45,24 +45,12 @@ class ZombpygGymEnv(object):
         rules_id="survival",
         initial_zombies=0, minimum_zombies=0,
         # agent_ids = ['robot'], # TODO
-        player_specs="", 
+        player_specs="",
         verbose=False
     ):
-        # self.game = game
-    
-        # def _render(game):
-        #     while True:
-        #         game.draw()
-        #         for event in pygame.event.get():
-        #             if event.type == pygame.KEYDOWN:
-        #                 if event.key == pygame.K_9:
-        #                     game.increase_fps()
-        #                 elif event.key == pygame.K_0:
-        #                     game.decrease_fps()    
         # pygame.init()
         # DISPLAYSURF = pygame.display.set_mode((640, 480), 0, 32)
         # pygame.display.set_caption('zombpyg')
-        self.window = None
         self.game = Game(
             640, 480, None, # DISPLAYSURF,  # TODO
             map_id=map_id,
@@ -73,16 +61,24 @@ class ZombpygGymEnv(object):
             verbose=verbose,
         )
 
-        # self.action_space = Discrete(game.get_available_actions()) # TODO: See above
-        # self.action_space = Discrete(AgentActions.get_actions_n()) # TODO: See above
+        self.window = None
+        self.__initialize_renderer__()
+
         self.observation_space = Box(low=0.0, high=400.0, shape=self.game.get_feedback_size())
 
+    def __initialize_renderer__(self):
+        if self.window is None:
+            pygame.init()
+            pygame.display.init()
+            pygame.display.set_caption('zombpyg')
+            self.window = pygame.display.set_mode((self.game.w, self.game.h), 0, 32)
+            self.game.set_display(self.window)
+ 
     def get_observation(self):
         return self.game.get_current_feedback()
     
     def get_frame_size(self):
         return self.game.get_feedback_size()
-
 
     def step(self, action_id):
         """Run one timestep of the environment's dynamics. When end of
@@ -100,12 +96,11 @@ class ZombpygGymEnv(object):
             done (bool): whether the episode has ended, in which case further step() calls will return undefined results
             info (dict): contains auxiliary diagnostic information (helpful for debugging, and sometimes learning)
         """
-        reward, observation, done = self.game.play_action(action_id)
-        truncated = False # TODO: Return this from the preceding
+        reward, observation, done, truncated = self.game.play_action(action_id)
+        # truncated = False # TODO: Return this from the preceding
         info = {}
             
         return observation, reward, done, truncated, info
-
 
     def reset(self):
         """Resets the environment to an initial state and returns an initial
@@ -125,21 +120,22 @@ class ZombpygGymEnv(object):
 
     def __render_human__(self):
         # TODO: Seems like this initialization should be moved to the contructor and reset method.
-        if self.window is None:
-            pygame.init()
-            pygame.display.init()
-            pygame.display.set_caption('zombpyg')
-            self.window = pygame.display.set_mode((self.game.w, self.game.h), 0, 32)
-            self.game.set_display(self.window)
-        
-        self.game.draw()
+        # if self.window is None:
+        #     pygame.init()
+        #     pygame.display.init()
+        #     pygame.display.set_caption('zombpyg')
+        #     self.window = pygame.display.set_mode((self.game.w, self.game.h), 0, 32)
+        #     self.game.set_display(self.window)
+ 
+        if self.window is not None:
+            self.game.draw()
         # TODO: Seems like the following should be removed
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_9:
-                    self.game.increase_fps()
-                elif event.key == pygame.K_0:
-                    self.game.decrease_fps()
+        # for event in pygame.event.get():
+        #     if event.type == pygame.KEYDOWN:
+        #         if event.key == pygame.K_9:
+        #             self.game.increase_fps()
+        #         elif event.key == pygame.K_0:
+        #             self.game.decrease_fps()
         
     def render(self, mode='human'):
         """Renders the environment.
