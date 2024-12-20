@@ -5,16 +5,10 @@ from zombpyg.agent import AgentBuilder
 from zombpyg.core.weapons import WeaponFactory
 
 
-# class DummyMap(object):
-#     def __init__(self):
-#         self.walls = []
-
-
 class DummyWorld(object):
     def __init__(self):
         # self.map = DummyMap()
         self.walls = []
-        # self.step_time_delta = step_time_delta # TODO
 
 
 # The following mostly just tests that we can instantiate an agent.
