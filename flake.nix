@@ -28,12 +28,6 @@
                   };
               })
           ];
-          # python3 = let
-          #         self = 
-          #             inherit self;
-          #             packageOverrides = prev.lib.composeManyExtensions final.pythonPackagesOverlays;
-          #         }; 
-          #     in self;
           # Trying the simpler approach described in the manual at 
           # https://nixos.org/manual/nixpkgs/unstable/#how-to-override-a-python-package-using-overlays
           python3 = prev.python3.override {
@@ -60,10 +54,13 @@
           dev-python = pkgs.python3.withPackages dev-python-packages;
         in 
           rec {
-            devShell = pkgs.mkShell {
-              buildInputs = with pkgs; [
-                dev-python
-              ];
+            devShells = {
+              default = pkgs.mkShell {
+                buildInputs = with pkgs; [
+                  dev-python
+                ];
+                shellHook = "export PS1='\\[\\e[1;34m\\]zombpyg-dev > \\[\\e[0m\\]'";
+              };
             };
             packages = {
               zombpyg = pkgs.python3Packages.zombpyg;
