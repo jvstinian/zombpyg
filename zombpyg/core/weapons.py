@@ -198,5 +198,7 @@ class WeaponFactory(object):
             return Axe()
         elif weapon_id == "knife":
             return Knife()
+        elif weapon_id == "random":
+            return random.choice([Knife(), Axe(), Gun(), Rifle(), Shotgun()])
         else:
             return None

@@ -13,3 +13,8 @@ def test_weapon_factory(weapon_name):
     assert weapon is not None
     assert weapon.name.lower() == weapon_name
 
+def test_weapon_factory_for_random():
+    weapon = WeaponFactory.create_weapon("random")
+    assert weapon is not None
+    assert weapon.name.lower() in weapon_names
+
