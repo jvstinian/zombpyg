@@ -10,51 +10,56 @@ def render_game(game):
         if pygame.event.peek(): 
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
+                    done = False
+                    truncated = False
+
                     if event.key == pygame.K_9:
                         game.increase_fps()
                     elif event.key == pygame.K_0:
                         game.decrease_fps()    
                     elif event.key == pygame.K_w:
-                        _, _, termination = game.play_action(
+                        _, _, done, truncated = game.play_action(
                             AgentActions.get_forward_move_action_id()
                         )
                     elif event.key == pygame.K_d:
-                        _, _, termination = game.play_action(
+                        _, _, done, truncated = game.play_action(
                             AgentActions.get_right_move_action_id()
                         )
                     elif event.key == pygame.K_s:
-                        _, _, termination = game.play_action(
+                        _, _, done, truncated = game.play_action(
                             AgentActions.get_backward_move_action_id()
                         )
                     elif event.key == pygame.K_a:
-                        _, _, termination = game.play_action(
+                        _, _, done, truncated = game.play_action(
                             AgentActions.get_left_move_action_id()
                         )
                     elif event.key == pygame.K_RIGHT:
-                        _, _, termination = game.play_action(
+                        _, _, done, truncated = game.play_action(
                             AgentActions.get_smallest_right_rotation_action_id()
                         )
                     elif event.key == pygame.K_LEFT:
-                        _, _, termination = game.play_action(
+                        _, _, done, truncated = game.play_action(
                             AgentActions.get_smallest_left_rotation_action_id()
                         )
                     elif event.key == pygame.K_SPACE:
-                        _, _, termination = game.play_action(
+                        _, _, done, truncated = game.play_action(
                             AgentActions.get_use_weapon_action_id()
                         )
                     elif event.key == pygame.K_h:
-                        _, _, termination = game.play_action(
+                        _, _, done, truncated = game.play_action(
                             AgentActions.get_self_heal_action_id()
                         )
                     elif event.key == pygame.K_g:
-                        _, _, termination = game.play_action(
+                        _, _, done, truncated = game.play_action(
                             AgentActions.get_heal_player_action_id()
                         )
+                    termination = done or truncated
         else:
             # No action
-            _, _, termination = game.play_action(
+            _, _, done, truncated = game.play_action(
                 AgentActions.get_no_action_id()
             )
+            termination = done or truncated
         print(f"Total Reward: {game.get_total_reward()}")
 
 def main(): 
