@@ -119,8 +119,7 @@ class Game:
             if (part_count == 0) or (player_spec_parts[0] == ""):
                 continue
             else:
-                pass
-                weapon_id = player_spec_parts[1] if part_count >= 2 else 'default'
+                weapon_id = player_spec_parts[1] if part_count >= 2 else 'random'
                 player_id = player_spec_parts[0]
                 player_count = int(player_spec_parts[2]) if part_count >= 3 else 1
                 self.player_builders.extend(
