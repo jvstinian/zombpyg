@@ -94,7 +94,6 @@ class Game:
             self.obj_radius,
             Color.BLUE, 
             self.robot_sensor_length
-            # weapon=Shotgun()
         )
         self.zombie_builder = ZombieBuilder(self.obj_radius)
 

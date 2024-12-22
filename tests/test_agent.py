@@ -30,7 +30,6 @@ def test_agent_icon_basic():
         obj_radius,
         Color.BLUE, 
         robot_sensor_length
-        # weapon=shotgun
     )
 
     agent = agent_builder.build(0, x, y, "shotgun", world)
