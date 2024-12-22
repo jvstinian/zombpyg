@@ -20,6 +20,8 @@ from zombpyg.actions import (
     HealSelfAction,
     HealPlayerAction
 )
+from zombpyg.core.weapon import WeaponFactory
+
 
 class AgentActions(object):
     direction_actions_n = 4
@@ -398,7 +400,7 @@ class AgentBuilder(object):
     def __init__(
         self, radius, color, 
         front_sensor_length, 
-        weapon
+        # weapon
     ):
         self.radius = radius
         self.color = color 
@@ -409,17 +411,19 @@ class AgentBuilder(object):
         ] + [
             (75 + 15*idx, 50) for idx in range(7)
         ]
-        self.weapon = weapon
+        # self.weapon = weapon
     
-    def build(self, agent_id, x, y, world):
+    def build(self, agent_id, x, y, weapon_id, world):
+        weapon = WeaponFactory.create_weapon(weapon_id)
         return Agent(
             x, y, self.radius, world,
             agent_id, self.color, self.sensor_specs,
-            weapon=self.weapon
+            weapon=weapon
         )
     
     def reset(self):
-        self.weapon.reset()
+        # self.weapon.reset()
+        pass
 
     def get_feedback_size(self):
         return 7 * len(self.sensor_specs)

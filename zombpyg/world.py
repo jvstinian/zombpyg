@@ -108,7 +108,7 @@ class World(object):
         if self.resources.get((x, y), None) is not None:
             del self.resources[(x, y)]
 
-    def generate_agent(self, agent_builder, agent_id, spawns):
+    def generate_agent(self, agent_builder, agent_id, weapon_id, spawns):
         spawn = random.choices(spawns, k=1)[0]
         while True:
             x, y = spawn.get_spawn_location()
@@ -120,7 +120,7 @@ class World(object):
                 continue
 
             self.agents.append(
-                agent_builder.build(agent_id, x, y, self)
+                agent_builder.build(agent_id, x, y, weapon_id, self)
             )
             break
         
