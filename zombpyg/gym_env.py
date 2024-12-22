@@ -44,7 +44,8 @@ class ZombpygGymEnv(object):
         map_id="demo",
         rules_id="survival",
         initial_zombies=0, minimum_zombies=0,
-        # agent_ids = ['robot'], # TODO
+        # agent_id = 0,
+        agent_weapon="rifle",
         player_specs="",
         verbose=False
     ):
@@ -55,6 +56,8 @@ class ZombpygGymEnv(object):
             rules_id=rules_id,
             initial_zombies=initial_zombies,
             minimum_zombies=minimum_zombies,
+            agent_ids = [0],
+            agent_weapons = [agent_weapon],
             player_specs=player_specs,
             verbose=verbose,
         )
