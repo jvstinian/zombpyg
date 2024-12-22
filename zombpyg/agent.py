@@ -20,7 +20,7 @@ from zombpyg.actions import (
     HealSelfAction,
     HealPlayerAction
 )
-from zombpyg.core.weapon import WeaponFactory
+from zombpyg.core.weapons import WeaponFactory
 
 
 class AgentActions(object):
