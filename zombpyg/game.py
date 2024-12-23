@@ -62,7 +62,7 @@ class Game:
        to stop, importing map data, drawing each update, etc.
     """
     def __init__(
-        self, w, h, # DISPLAYSURF,
+        self, w, h,
         map_id="demo",
         rules_id="survival",
         initial_zombies=0, minimum_zombies=0,
@@ -79,8 +79,6 @@ class Game:
         self.DISPLAYSURF = None
         self.fpsClock = None
         self.__initialize_renderer__()
-        # if DISPLAYSURF is not None:
-        #     self.set_display(DISPLAYSURF)
         self.fps = 50
         
         self.obj_radius = 10

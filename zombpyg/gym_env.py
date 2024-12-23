@@ -52,7 +52,7 @@ class ZombpygGymEnv(object):
     ):
         # We pass None for the DISPLAYSURF, and configure the rendering below.
         self.game = Game(
-            640, 480, # None,
+            640, 480,
             map_id=map_id,
             rules_id=rules_id,
             initial_zombies=initial_zombies,
@@ -64,19 +64,8 @@ class ZombpygGymEnv(object):
             verbose=verbose,
         )
 
-        # self.window = None
-        # self.__initialize_renderer__()
-
         self.observation_space = Box(low=0.0, high=400.0, shape=self.game.get_feedback_size())
 
-    # def __initialize_renderer__(self):
-    #     if self.window is None:
-    #         pygame.init()
-    #         pygame.display.init()
-    #         pygame.display.set_caption('zombpyg')
-    #         self.window = pygame.display.set_mode((self.game.w, self.game.h), 0, 32)
-    #         self.game.set_display(self.window)
- 
     def get_observation(self):
         return self.game.get_current_feedback()
     
@@ -158,8 +147,6 @@ class ZombpygGymEnv(object):
                     super(MyEnv, self).render(mode=mode) # just raise an exception
         """
         if mode == 'human':
-            # if self.window is not None:
-            #     self.game.draw()
             self.game.draw()
             return None
         else:
@@ -172,9 +159,6 @@ class ZombpygGymEnv(object):
         garbage collected or when the program exits.
         """
         self.game.close()
-        # if self.window is not None:
-        #     pygame.display.quit()
-        #     pygame.quit()
 
     def seed(self, seed=None):
         """Sets the seed for this env's random number generator(s).
