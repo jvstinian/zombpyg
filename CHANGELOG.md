@@ -1,3 +1,7 @@
+# 0.2.0
+
+Adding a single-agent gym environment.
+
 # 0.1.3
 
 Adding support to the weapons factory for assigning a random weapon.
