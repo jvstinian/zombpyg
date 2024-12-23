@@ -125,8 +125,8 @@ class Game:
             pygame.init()
             pygame.display.init()
             pygame.display.set_caption('zombpyg')
-            self.DISPLAYSURF = pygame.display.set_mode((self.game.w, self.game.h), 0, 32)
-            self.game.set_display(self.DISPLAYSURF)
+            self.DISPLAYSURF = pygame.display.set_mode((self.w, self.h), 0, 32)
+            self.set_display(self.DISPLAYSURF)
  
     def __process_player_specs__(self, player_specs):
         self.player_builders = []
