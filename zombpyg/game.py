@@ -93,8 +93,7 @@ class Game:
         self.agent_builder = AgentBuilder(
             self.obj_radius,
             Color.BLUE, 
-            self.robot_sensor_length,
-            weapon=Shotgun()
+            self.robot_sensor_length
         )
         self.zombie_builder = ZombieBuilder(self.obj_radius)
 
@@ -136,7 +135,7 @@ class Game:
     def spawn_agents(self):
         for agent_id in self.agent_ids:
             self.world.generate_agent(
-                self.agent_builder, agent_id, self.map.player_spawns
+                self.agent_builder, agent_id, "shotgun", self.map.player_spawns
             )
 
     def spawn_players(self):

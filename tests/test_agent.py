@@ -29,11 +29,10 @@ def test_agent_icon_basic():
     agent_builder = AgentBuilder(
         obj_radius,
         Color.BLUE, 
-        robot_sensor_length,
-        weapon=shotgun
+        robot_sensor_length
     )
 
-    agent = agent_builder.build(0, x, y, world)
+    agent = agent_builder.build(0, x, y, "shotgun", world)
     assert agent.agent_id == 0
     assert agent.x == x
     assert agent.y == y
