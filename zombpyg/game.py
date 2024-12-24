@@ -1,6 +1,7 @@
 import random
 import pygame
 from pygame.locals import *
+from itertools import cycle, islice
 from zombpyg.map.map import MapFactory
 from zombpyg.rules.factory import RulesFactory
 from zombpyg.world import World
@@ -66,7 +67,8 @@ class Game:
         rules_id="survival",
         initial_zombies=0, minimum_zombies=0,
         agent_ids = ['robot'],
-        player_specs="", 
+        agent_weapons="random",
+        player_specs="",
         initialize_game=False,
         verbose=False
     ):
@@ -85,6 +87,10 @@ class Game:
         self.check_terminate = True
         
         self.agent_ids = agent_ids
+        # The following processes the provided weapon names into a list of weapon names 
+        # with length matching the length of agent_ids
+        self.__process_weapon_name_inputs__(agent_weapons)
+
         self.map = MapFactory.build_map(map_id, self.w, self.h)
         self.initial_zombies = initial_zombies
         self.minimum_zombies = minimum_zombies
@@ -129,13 +135,22 @@ class Game:
                     [PlayerBuilder(player_id, weapon_id, self.obj_radius)] * player_count
                 )
 
+    def __process_weapon_name_inputs__(self, agent_weapons):
+        agent_count = len(self.agent_ids) if self.agent_ids else 0
+        if isinstance(agent_weapons, (str,)):
+            self.agent_weapons = [agent_weapons] * agent_count
+        elif isinstance(agent_weapons, (list,)):
+            self.agent_weapons = list(islice(cycle(agent_weapons), agent_count))
+        else:
+            raise ValueError(f"{agent_weapons} is not a valid value for argument agent_weapons.  Value must be the weapon name as a string or a list of weapon names.")
+
     def spawn_resources(self):
         self.world.generate_resources(self.map.resource_spawns)
 
     def spawn_agents(self):
-        for agent_id in self.agent_ids:
+        for agent_id, agent_weapon in zip(self.agent_ids, self.agent_weapons):
             self.world.generate_agent(
-                self.agent_builder, agent_id, "shotgun", self.map.player_spawns
+                self.agent_builder, agent_id, agent_weapon, self.map.player_spawns
             )
 
     def spawn_players(self):
