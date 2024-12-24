@@ -1,3 +1,7 @@
+# 0.4.0
+
+Game class now manages the pygame rendering. The constructors for the game class and gym environment take a boolean argument indicating whether to render.
+
 # 0.3.0
 
 Associating weapons with agents at generation.  
