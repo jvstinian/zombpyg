@@ -1,3 +1,7 @@
+# 0.3.0
+
+Associating weapons with agents at generation.
+
 # 0.2.0
 
 Adding a single-agent gym environment.
