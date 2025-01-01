@@ -12,7 +12,7 @@ def test_gym_env_observation():
         minimum_zombies=0, 
         verbose=False
     )
-    observation = gym_env.reset()
+    observation, _ = gym_env.reset()
     feedback_size = gym_env.game.agent_builder.get_feedback_size()
     assert observation.shape == (1,feedback_size,1)
 
