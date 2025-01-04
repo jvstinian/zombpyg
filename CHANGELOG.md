@@ -1,3 +1,8 @@
+# 0.6.0
+
+Rescaling the agent attributes (health, healing capacity, weapon ID, ammunition) in the gym observations to be
+consistent with the sensor feedback and the gym observation space specification.
+
 # 0.5.0
 
 Adjusting the reset method in the gym implementation to return both an initial observation and an info dictionary.
