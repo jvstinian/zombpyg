@@ -341,13 +341,12 @@ class Agent(Player, MoveableThing, RotatableThing, AttackingThing):
         
         # Set state
         feedbacks[:, 6] = numpy.zeros((len(self.sensors),), dtype="float32")
-        feedbacks[0, 6] = self.life
-        feedbacks[1, 6] = self.healing_capacity
+        feedbacks[0, 6] = self.life / Player.MAX_LIFE
+        feedbacks[1, 6] = self.healing_capacity / Player.MAX_LIFE
         if self.weapon is not None:
-            feedbacks[2, 6] = self.weapon.get_weapon_id() # else keep 0
+            feedbacks[2, 6] = self.weapon.get_weapon_id() / 64.0 # else keep 0
         if self.weapon is not None and self.weapon.is_firearm:
-            feedbacks[3, 6] = self.weapon.ammo
-            feedbacks[4, 6] = self.weapon.max_ammo
+            feedbacks[3, 6] = self.weapon.ammo / self.weapon.max_ammo
         
         # resources
         ammo_distances, medical_distances = self.find_resources()
