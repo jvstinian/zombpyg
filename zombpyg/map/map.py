@@ -143,6 +143,6 @@ class MapFactory(object):
         elif map_id == "open_room":
             return OpenRoomMap.build_map(w, h)
         elif map_id == "easy_exit":
-            return EasyExitMap(w, h)
+            return EasyExitMap.build_map(w, h)
         else:
             return MapFactory.get_default(w, h)
