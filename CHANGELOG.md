@@ -1,3 +1,7 @@
+# 0.6.1
+
+Adding a map making exit easy and with a lot of resources.
+
 # 0.6.0
 
 Rescaling the agent attributes (health, healing capacity, weapon ID, ammunition) in the gym observations to be
