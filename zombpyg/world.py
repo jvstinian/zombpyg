@@ -96,6 +96,12 @@ class World(object):
                 break
         return flag
     
+    def overlaps_with_fighters(self, point, radius):
+        for fighter in (self.zombies + self.players + self.agents):
+            if calculate_distance(point, fighter.get_position()) < (radius + fighter.get_radius()):
+                return True
+        return False
+    
     def generate_resources(self, resource_spawns):
         for resource_spawn in resource_spawns:
             resource = resource_spawn.spawn_resource()
@@ -119,6 +125,9 @@ class World(object):
             if self.collide_with_walls(x-radius, y+radius, x+radius, y-radius):
                 continue
 
+            if self.overlaps_with_fighters((x, y), agent_builder.radius):
+                continue
+
             self.agents.append(
                 agent_builder.build(agent_id, x, y, weapon_id, self)
             )
@@ -135,6 +144,9 @@ class World(object):
             if self.collide_with_walls(x-radius, y+radius, x+radius, y-radius):
                 continue
             
+            if self.overlaps_with_fighters((x, y), player_builder.radius):
+                continue
+
             self.players.append(
                 player_builder.create_player(x, y, self)
             )
@@ -152,6 +164,9 @@ class World(object):
             if self.collide_with_walls(x-radius, y+radius, x+radius, y-radius):
                 continue
             
+            if self.overlaps_with_fighters((x, y), zombie_builder.radius):
+                continue
+
             self.zombies.append(
                 zombie_builder.create_zombie(x, y, orientation, self)
             )
