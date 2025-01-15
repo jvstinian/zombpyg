@@ -2,7 +2,7 @@ import random
 import numpy
 import pygame
 
-from zombpyg.utils.geometry import _valid_angle
+from zombpyg.utils.geometry import _valid_angle, calculate_distance
 from zombpyg.utils.surroundings import Color
 from zombpyg.core.wall import Wall
 from zombpyg.agent import Agent
