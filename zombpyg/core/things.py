@@ -129,6 +129,9 @@ class FightingThing(CircularThing):
         else:
             flag = world.collide_with_walls(x0, y0, x1-self.r, y1-self.r) or world.collide_with_walls(x0, y0, x1-self.r, y1+self.r)
          
+        if not flag:
+            flag = world.fighter_collides_with_others(self, (x1, y1))
+
         if flag:
             x = x0
             y = y0
