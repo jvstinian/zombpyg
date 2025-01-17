@@ -81,15 +81,13 @@ def main():
     
     pygame.init()
     pygame.key.set_repeat(100, int(1000/50))
-    DISPLAYSURF = pygame.display.set_mode((640, 480), 0, 32)
-    pygame.display.set_caption('zombpyg')
     game = Game(
         640, 480,
-        DISPLAYSURF,
         map_id=map_id,
         initial_zombies=initial_zombies, minimum_zombies=minimum_zombies,
         rules_id=rules_id,
         player_specs=player_specs,
+        enable_rendering=True,
         verbose=verbose,
     )
     game.reset()

@@ -93,6 +93,44 @@ class OpenRoomMap(Map):
             resource_spawns=resource_spawns,
         )
 
+class EasyExitMap(Map):
+    @staticmethod
+    def build_map(w, h):
+        walls = [
+            Wall(start=(0, 0), end=(0, h-1), width=1),
+            Wall(start=(0, h-1), end=(w-1, h-1), width=1),
+            Wall(start=(w-1, h-1), end=(w-1,0), width=1),
+            Wall(start=(w-1, 0), end=(0, 0), width=1),
+        ]
+        player_spawns = [
+            SpawnLocation(int(2*w/5), int(2*h/5), int(w/5), int(h/5))
+        ]
+        zombie_spawns = [
+            SpawnLocation(int(w*2/5), int(h*0/5), int(w/5), int(h/5)),
+            SpawnLocation(int(w*2/5), int(h*4/5), int(w/5), int(h/5)),
+            SpawnLocation(int(w*0/5), int(h*2/5), int(w/5), int(h/5)),
+            SpawnLocation(int(w*4/5), int(h*2/5), int(w/5), int(h/5)),
+        ]
+        objectives = [
+            ObjectiveLocation(int(w*0/5), int(h*0/5), int(w/5), int(h/5)),
+            ObjectiveLocation(int(w*0/5), int(h*4/5), int(w/5), int(h/5)),
+            ObjectiveLocation(int(w*4/5), int(h*0/5), int(w/5), int(h/5)),
+            ObjectiveLocation(int(w*4/5), int(h*4/5), int(w/5), int(h/5)),
+        ]
+        resource_spawns = [
+            ResourceSpawnLocation(int(w*(1+2*i)/10), int(h*j/5), 10, 0.5, 200, 0.5, 2.0)
+            for i in range(0, 5)
+            for j in range(1, 5)
+        ]
+        return Map(
+            (w, h),
+            walls,
+            player_spawns=player_spawns,
+            zombie_spawns=zombie_spawns,
+            objectives=objectives,
+            resource_spawns=resource_spawns,
+        )
+
 class MapFactory(object):
     @staticmethod
     def get_default(w, h):
@@ -104,5 +142,7 @@ class MapFactory(object):
             return DemoMap.build_map(w, h)
         elif map_id == "open_room":
             return OpenRoomMap.build_map(w, h)
+        elif map_id == "easy_exit":
+            return EasyExitMap.build_map(w, h)
         else:
             return MapFactory.get_default(w, h)

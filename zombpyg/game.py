@@ -62,7 +62,7 @@ class Game:
        to stop, importing map data, drawing each update, etc.
     """
     def __init__(
-        self, w, h, DISPLAYSURF,
+        self, w, h,
         map_id="demo",
         rules_id="survival",
         initial_zombies=0, minimum_zombies=0,
@@ -70,6 +70,7 @@ class Game:
         agent_weapons="random",
         player_specs="",
         initialize_game=False,
+        enable_rendering=True,
         verbose=False
     ):
         
@@ -77,8 +78,7 @@ class Game:
         self.h = h
         self.DISPLAYSURF = None
         self.fpsClock = None
-        if DISPLAYSURF is not None:
-            self.set_display(DISPLAYSURF)
+        self.__initialize_renderer__()
         self.fps = 50
         
         self.obj_radius = 10
@@ -120,6 +120,14 @@ class Game:
         if initialize_game:
             self.reset()
 
+    def __initialize_renderer__(self):
+        if self.DISPLAYSURF is None:
+            pygame.init()
+            pygame.display.init()
+            pygame.display.set_caption('zombpyg')
+            self.DISPLAYSURF = pygame.display.set_mode((self.w, self.h), 0, 32)
+            self.set_display(self.DISPLAYSURF)
+ 
     def __process_player_specs__(self, player_specs):
         self.player_builders = []
         for player_spec in player_specs.split(','):
@@ -263,14 +271,20 @@ class Game:
         self.fpsClock = pygame.time.Clock()
 
     def draw(self):
-        # Draw objects
-        self.DISPLAYSURF.fill(Color.BACKGROUND)
-        self.world.draw(self)
+        if self.DISPLAYSURF is not None:
+          # Draw objects
+          self.DISPLAYSURF.fill(Color.BACKGROUND)
+          self.world.draw(self)
 
-        pygame.display.update()
-        self.fpsClock.tick(self.fps)
+          pygame.display.update()
+          self.fpsClock.tick(self.fps)
 
-        if self.verbose:
-            time_used = self.fpsClock.get_rawtime()
-            if time_used > 0:
-                print(f"Estimated FPS: {1000.0/time_used}")
+          if self.verbose:
+              time_used = self.fpsClock.get_rawtime()
+              if time_used > 0:
+                  print(f"Estimated FPS: {1000.0/time_used}")
+
+    def close(self):
+        if self.DISPLAYSURF is not None:
+            pygame.display.quit()
+            pygame.quit()

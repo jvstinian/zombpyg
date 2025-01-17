@@ -2,7 +2,7 @@ import random
 import numpy
 import pygame
 
-from zombpyg.utils.geometry import _valid_angle
+from zombpyg.utils.geometry import _valid_angle, calculate_distance
 from zombpyg.utils.surroundings import Color
 from zombpyg.core.wall import Wall
 from zombpyg.agent import Agent
@@ -96,6 +96,20 @@ class World(object):
                 break
         return flag
     
+    def overlaps_with_fighters(self, point, radius):
+        for fighter in (self.zombies + self.players + self.agents):
+            if calculate_distance(point, fighter.get_position()) < (radius + fighter.get_radius()):
+                return True
+        return False
+    
+    def fighter_collides_with_others(self, this_fighter, new_point):
+        radius = this_fighter.get_radius()
+        for other_fighter in (self.zombies + self.players + self.agents):
+            if this_fighter != other_fighter:
+                if calculate_distance(new_point, other_fighter.get_position()) < (radius + other_fighter.get_radius()):
+                    return True
+        return False
+    
     def generate_resources(self, resource_spawns):
         for resource_spawn in resource_spawns:
             resource = resource_spawn.spawn_resource()
@@ -108,50 +122,75 @@ class World(object):
         if self.resources.get((x, y), None) is not None:
             del self.resources[(x, y)]
 
-    def generate_agent(self, agent_builder, agent_id, weapon_id, spawns):
+    def generate_agent(self, agent_builder, agent_id, weapon_id, spawns, max_attempts=3):
         spawn = random.choices(spawns, k=1)[0]
-        while True:
+        attempts = 0
+        while attempts < max_attempts:
             x, y = spawn.get_spawn_location()
             radius = agent_builder.radius * 2
             
             if self.collide_with_walls(x-radius, y-radius, x+radius, y+radius):
+                attempts += 1
                 continue
             if self.collide_with_walls(x-radius, y+radius, x+radius, y-radius):
+                attempts += 1
+                continue
+
+            if self.overlaps_with_fighters((x, y), agent_builder.radius):
+                attempts += 1
                 continue
 
             self.agents.append(
                 agent_builder.build(agent_id, x, y, weapon_id, self)
             )
             break
+
+        if attempts >= max_attempts:
+            raise RuntimeError(f"Could not create agent in {max_attempts} attempts")
+
         
-    def generate_player(self, player_builder, spawns):
+    def generate_player(self, player_builder, spawns, max_attempts=3):
         spawn = random.choices(spawns, k=1)[0]
-        while True:
+        attempts = 0
+        while attempts < max_attempts:
             x, y = spawn.get_spawn_location()
             radius = player_builder.radius * 2
             
             if self.collide_with_walls(x-radius, y-radius, x+radius, y+radius):
+                attempts += 1
                 continue
             if self.collide_with_walls(x-radius, y+radius, x+radius, y-radius):
+                attempts += 1
                 continue
             
+            if self.overlaps_with_fighters((x, y), player_builder.radius):
+                attempts += 1
+                continue
+
             self.players.append(
                 player_builder.create_player(x, y, self)
             )
             break
 
-    def generate_zombie(self, zombie_builder, spawns):
+    def generate_zombie(self, zombie_builder, spawns, max_attempts=3):
         spawn = random.choices(spawns, k=1)[0]
-        while True:
+        attempts = 0
+        while attempts < max_attempts:
             x, y = spawn.get_spawn_location()
             orientation = _valid_angle(random.uniform(-180.0, 180.0))
             radius = zombie_builder.radius * 2
             
             if self.collide_with_walls(x-radius, y-radius, x+radius, y+radius):
+                attempts += 1
                 continue
             if self.collide_with_walls(x-radius, y+radius, x+radius, y-radius):
+                attempts += 1
                 continue
             
+            if self.overlaps_with_fighters((x, y), zombie_builder.radius):
+                attempts += 1
+                continue
+
             self.zombies.append(
                 zombie_builder.create_zombie(x, y, orientation, self)
             )
