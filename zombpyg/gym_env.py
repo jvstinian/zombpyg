@@ -105,6 +105,7 @@ class ZombpygGymEnv(object):
 
         Returns:
             observation (object): the initial observation.
+            info (dict): contains auxiliary diagnostic information
         """
         self.game.reset()
         return self.get_observation(), {}
