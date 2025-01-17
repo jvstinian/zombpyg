@@ -1,3 +1,7 @@
+# 0.6.2
+
+Avoid overlapping when spawning agents, players, and zombies, 
+
 # 0.6.1
 
 Adding a map making exit easy and with a lot of resources.
