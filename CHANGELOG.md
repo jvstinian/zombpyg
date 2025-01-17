@@ -1,6 +1,6 @@
 # 0.6.2
 
-Avoid overlapping when generating agents, players, and zombies, 
+Avoid overlapping when spawning agents, players, and zombies, 
 
 # 0.6.1
 
