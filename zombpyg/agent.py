@@ -53,11 +53,11 @@ class AgentActions(object):
     
     @classmethod
     def get_smallest_left_rotation_action_id(cls):
-        return AgentActions.direction_actions_n + int(len(cls.orientation_actions)/2) - 1
+        return cls.direction_actions_n + int(len(cls.orientation_actions)/2) - 1
     
     @classmethod
     def get_smallest_right_rotation_action_id(cls):
-        return AgentActions.direction_actions_n + int(len(cls.orientation_actions)/2) + 1
+        return cls.direction_actions_n + int(len(cls.orientation_actions)/2) + 1
     
     @classmethod
     def get_use_weapon_action_id(cls):
