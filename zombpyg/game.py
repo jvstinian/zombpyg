@@ -165,18 +165,22 @@ class Game:
         for player_builder in self.player_builders:
             self.world.generate_player(player_builder, self.map.player_spawns)
 
-    def spawn_zombies(self, count):
+    def spawn_zombies(self, count, initial_spawn=False):
         """Spawn N zombies in the world."""
+        zombie_spawns = self.map.zombie_spawns
+        if not initial_spawn: # exclude initial-only spawns
+            zombie_spawns = [spawn for spawn in zombie_spawns if not spawn.initial_spawn_only]
+
         for _ in range(count):
             self.world.generate_zombie(
-                self.zombie_builder, self.map.zombie_spawns
+                self.zombie_builder, zombie_spawns
             )
 
     def spawn_zombies_to_maintain_minimum(self):
         """maintain the flow of zombies if necessary."""
         zombies = [zombie for zombie in self.world.zombies if zombie.life > 0]
         if len(zombies) < self.minimum_zombies:
-            self.spawn_zombies(self.minimum_zombies - len(zombies))
+            self.spawn_zombies(self.minimum_zombies - len(zombies), initial_spawn=False)
 
     def initialize_rewards(self):
         self.agent_rewards = list(
@@ -198,7 +202,7 @@ class Game:
         self.spawn_resources()
         self.spawn_agents()
         self.spawn_players()
-        self.spawn_zombies(self.initial_zombies)
+        self.spawn_zombies(self.initial_zombies, initial_spawn=True)
         self.initialize_rewards()
 
     def get_feedback_size(self):

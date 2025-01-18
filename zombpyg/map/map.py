@@ -32,7 +32,8 @@ class DemoMap(Map):
             SpawnLocation(w - int(w/5), int(h/3), int(w/5), int(h/3))
         ]
         zombie_spawns = [
-            SpawnLocation(int(w/5), int(h*2/5), int(w/2) - int(w/5), int(h*1/5))
+            SpawnLocation(int(w/5), int(h*2/5), int(w/2) - int(w/5), int(h*1/5)),
+            SpawnLocation(int(w/2), int(h*2/5), int(4*w/5) - int(w/2), int(h*1/5), initial_spawn_only=True)
         ]
         objectives = [
             ObjectiveLocation(0, int(h/3), int(w/5), int(h/3))
