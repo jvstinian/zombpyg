@@ -1,3 +1,7 @@
+# 0.6.3
+
+Adding support for spawn regions that are only used when initializing a world.
+
 # 0.6.2
 
 Avoid overlapping when spawning agents, players, and zombies, 
