@@ -1,3 +1,8 @@
+# 0.6.4
+
+Adding support for a game step with actions for all agents. This is needed for supporting multi-agent environments.
+The single-agent step now wraps the game step for all agents. The new interface represents a superset of the preceding version.
+
 # 0.6.3
 
 Adding support for spawn regions that are only used when initializing a world.
