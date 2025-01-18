@@ -165,18 +165,22 @@ class Game:
         for player_builder in self.player_builders:
             self.world.generate_player(player_builder, self.map.player_spawns)
 
-    def spawn_zombies(self, count):
+    def spawn_zombies(self, count, initial_spawn=False):
         """Spawn N zombies in the world."""
+        zombie_spawns = self.map.zombie_spawns
+        if not initial_spawn: # exclude initial-only spawns
+            zombie_spawns = [spawn for spawn in zombie_spawns if not spawn.initial_spawn_only]
+
         for _ in range(count):
             self.world.generate_zombie(
-                self.zombie_builder, self.map.zombie_spawns
+                self.zombie_builder, zombie_spawns
             )
 
     def spawn_zombies_to_maintain_minimum(self):
         """maintain the flow of zombies if necessary."""
         zombies = [zombie for zombie in self.world.zombies if zombie.life > 0]
         if len(zombies) < self.minimum_zombies:
-            self.spawn_zombies(self.minimum_zombies - len(zombies))
+            self.spawn_zombies(self.minimum_zombies - len(zombies), initial_spawn=False)
 
     def initialize_rewards(self):
         self.agent_rewards = list(
@@ -198,7 +202,7 @@ class Game:
         self.spawn_resources()
         self.spawn_agents()
         self.spawn_players()
-        self.spawn_zombies(self.initial_zombies)
+        self.spawn_zombies(self.initial_zombies, initial_spawn=True)
         self.initialize_rewards()
 
     def get_feedback_size(self):
@@ -207,14 +211,14 @@ class Game:
         #       (1, self.feedback_size, 1)
         return (self.feedback_size, 1)
 
-    def play_action(self, action_id, num_frames=1):
+    def play_actions(self, action_ids, num_frames=1):
         assert num_frames == 1
 
-        feedbacks = self.world.step([action_id])
+        feedbacks = self.world.step(action_ids)
         rewards = self.update_rewards()
-        reward = rewards[0]
-        if self.verbose and reward != 0.0:
-            print(f"Reward: {reward}")
+        # reward = rewards[0]
+        # if self.verbose and reward != 0.0:
+        #     print(f"Reward: {reward}")
 
         self.spawn_zombies_to_maintain_minimum()
        
@@ -227,7 +231,10 @@ class Game:
             if won:
                 if self.verbose:
                     print(f"WIN!  {description}")
-                reward += 1000.0
+                # Grant the winners reward to the survivors
+                for idx, agent in self.agents:
+                    if agent.life > 0:
+                        rewards[idx] += 1000.0
             else:
                 if self.verbose:
                     print(f"GAME OVER.  {description}")
@@ -240,7 +247,12 @@ class Game:
                 print("GAME OVER.  Reached 300 seconds, stopping.")
             truncated = True
 
-        return reward, feedbacks.reshape((1, len(feedbacks), 1)), done, truncated
+        observations = [feedback.reshape((1, len(feedback), 1)) for feedback in feedbacks]
+        return rewards, observations, done, truncated
+    
+    def play_action(self, action_id, num_frames=1):
+        rewards, observations, done, truncated = self.play_actions([action_id], num_frames=num_frames)
+        return rewards[0], observations[0], done, truncated
     
     # This is used by the train method
     def get_total_reward(self):

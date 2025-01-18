@@ -81,7 +81,7 @@ class World(object):
         for robot in self.agents:
             robot.consume_nearby_resource()
             
-        feedbacks = self.agents[0].sensor_feedback()
+        feedbacks = [agent.sensor_feedback() for agent in self.agents]
         
         self.clean_dead_things()
 
