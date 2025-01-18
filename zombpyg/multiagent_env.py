@@ -128,8 +128,11 @@ class MultiagentZombpygEnv(object):
         # TODO: The following Game method supports only a single agent action
         rewardslist, observationslist, doneflag, truncatedflag = self.game.play_actions(agent_actions)
         # form returns
-        rewards = { agent_id: reward for agent_id, reward in zip(self.agents, rewardslist) }
-        observations = { agent_id: observation for agent_id, observation in zip(self.agents, observationslist) }
+        # rewardslist and observationslist are for all agents, not just those that were active at the beginning of the step or are still alive
+        allrewards = { agent_id: reward for agent_id, reward in zip(self.possible_agents, rewardslist) }
+        rewards = { agent_id: allrewards[agent_id] for agent_id in self.agents }
+        allobservations = { agent_id: observation for agent_id, observation in zip(self.possible_agents, observationslist) }
+        observations = { agent_id: allobservations[agent_id] for agent_id in self.agents }
         done = { agent_id: doneflag for agent_id in self.agents }
         truncated = { agent_id: truncatedflag for agent_id in self.agents }
         info = {}
