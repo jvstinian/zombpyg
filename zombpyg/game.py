@@ -213,9 +213,10 @@ class Game:
 
         feedbacks = self.world.step(action_ids)
         rewards = self.update_rewards()
-        # reward = rewards[0]
-        # if self.verbose and reward != 0.0:
-        #     print(f"Reward: {reward}")
+        if self.verbose and any([reward != 0.0 for reward in rewards]):
+            for agent_id, reward in zip(self.agent_ids, rewards):
+                if reward != 0.0:
+                    print(f"Reward for {agent_id}: {reward}")
 
         self.spawn_zombies_to_maintain_minimum()
        
