@@ -122,7 +122,7 @@ class World(object):
         if self.resources.get((x, y), None) is not None:
             del self.resources[(x, y)]
 
-    def generate_agent(self, agent_builder, agent_id, weapon_id, spawns, max_attempts=3):
+    def generate_agent(self, agent_builder, agent_id, weapon_id, spawns, max_attempts=50):
         spawn = random.choices(spawns, k=1)[0]
         attempts = 0
         while attempts < max_attempts:
