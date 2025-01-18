@@ -100,7 +100,7 @@ class MultiagentZombpygEnv(object):
     #         v["agent_id"]: v["action"] for v in action
     #     }
 
-    def step(self, action):
+    def step(self, actions):
         """
         Receives a dictionary of actions keyed by the agent name.
 
@@ -122,7 +122,7 @@ class MultiagentZombpygEnv(object):
             agent_actions.append(
                 actions.get(
                     agent.agent_id,
-                    AgentActions,get_no_action_id()
+                    AgentActions.get_no_action_id()
                 )
             )
         # TODO: The following Game method supports only a single agent action
