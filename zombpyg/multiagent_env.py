@@ -1,19 +1,17 @@
 #!/usr/bin/env python
 # coding: utf-8
 from os import path
-from gym.core import Env
-from gym.spaces import Text, Box, Dict, Sequence
+# from gym.core import Env
+# from gym.spaces import Text, Box, Dict, Sequence
+from gym.spaces import Box
 from gym.spaces.discrete import Discrete
-from zombsole.gym.observation import SurroundingsChannelsObservation
-from zombsole.gym.reward import AgentRewards
-from zombsole.game import Game, Map
-from zombsole.renderer import NoRender
-import time
-import numpy as np
+from zombpyg.game import Game
+from zombpyg.agent import AgentActions
+# import numpy as np
 
 
 # TODO: When we update from nixos-23.05, we will need to make sure this properly conforms with PettingZoo's ParallelEnv.
-class MultiagentZombsoleEnv(object):
+class MultiagentZombpygEnv(object):
     """The main Gym class for multiagent play.
     """
     # See the supported modes in the render method
@@ -39,11 +37,12 @@ class MultiagentZombsoleEnv(object):
         agent_ids = [0],
         agent_weapons="rifle",
         player_specs="",
+        enable_rendering=True,
         verbose=False
     ):
         # We pass None for the DISPLAYSURF, and configure the rendering below.
         self.game = Game(
-            640, 480, None,
+            640, 480,
             map_id=map_id,
             rules_id=rules_id,
             initial_zombies=initial_zombies,
@@ -51,17 +50,18 @@ class MultiagentZombsoleEnv(object):
             agent_ids = agent_ids,
             agent_weapons = agent_weapons,
             player_specs=player_specs,
+            enable_rendering=enable_rendering,
             verbose=verbose,
         )
 
-        self.window = None
-        self.__initialize_renderer__()
+        # self.window = None
+        # self.__initialize_renderer__()
 
         self.agents = agent_ids
         self.possible_agents = agent_ids
         # self.num_agents = len(self.agents) # Is this needed by PettingZoo?
         # self.max_num_agents = len(self.possible_agents) # Is this needed by PettingZoo?
-        self.action_spaces = { agend_id: Discrete(AgentActions.get_actions_n()) for agent_id in self.possible_agents }
+        self.action_spaces = { agent_id: Discrete(AgentActions.get_actions_n()) for agent_id in self.possible_agents }
         self.observation_spaces = self._get_observation_spaces()
 
     # Using default implementations of 
@@ -73,7 +73,7 @@ class MultiagentZombsoleEnv(object):
 
     # setting observation_space in the constructor with the help of the following
     def _get_observation_spaces(self):
-        return { agend_id: Box(low=0.0, high=400.0, shape=self.game.get_feedback_size()) for agent_id in self.possible_agents }
+        return { agent_id: Box(low=0.0, high=400.0, shape=self.game.get_feedback_size()) for agent_id in self.possible_agents }
         # return Sequence(
         #     Dict({
         #         "agent_id": Discrete(64),
@@ -87,8 +87,9 @@ class MultiagentZombsoleEnv(object):
             if agent.agent_id in self.agents: # This indicates the agent was alive before the step
                 agentobs = agent.sensor_feedback()
                 agentobs = agentobs.reshape((1, len(agentobs), 1))
-                ret[agent.agent_id] = agent.sensor_feedback().reshape((1, len(feedbacks), 1))
-        return ret
+                ret[agent.agent_id] = agentobs
+        # return the observation and info
+        return ret, {}
 
     # Taken from zombpyg single-agent gym.  Is this needed here?
     # def get_frame_size(self):
@@ -125,17 +126,18 @@ class MultiagentZombsoleEnv(object):
                 )
             )
         # TODO: The following Game method supports only a single agent action
-        reward, observation, done, truncated = self.game.play_action(agent_actions)
+        rewardslist, observationslist, doneflag, truncatedflag = self.game.play_actions(agent_actions)
+        # form returns
+        rewards = { agent_id: reward for agent_id, reward in zip(self.agents, rewardslist) }
+        observations = { agent_id: observation for agent_id, observation in zip(self.agents, observationslist) }
+        done = { agent_id: doneflag for agent_id in self.agents }
+        truncated = { agent_id: truncatedflag for agent_id in self.agents }
         info = {}
 
-        # form returns
-        # for self.players specify done and truncated
-        # empyt imfo for all players
-        # make sure observations are properly formatted
+        # Update the active list of agents
+        self.agents = [ agent.agent_id for agent in self.game.world.agents if agent.life > 0]
 
-        # filter self.agents to only those that are still living
-
-        return observation, reward, done, truncated, info
+        return observations, rewards, done, truncated, info
 
     def reset(self):
         """Resets the environment to an initial state and returns an initial
@@ -151,6 +153,7 @@ class MultiagentZombsoleEnv(object):
             observation (object): the initial observation.
         """
         self.game.reset()
+        self.agents = self.possible_agents
         return self.get_observation()
 
     def render(self, mode='human'):
@@ -159,8 +162,7 @@ class MultiagentZombsoleEnv(object):
             mode (str): the mode to render with
         """
         if mode == 'human':
-            if self.window is not None:
-                self.game.draw()
+            self.game.draw()
             return None
         else:
             raise ValueError("mode={} is not supported".format(mode))
@@ -171,9 +173,7 @@ class MultiagentZombsoleEnv(object):
         Environments will automatically close() themselves when
         garbage collected or when the program exits.
         """
-        if self.window is not None:
-            pygame.display.quit()
-            pygame.quit()
+        self.game.close()
 
     # def seed(self, seed=None):
     #     """Sets the seed for this env's random number generator(s).
