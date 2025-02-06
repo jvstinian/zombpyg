@@ -166,6 +166,86 @@ class SimpleHallwayMap(Map):
             resource_spawns=resource_spawns,
         )
 
+class NarrowHallwayMap(Map):
+    @staticmethod
+    def build_map(w, h):
+        main_hallway_lower_h = int(h/2) - int(h/20)
+        main_hallway_upper_h = int(h/2) + int(h/20)
+        second_hallway_lower_h = main_hallway_lower_h - int(h*1/5)
+        second_hallway_upper_h = main_hallway_upper_h + int(h*1/5)
+        second_hallway_lower_w = int(w*3/10)
+        second_hallway_upper_w = int(w*4/10)
+        exit_lower_h = main_hallway_lower_h - int(h*1/10)
+        exit_upper_h = main_hallway_upper_h + int(h*1/10)
+        exit_lower_w = int(w*9/10)
+        exit_upper_w = int(w-1)
+            
+        lower_wall_points = [
+            (0, main_hallway_lower_h),
+            (second_hallway_lower_w, main_hallway_lower_h),
+            (second_hallway_lower_w, second_hallway_lower_h),
+            (second_hallway_upper_w, second_hallway_lower_h),
+            (second_hallway_upper_w, main_hallway_lower_h),
+            (exit_lower_w, main_hallway_lower_h),
+            (exit_lower_w, exit_lower_h),
+            (exit_upper_w, exit_lower_h),
+        ]
+
+        upper_wall_points = [
+            (0, main_hallway_upper_h),
+            (second_hallway_lower_w, main_hallway_upper_h),
+            (second_hallway_lower_w, second_hallway_upper_h),
+            (second_hallway_upper_w, second_hallway_upper_h),
+            (second_hallway_upper_w, main_hallway_upper_h),
+            (exit_lower_w, main_hallway_upper_h),
+            (exit_lower_w, exit_upper_h),
+            (exit_upper_w, exit_upper_h),
+        ]
+
+        walls = [
+            Wall(start=(0, 0), end=(0, h-1), width=1),
+            Wall(start=(0, h-1), end=(w-1, h-1), width=1),
+            Wall(start=(w-1, h-1), end=(w-1,0), width=1),
+            Wall(start=(w-1, 0), end=(0, 0), width=1),
+            ] + list(
+                map(lambda pts: Wall(start=pts[0], end=pts[1], width=1), zip(lower_wall_points[0:-1], lower_wall_points[1:]))
+            ) + list(
+                map(lambda pts: Wall(start=pts[0], end=pts[1], width=1), zip(upper_wall_points[0:-1], upper_wall_points[1:]))
+            )
+
+        player_spawns = [
+            SpawnLocation(
+                second_hallway_lower_w, 
+                second_hallway_lower_h, 
+                second_hallway_upper_w - second_hallway_lower_w,
+                second_hallway_upper_h - second_hallway_lower_h,
+            )
+        ]
+        zombie_spawns = [
+            SpawnLocation(int(w*0/5), main_hallway_lower_h, second_hallway_lower_w, main_hallway_upper_h - main_hallway_lower_h),
+            SpawnLocation(
+                second_hallway_upper_w, main_hallway_lower_h, exit_lower_w - second_hallway_upper_w, main_hallway_upper_h - main_hallway_lower_h,
+                initial_spawn_only=True
+            ),
+        ]
+        objectives = [
+            ObjectiveLocation(
+                exit_lower_w, exit_lower_h, exit_upper_w - exit_lower_w, exit_upper_h - exit_lower_h
+            ),
+        ]
+        resource_spawns = [
+            ResourceSpawnLocation(int(w*(1+2*i)/20), int(h*5/10), 10, 0.5, 200, 0.5, 2.0)
+            for i in range(3, 9)
+        ]
+        return Map(
+            (w, h),
+            walls,
+            player_spawns=player_spawns,
+            zombie_spawns=zombie_spawns,
+            objectives=objectives,
+            resource_spawns=resource_spawns,
+        )
+
 class MapFactory(object):
     @staticmethod
     def get_default(w, h):
@@ -181,5 +261,7 @@ class MapFactory(object):
             return EasyExitMap.build_map(w, h)
         elif map_id == "simple_hallway":
             return SimpleHallwayMap.build_map(w, h)
+        elif map_id == "narrow_hallway":
+            return NarrowHallwayMap.build_map(w, h)
         else:
             return MapFactory.get_default(w, h)
