@@ -280,7 +280,7 @@ class CatacombsMap(Map):
                     upper_w = (1 + 3*i + 1)*cell_width
 
                 walls.extend(
-                    SewersMap.get_rectangle_walls(
+                    CatacombsMap.get_rectangle_walls(
                         lower_w, lower_h, upper_w, upper_h
                     )
                 )
@@ -293,12 +293,68 @@ class CatacombsMap(Map):
             SpawnLocation(0*cell_width, 6*cell_height, w, cell_height),
         ]
         objectives = [
-            ObjectiveLocation(8*cell_width, 0*cell_height, 2*cell_width, 4*cell_height),
+            ObjectiveLocation(8*cell_width, 0*cell_height, 2*cell_width, 3*cell_height),
         ]
         resource_spawns = [
-            ResourceSpawnLocation(3*i*cell_width, 3*j*cell_height, 10, 0.5, 200, 0.5, 2.0)
+            ResourceSpawnLocation(3*i*cell_width + (cell_width//2), 3*j*cell_height + (cell_height//2), 10, 0.5, 200, 0.5, 2.0)
             for i in range(1, 3)
             for j in range(1, 3)
+        ]
+        return Map(
+            (w, h),
+            walls,
+            player_spawns=player_spawns,
+            zombie_spawns=zombie_spawns,
+            objectives=objectives,
+            resource_spawns=resource_spawns,
+        )
+
+class HallwayElevatorMap(Map):
+    @staticmethod
+    def build_map(w, h):
+        lower_wall_points = [
+            (         0, int(h*2/5)),
+            (int(w*3/5), int(h*2/5)),
+            (int(w*3/5), int(h*1/5)),
+            (       w-1, int(h*1/5)),
+        ]
+        
+        upper_wall_points = [
+            (         0, int(h*3/5)),
+            (int(w*3/5), int(h*3/5)),
+            (int(w*3/5), int(h*4/5)),
+            (       w-1, int(h*4/5)),
+        ]
+
+        walls = [
+            Wall(start=(0, 0), end=(0, h-1), width=1),
+            Wall(start=(0, h-1), end=(w-1, h-1), width=1),
+            Wall(start=(w-1, h-1), end=(w-1,0), width=1),
+            Wall(start=(w-1, 0), end=(0, 0), width=1),
+            Wall(start=(int(w*4/5), int(h*2/5)), end=(int(w*4/5), int(h*3/5)), width=1),
+        ] + list(
+            map(lambda pts: Wall(start=pts[0], end=pts[1], width=1), zip(lower_wall_points[0:-1], lower_wall_points[1:]))
+        ) + list(
+            map(lambda pts: Wall(start=pts[0], end=pts[1], width=1), zip(upper_wall_points[0:-1], upper_wall_points[1:]))
+        )
+        
+        player_spawns = [
+            SpawnLocation(int(1*w/5), int(h*2/5), int(w/5), int(h/5))
+        ]
+        zombie_spawns = [
+            SpawnLocation(int(w*0/5), int(h*2/5), int(w/5), int(h/5)),
+            SpawnLocation(int(w*3/5), int(h*2/5), int(w/5), int(h*2/5), initial_spawn_only=True),
+        ]
+        objectives = [
+            ObjectiveLocation(int(w*4/5), int(h*2/5), int(w/5), int(h/5)),
+        ]
+        resource_spawns = [
+            ResourceSpawnLocation(int(w*5/10), int(h*5/10), 10, 0.5, 200, 0.5, 2.0),
+            ResourceSpawnLocation(int(w*7/10), int(h*5/10), 10, 0.5, 200, 0.5, 2.0),
+            ResourceSpawnLocation(int(w*7/10), int(h*3/10), 10, 0.5, 200, 0.5, 2.0),
+            ResourceSpawnLocation(int(w*7/10), int(h*7/10), 10, 0.5, 200, 0.5, 2.0),
+            ResourceSpawnLocation(int(w*9/10), int(h*3/10), 10, 0.5, 200, 0.5, 2.0),
+            ResourceSpawnLocation(int(w*9/10), int(h*7/10), 10, 0.5, 200, 0.5, 2.0),
         ]
         return Map(
             (w, h),
@@ -329,5 +385,7 @@ class MapFactory(object):
             return NarrowHallwayMap.build_map(w, h)
         elif map_id == "catacombs":
             return CatacombsMap.build_map(w, h)
+        elif map_id == "elevator":
+            return HallwayElevatorMap.build_map(w, h)
         else:
             return MapFactory.get_default(w, h)
