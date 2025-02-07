@@ -246,6 +246,70 @@ class NarrowHallwayMap(Map):
             resource_spawns=resource_spawns,
         )
 
+class CatacombsMap(Map):
+    @staticmethod
+    def get_rectangle_walls(w0, h0, w1, h1):
+        return [
+            Wall(start=(w0, h0), end=(w0, h1), width=1),
+            Wall(start=(w0, h1), end=(w1, h1), width=1),
+            Wall(start=(w1, h1), end=(w1, h0), width=1),
+            Wall(start=(w1, h0), end=(w0, h0), width=1),
+        ]
+            
+    @staticmethod
+    def build_map(w, h):
+        walls = [
+            Wall(start=(0, 0), end=(0, h-1), width=1),
+            Wall(start=(0, h-1), end=(w-1, h-1), width=1),
+            Wall(start=(w-1, h-1), end=(w-1,0), width=1),
+            Wall(start=(w-1, 0), end=(0, 0), width=1),
+        ]
+        
+        cell_width = int(w*1/10)
+        cell_height = int(h*1/10)
+
+        for i in range(0, 3):
+            for j in range(0, 3):
+                lower_w = (1 + 3*i)*cell_width
+                lower_h = (1 + 3*j)*cell_height
+                upper_w = (1 + 3*i + 2)*cell_width
+                upper_h = (1 + 3*j + 2)*cell_height
+                if (i == 0) and (j ==2):
+                    upper_h = (1 + 3*j + 1)*cell_height
+                if (i == 2) and (j ==0):
+                    upper_w = (1 + 3*i + 1)*cell_width
+
+                walls.extend(
+                    SewersMap.get_rectangle_walls(
+                        lower_w, lower_h, upper_w, upper_h
+                    )
+                )
+
+        player_spawns = [
+            SpawnLocation(0*cell_width, 8*cell_height, 4*cell_width, 2*cell_height)
+        ]
+        zombie_spawns = [
+            SpawnLocation(0*cell_width, 3*cell_height, w, cell_height),
+            SpawnLocation(0*cell_width, 6*cell_height, w, cell_height),
+        ]
+        objectives = [
+            ObjectiveLocation(8*cell_width, 0*cell_height, 2*cell_width, 4*cell_height),
+        ]
+        resource_spawns = [
+            ResourceSpawnLocation(3*i*cell_width, 3*j*cell_height, 10, 0.5, 200, 0.5, 2.0)
+            for i in range(1, 3)
+            for j in range(1, 3)
+        ]
+        return Map(
+            (w, h),
+            walls,
+            player_spawns=player_spawns,
+            zombie_spawns=zombie_spawns,
+            objectives=objectives,
+            resource_spawns=resource_spawns,
+        )
+
+
 class MapFactory(object):
     @staticmethod
     def get_default(w, h):
@@ -263,5 +327,7 @@ class MapFactory(object):
             return SimpleHallwayMap.build_map(w, h)
         elif map_id == "narrow_hallway":
             return NarrowHallwayMap.build_map(w, h)
+        elif map_id == "catacombs":
+            return CatacombsMap.build_map(w, h)
         else:
             return MapFactory.get_default(w, h)
