@@ -365,6 +365,44 @@ class HallwayElevatorMap(Map):
             resource_spawns=resource_spawns,
         )
 
+class TinySpace0Map(Map):
+    @staticmethod
+    def build_map(w, h):
+        w1 = w*1/5
+        w2 = w*4/5
+        h1 = h*2/5
+        h2 = h*3/5
+        subbox_width = (w2 - w1) // 3
+        walls = [
+            # Wall(start=(0, 0), end=(0, h-1), width=1), # We don't even need the outer edges
+            # Wall(start=(0, h-1), end=(w-1, h-1), width=1),
+            # Wall(start=(w-1, h-1), end=(w-1,0), width=1),
+            # Wall(start=(w-1, 0), end=(0, 0), width=1),
+            Wall(start=(w1, h1), end=(w1, h2), width=1),
+            Wall(start=(w1, h2), end=(w2, h2), width=1),
+            Wall(start=(w2, h2), end=(w2, h1), width=1),
+            Wall(start=(w2, h1), end=(w1, h1), width=1),
+        ]
+        player_spawns = [
+            SpawnLocation(w1, h1, subbox_width, h2-h1)
+        ]
+        zombie_spawns = [
+            SpawnLocation(w1+subbox_width, h1, subbox_width, h2-h1),
+        ]
+        objectives = [
+            ObjectiveLocation(w1+2*subbox_width, h1, subbox_width, h2-h1),
+        ]
+        resource_spawns = [
+            ResourceSpawnLocation(w1 + (w2-w1)//2, (h1 + h2)//2, 10, 0.25, 200, 0.75, 2.0),
+        ]
+        return Map(
+            (w, h),
+            walls,
+            player_spawns=player_spawns,
+            zombie_spawns=zombie_spawns,
+            objectives=objectives,
+            resource_spawns=resource_spawns,
+        )
 
 class MapFactory(object):
     @staticmethod
@@ -387,5 +425,7 @@ class MapFactory(object):
             return CatacombsMap.build_map(w, h)
         elif map_id == "elevator":
             return HallwayElevatorMap.build_map(w, h)
+        elif map_id == "tiny_space_v0":
+            return TinySpace0Map.build_map(w, h)
         else:
             return MapFactory.get_default(w, h)
