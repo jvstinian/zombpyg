@@ -407,14 +407,14 @@ class TinySpace0Map(Map):
 class TinySpace1Map(Map):
     @staticmethod
     def build_map(w, h):
-        w1 = w*1/5
-        w2 = w*2/5
-        w3 = w*3/5
-        w4 = w*4/5
-        h1 = h*1/5
-        h2 = h*2/5
-        h3 = h*3/5
-        h4 = h*4/5
+        w1 = int(w*1/5)
+        w2 = int(w*2/5)
+        w3 = int(w*3/5)
+        w4 = int(w*4/5)
+        h1 = int(h*1/5)
+        h2 = int(h*2/5)
+        h3 = int(h*3/5)
+        h4 = int(h*4/5)
 
         # Unlike in the hallway maps, we go all the way around the perimeter
         wall_points = [
