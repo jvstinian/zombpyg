@@ -49,6 +49,7 @@ class ZombpygGymEnv(object):
         player_specs="",
         enable_rendering=True,
         fps=50,
+        agent_reward_configuration={},
         verbose=False
     ):
         # We pass None for the DISPLAYSURF, and configure the rendering below.
@@ -63,6 +64,7 @@ class ZombpygGymEnv(object):
             player_specs=player_specs,
             enable_rendering=enable_rendering,
             fps=fps,
+            agent_reward_configuration=agent_reward_configuration,
             verbose=verbose,
         )
 
