@@ -448,7 +448,7 @@ class TinySpace1Map(Map):
             ObjectiveLocation(w3, h2, w4-w3, h3-h2),
         ]
 
-        resource_spawn_start = (w1 + w3)//2 
+        resource_spawn_start = (w1 + w2)//2 
         resource_spawn_end = (w3 + w4)//2 
         resource_spawn_steps = (resource_spawn_end - resource_spawn_start)//20
         resource_spawns = [
