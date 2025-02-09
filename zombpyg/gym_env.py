@@ -48,6 +48,7 @@ class ZombpygGymEnv(object):
         agent_weapon="rifle",
         player_specs="",
         enable_rendering=True,
+        friendly_fire_guard=False,
         verbose=False
     ):
         # We pass None for the DISPLAYSURF, and configure the rendering below.
@@ -61,6 +62,7 @@ class ZombpygGymEnv(object):
             agent_weapons = [agent_weapon],
             player_specs=player_specs,
             enable_rendering=enable_rendering,
+            friendly_fire_guard=friendly_fire_guard,
             verbose=verbose,
         )
 
