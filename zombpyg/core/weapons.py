@@ -45,6 +45,19 @@ class MeleeWeapon(Weapon):
         if target is not None:
             damage = random.randint(*self.damage_range)
             target.life -= damage
+            
+            # Adjust the attackers stats
+            fighter_type = getattr(target, "name", "")
+            if (fighter_type == "zombie"):
+                attacker.attack_hits += 1
+
+            if target.life <= 0:
+                if fighter_type == "zombie":
+                    attacker.zombies_killed += 1
+                else: # player or agent
+                    attacker.fratricide += 1
+            elif (fighter_type != "zombie"): # target.life > 0 and target was either "player" or "agent"
+                attacker.friendly_fire += 1
     
     def ammo_resource_consumption_rate(self):
         return None
