@@ -36,22 +36,6 @@ def env2p_fixture():
     return env
 
 
-# @pytest.fixture(scope="function", name="env10p")
-# def env10p_fixture():
-#     env = MultiagentZombpygEnv(
-#         map_id="demo",
-#         rules_id="extermination",
-#         initial_zombies=100,
-#         minimum_zombies=0, 
-#         agent_ids = list(range(0, 10)),
-#         agent_weapons="random",
-#         player_specs="",
-#         enable_rendering=False,
-#         verbose=False
-#     )
-#     return env
-
-
 def test_multiagent_env_shape(env1p):
     observations, _ = env1p.reset()
     feedback_size = env1p.game.agent_builder.get_feedback_size()
@@ -59,6 +43,7 @@ def test_multiagent_env_shape(env1p):
         observation = observations[agent_id]
         assert observation.shape == (1,feedback_size,1)
         assert np.all(observation <= 2.0)
+
 
 def test_multiagent_1pgame(env2p):
     _, _ = env2p.reset()
@@ -75,20 +60,4 @@ def test_multiagent_1pgame(env2p):
         stepcount += 1
 
     assert True
-
-# def test_multiagent_large_game(env10p):
-#     _, _ = env10p.reset()
-#     stepcount = 0
-#     while True:
-#         _, _, done, truncated, _ = env10p.step({
-#             agent_id: env10p.action_spaces[agent_id].sample()
-#             for agent_id in env10p.agents
-#         })
-# 
-#         if done or truncated or (stepcount >=200):
-#             break
-# 
-#         stepcount += 1
-# 
-#     assert True
 
