@@ -252,11 +252,6 @@ class Game:
         rewards, observations, done, truncated = self.play_actions([action_id], num_frames=num_frames)
         return rewards[0], observations[0], done, truncated
     
-    # TODO
-    # # This is used by the train method
-    # def get_total_reward(self):
-    #     return self.agent_rewards[0].get_total_reward()
-    
     # This is used by the train method
     # This might be useful for gym later.
     def get_available_actions(self):
