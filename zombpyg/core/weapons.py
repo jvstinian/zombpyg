@@ -47,7 +47,7 @@ class MeleeWeapon(Weapon):
             fighter_type = getattr(target, "name", "")
             if self.friendly_fire_guard and (fighter_type != "zombie"):
                 # Nearly attacked fellow player or agent
-                print("Friendly fire with melee weapon detected.")
+                print("Friendly fire with melee weapon detected.") # TODO
                 attacker.friendly_fire_avoided += 1
             else:
                 damage = random.randint(*self.damage_range)
