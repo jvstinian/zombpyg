@@ -206,10 +206,7 @@ class Game:
         self.initialize_rewards()
 
     def get_feedback_size(self):
-        # TODO: Given the observation construction below,
-        #       the following is incorrect, and should be 
-        #       (1, self.feedback_size, 1)
-        return (self.feedback_size, 1)
+        return (1, self.feedback_size, 1)
 
     def play_actions(self, action_ids, num_frames=1):
         assert num_frames == 1
