@@ -72,7 +72,8 @@ class ZombpygGymEnv(object):
         return self.game.get_current_feedback()
     
     def get_frame_size(self):
-        return self.game.get_feedback_size()
+        feedback_size = self.game.get_feedback_size()
+        return feedback_size[1:] # omit channels
 
     def step(self, action_id):
         """Run one timestep of the environment's dynamics. When end of
@@ -107,6 +108,7 @@ class ZombpygGymEnv(object):
 
         Returns:
             observation (object): the initial observation.
+            info (dict): contains auxiliary diagnostic information
         """
         self.game.reset()
         return self.get_observation(), {}
