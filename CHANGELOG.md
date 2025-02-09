@@ -1,3 +1,8 @@
+# 0.7.0
+
+Adding support for a game step with actions for all agents.  This is needed for supporting multi-agent environments.
+Starting to adapt the multiagent environment to the PettingZoo parallel environment interface.
+
 # 0.6.4
 
 Adding support for a game step with actions for all agents. This is needed for supporting multi-agent environments.
