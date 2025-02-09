@@ -452,7 +452,7 @@ class TinySpace1Map(Map):
         resource_spawn_end = (w3 + w4)//2 
         resource_spawn_steps = (resource_spawn_end - resource_spawn_start)//20
         resource_spawns = [
-            ResourceSpawnLocation(resource_spawn_start + i*20, resource_spawn_start, (h2 + h3)//2, 10, 0.01, 20, 0.99, 0.1)
+            ResourceSpawnLocation(resource_spawn_start + i*20, (h2 + h3)//2, 10, 0.01, 20, 0.99, 0.1)
             for i in range(resource_spawn_steps+1)
         ] + [
             ResourceSpawnLocation((w2 + w3)//2, (h2 + h3)//2 - 20, 10, 0.5, 200, 0.5, 2.0),
