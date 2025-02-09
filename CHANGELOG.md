@@ -1,6 +1,10 @@
-# 0.7.1
+# 0.7.2
 
 Adding two simple hallway maps.
+
+# 0.7.1
+
+Player statistics tracking for melee weapon attacks has been fixed.
 
 # 0.7.0
 
