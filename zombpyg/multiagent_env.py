@@ -142,18 +142,13 @@ class MultiagentZombpygEnv(object):
 
         return observations, rewards, done, truncated, info
 
-    def reset(self):
+    def reset(self, seed=None, options=None):
         """Resets the environment to an initial state and returns an initial
         observation.
 
-        Note that this function should not reset the environment's random
-        number generator(s); random variables in the environment's state should
-        be sampled independently between multiple calls to `reset()`. In other
-        words, each call of `reset()` should yield an environment suitable for
-        a new episode, independent of previous episodes.
-
         Returns:
-            observation (object): the initial observation.
+            dictionary of observations (dict[AgentID, ObsType]): the initial observations
+            dictionary of info (dict[AgentID, dict]): additional information for each agent
         """
         self.game.reset()
         self.agents = self.possible_agents
