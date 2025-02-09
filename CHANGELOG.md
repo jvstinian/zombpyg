@@ -1,3 +1,7 @@
+# 0.7.1
+
+Player statistics tracking for melee weapon attacks has been fixed.
+
 # 0.7.0
 
 Adding support for a game step with actions for all agents.  This is needed for supporting multi-agent environments.
