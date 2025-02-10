@@ -58,46 +58,16 @@ class AgentReward(object):
                 + self.healing_of_others_coef*healing_of_others
             )
 
-    # class AgentState(object):
-    #     def __init__(self, agent):
-    #         self.alive = (agent.life > 0)
-    #         self.life = agent.life
-    #         self.healing_capacity = agent.healing_capacity
-    #         self.zombies_killed = agent.zombies_killed
-    #         self.fratricide = agent.fratricide
-    #         self.friendly_fire = agent.friendly_fire
-    #         self.accuracy = 100 * agent.attack_hits / agent.attack_count if agent.attack_count > 0 else 0
-    #         self.adj_accuracy = min(max((agent.attack_count - 10)/40.0, 0.0), 1.0) * self.accuracy
-    #         self.ammo_level = agent.weapon.ammo / agent.weapon.max_ammo if (agent.weapon is not None and agent.weapon.is_firearm) else 0.0
-    #         self.healing_of_others = agent.healing_of_others
-
-    #     def get_total_reward(self):
-    #         return (
-    #             self.life
-    #             + self.healing_capacity/2.0
-    #             + 5*self.zombies_killed 
-    #             - 100 * self.fratricide 
-    #             - 10 * self.friendly_fire
-    #             + self.adj_accuracy/10.0
-    #             + 100*self.ammo_level
-    #             + self.healing_of_others
-    #         )
-
     def __init__(self, agent, reward_config):
         self.reward_calculator = AgentReward.RewardConfiguration(**reward_config)
         self.total_reward = self.reward_calculator.get_total_reward(agent)
-        # self.agent_state = AgentReward.AgentState(agent)
 
     def update(self, agent):
-        # prev_reward = self.agent_state.get_total_reward()
-        # self.agent_state = AgentReward.AgentState(agent)
-        # return self.agent_state.get_total_reward() - prev_reward
         prev_reward = self.total_reward
         self.total_reward = self.reward_calculator.get_total_reward(agent)
         return self.total_reward - prev_reward
 
     def get_total_reward(self):
-        # return self.agent_state.get_total_reward()
         return self.total_reward
         
 class Game:
@@ -126,7 +96,7 @@ class Game:
         self.DISPLAYSURF = None
         self.fpsClock = None
         self.__initialize_renderer__()
-        self.fps = fps # 50
+        self.fps = fps
         
         self.obj_radius = 10
         self.robot_sensor_length = 250
