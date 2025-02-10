@@ -255,7 +255,7 @@ class Game:
                 # Grant the winners reward to the survivors
                 for idx, agent in enumerate(self.world.agents):
                     if agent.life > 0:
-                        rewards[idx] += 1000.0
+                        rewards[idx] += 100.0 # TODO: Experimenting here
             else:
                 if self.verbose:
                     print(f"GAME OVER.  {description}")
