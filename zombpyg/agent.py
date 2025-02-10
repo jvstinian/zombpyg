@@ -108,6 +108,7 @@ class Agent(Player, MoveableThing, RotatableThing, AttackingThing):
         self.attack_hits = 0
         self.fratricide = 0
         self.friendly_fire = 0
+        self.friendly_fire_avoided = 0
         self.healing_of_others = 0
 
         self.world = world
@@ -398,7 +399,8 @@ class Agent(Player, MoveableThing, RotatableThing, AttackingThing):
 class AgentBuilder(object):
     def __init__(
         self, radius, color, 
-        front_sensor_length
+        front_sensor_length,
+        friendly_fire_guard=False
     ):
         self.radius = radius
         self.color = color 
@@ -409,9 +411,10 @@ class AgentBuilder(object):
         ] + [
             (75 + 15*idx, 50) for idx in range(7)
         ]
+        self.friendly_fire_guard = friendly_fire_guard
     
     def build(self, agent_id, x, y, weapon_id, world):
-        weapon = WeaponFactory.create_weapon(weapon_id)
+        weapon = WeaponFactory.create_weapon(weapon_id, friendly_fire_guard=self.friendly_fire_guard)
         return Agent(
             x, y, self.radius, world,
             agent_id, self.color, self.sensor_specs,

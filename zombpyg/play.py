@@ -87,6 +87,7 @@ def main():
         rules_id=rules_id,
         player_specs=player_specs,
         enable_rendering=True,
+        friendly_fire_guard=True,
         verbose=verbose,
     )
     game.reset()

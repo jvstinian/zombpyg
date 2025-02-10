@@ -88,6 +88,7 @@ class Game:
         enable_rendering=True,
         fps=50,
         agent_reward_configuration={},
+        friendly_fire_guard=False,
         verbose=False
     ):
         
@@ -100,6 +101,8 @@ class Game:
         
         self.obj_radius = 10
         self.robot_sensor_length = 250
+        
+        self.friendly_fire_guard = friendly_fire_guard
         
         self.check_terminate = True
         
@@ -116,7 +119,8 @@ class Game:
         self.agent_builder = AgentBuilder(
             self.obj_radius,
             Color.BLUE, 
-            self.robot_sensor_length
+            self.robot_sensor_length,
+            friendly_fire_guard=self.friendly_fire_guard
         )
         self.zombie_builder = ZombieBuilder(self.obj_radius)
 
@@ -127,7 +131,7 @@ class Game:
         # Decide whether to use gym interface
         # self.action_space = ActionSpace(self.get_available_actions())
 
-        self.__process_player_specs__(player_specs)
+        self.__process_player_specs__(player_specs, self.friendly_fire_guard)
 
         self.verbose = verbose
 
@@ -147,7 +151,7 @@ class Game:
             self.DISPLAYSURF = pygame.display.set_mode((self.w, self.h), 0, 32)
             self.set_display(self.DISPLAYSURF)
  
-    def __process_player_specs__(self, player_specs):
+    def __process_player_specs__(self, player_specs, friendly_fire_guard):
         self.player_builders = []
         for player_spec in player_specs.split(','):
             player_spec_parts = player_spec.split(':')
@@ -159,7 +163,7 @@ class Game:
                 player_id = player_spec_parts[0]
                 player_count = int(player_spec_parts[2]) if part_count >= 3 else 1
                 self.player_builders.extend(
-                    [PlayerBuilder(player_id, weapon_id, self.obj_radius)] * player_count
+                    [PlayerBuilder(player_id, weapon_id, self.obj_radius, friendly_fire_guard=friendly_fire_guard)] * player_count
                 )
 
     def __process_weapon_name_inputs__(self, agent_weapons):
