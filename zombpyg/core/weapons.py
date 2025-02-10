@@ -47,7 +47,6 @@ class MeleeWeapon(Weapon):
             fighter_type = getattr(target, "name", "")
             if self.friendly_fire_guard and (fighter_type != "zombie"):
                 # Nearly attacked fellow player or agent
-                print("Friendly fire with melee weapon detected.") # TODO
                 attacker.friendly_fire_avoided += 1
             else:
                 damage = random.randint(*self.damage_range)
@@ -149,44 +148,6 @@ class Firearm(Weapon):
             )
         return bullets
     
-    # def check_bullet_paths_for_friendly_fire(self, attacker, angles):
-    #     friendly_distance_buffer_multiplier = 1.2
-    #     friendlies = [
-    #         (agent, 'agent') for agent in self.world.agents if agent.life > 0
-    #     ] + [
-    #         (player, 'player') for player in self.world.players if player.life > 0
-    #     ]
-
-    #     anglesrad = numpy.deg2rad(angles)
-    #     x, y = attacker.get_position()
-    #     radius = attacker.r
-    #     orientation = attacker.orientation
-    #     orientation_vector = (
-    #         numpy.sin(numpy.deg2rad(orientation)),
-    #         -numpy.cos(numpy.deg2rad(orientation))
-    #     )
-    #     bullet_start = (
-    #         x + 1.01*radius*orientation_vector[0],
-    #         y + 1.01*radius*orientation_vector[1]
-    #     )
-    #     for angle in anglesrad:
-    #         # We find the segment for the unimpeded path
-    #         direction_vector = rotate_vector(orientation_vector, angle)
-    #         bullet_end_point = tuple(
-    #             numpy.array(bullet_start) + numpy.array(direction_vector) * self.bullet_velocity * Firearm.TIME_IN_AIR # in air for 0.5 seconds
-    #         )
-    #         # Adjust the endpoint for the nearest wall collision
-    #         for wall in attacker.world.walls:
-    #             pt = wall.collide(bullet_start, bullet_end_point)
-    #             if pt is not None:
-    #                 bullet_end_point = pt
-    #         # Go through friendlies and see if any are too close to the path
-    #         for friendly in friendlies:
-    #             _, dist, _ = get_nearest_point_and_distance_to_path(bullet_start, bullet_end_point, friendly.get_position())
-    #             if dist < friendly_distance_buffer_multiplier*friendly.r:
-    #                 return True
-    #     return False
-    
     def check_bullet_paths_for_friendly_fire(self, attacker, bullets):
         friendly_distance_buffer_multiplier = 1.2
         friendlies = [
@@ -219,7 +180,6 @@ class Firearm(Weapon):
             if self.friendly_fire_guard and self.check_bullet_paths_for_friendly_fire(attacker, bullets):
                 # Nearly attacked fellow player or agent
                 # There shouldn't be an issue with the bullets just going out of scope
-                print("Friendly fire with firearm detected.")
                 attacker.friendly_fire_avoided += 1
             else:
                 self.ammo -= 1
