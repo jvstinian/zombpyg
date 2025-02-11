@@ -153,9 +153,15 @@ class SimpleHallwayMap(Map):
         objectives = [
             ObjectiveLocation(int(w*4/5), int(h*2/5), int(w/5), int(h/5)),
         ]
+        resource_spawn_start = int(3*w/10)
+        resource_spawn_end = int(9*w/10)
+        resource_spawn_steps = (resource_spawn_end - resource_spawn_start)//20
         resource_spawns = [
-            ResourceSpawnLocation(int(w*(1+2*i)/10), int(h*5/10), 10, 0.5, 200, 0.5, 2.0)
-            for i in range(2, 4)
+            ResourceSpawnLocation(resource_spawn_start + i*20, int(h/2), 10, 0.01, 20, 0.99, 0.1)
+            for i in range(resource_spawn_steps+1)
+        ] + [
+            ResourceSpawnLocation(int(w/2), int(h/2)-20, 10, 0.5, 50, 0.5, 0.5),
+            ResourceSpawnLocation(int(w/2), int(h/2)+20, 10, 0.5, 50, 0.5, 0.5),
         ]
         return Map(
             (w, h),
@@ -233,9 +239,12 @@ class NarrowHallwayMap(Map):
                 exit_lower_w, exit_lower_h, exit_upper_w - exit_lower_w, exit_upper_h - exit_lower_h
             ),
         ]
+        resource_spawn_start = (second_hallway_lower_w + second_hallway_upper_w)//2
+        resource_spawn_end = (exit_lower_w + exit_upper_w)//2
+        resource_spawn_steps = (resource_spawn_end - resource_spawn_start)//20
         resource_spawns = [
-            ResourceSpawnLocation(int(w*(1+2*i)/20), int(h*5/10), 10, 0.5, 200, 0.5, 2.0)
-            for i in range(3, 9)
+            ResourceSpawnLocation(resource_spawn_start + i*20, (main_hallway_lower_h + main_hallway_upper_h)//2, 10, 0.01, 20, 0.99, 0.1)
+            for i in range(resource_spawn_steps+1)
         ]
         return Map(
             (w, h),
@@ -348,14 +357,34 @@ class HallwayElevatorMap(Map):
         objectives = [
             ObjectiveLocation(int(w*4/5), int(h*2/5), int(w/5), int(h/5)),
         ]
+        rsw1 = (int(w*1/5)+ int(w*2/5))//2
+        rsw2 = (int(w*3/5)+ int(w*4/5))//2
+        rsw3 = (int(w*4/5)+ (w-1))//2
+        rsh1 = (int(h*1/5)+ int(h*2/5))//2
+        rsh2 = (int(h*3/5)+ int(h*4/5))//2
+        steps1 = (rsw2 - rsw1)//20
+        steps2 = (rsh2 - rsh1)//20
+        steps3 = (rsw3 - rsw2)//20
         resource_spawns = [
-            ResourceSpawnLocation(int(w*5/10), int(h*5/10), 10, 0.5, 200, 0.5, 2.0),
-            ResourceSpawnLocation(int(w*7/10), int(h*5/10), 10, 0.5, 200, 0.5, 2.0),
-            ResourceSpawnLocation(int(w*7/10), int(h*3/10), 10, 0.5, 200, 0.5, 2.0),
-            ResourceSpawnLocation(int(w*7/10), int(h*7/10), 10, 0.5, 200, 0.5, 2.0),
-            ResourceSpawnLocation(int(w*9/10), int(h*3/10), 10, 0.5, 200, 0.5, 2.0),
-            ResourceSpawnLocation(int(w*9/10), int(h*7/10), 10, 0.5, 200, 0.5, 2.0),
+            ResourceSpawnLocation(rsw1 + i*20, int(h*5/10), 10, 0.01, 20, 0.99, 0.1)
+            for i in range(steps1)
+        ] + [
+            ResourceSpawnLocation(rsw2, rsh1 + i*20, 10, 0.01, 20, 0.99, 0.1)
+            for i in range(steps2+1)
+        ] + [
+            ResourceSpawnLocation(rsw2 + i*20, rsh1, 10, 0.01, 20, 0.99, 0.1)
+            for i in range(1,steps3+1)
+        ] + [
+            ResourceSpawnLocation(rsw2 + i*20, rsh2, 10, 0.01, 20, 0.99, 0.1)
+            for i in range(1,steps3+1)
         ]
+        # resource_spawns = [
+        #     ResourceSpawnLocation(int(w*7/10), int(h*5/10), 10, 0.5, 200, 0.5, 2.0),
+        #     ResourceSpawnLocation(int(w*7/10), int(h*3/10), 10, 0.5, 200, 0.5, 2.0),
+        #     ResourceSpawnLocation(int(w*7/10), int(h*7/10), 10, 0.5, 200, 0.5, 2.0),
+        #     ResourceSpawnLocation(int(w*9/10), int(h*3/10), 10, 0.5, 200, 0.5, 2.0),
+        #     ResourceSpawnLocation(int(w*9/10), int(h*7/10), 10, 0.5, 200, 0.5, 2.0),
+        # ]
         return Map(
             (w, h),
             walls,
@@ -368,10 +397,10 @@ class HallwayElevatorMap(Map):
 class TinySpace0Map(Map):
     @staticmethod
     def build_map(w, h):
-        w1 = w*1/5
-        w2 = w*4/5
-        h1 = h*2/5
-        h2 = h*3/5
+        w1 = int(w*1/5)
+        w2 = int(w*4/5)
+        h1 = int(h*2/5)
+        h2 = int(h*3/5)
         subbox_width = (w2 - w1) // 3
         walls = [
             # Wall(start=(0, 0), end=(0, h-1), width=1), # We don't even need the outer edges
@@ -392,9 +421,15 @@ class TinySpace0Map(Map):
         objectives = [
             ObjectiveLocation(w1+2*subbox_width, h1, subbox_width, h2-h1),
         ]
+
+        resource_spawn_start = w1 + (w2-w1)//6
+        resource_spawn_end = w2 - (w2-w1)//6
+        resource_spawn_steps = (resource_spawn_end - resource_spawn_start)//20
         resource_spawns = [
-            ResourceSpawnLocation(w1 + (w2-w1)//2, (h1 + h2)//2, 10, 0.25, 200, 0.75, 2.0),
+            ResourceSpawnLocation(resource_spawn_start + i*20, (h1 + h2)//2, 10, 0.01, 20, 0.99, 0.1)
+            for i in range(resource_spawn_steps+1)
         ]
+
         return Map(
             (w, h),
             walls,
