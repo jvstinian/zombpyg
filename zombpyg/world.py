@@ -104,7 +104,14 @@ class World(object):
     
     def fighter_collides_with_others(self, this_fighter, new_point):
         radius = this_fighter.get_radius()
-        for other_fighter in (self.zombies + self.players + self.agents):
+        other_fighters = [
+            zombie for zombie in self.zombies if zombie.life > 0
+        ] + [
+            player for player in self.players if player.life > 0
+        ] + [
+            agent for agent in self.agents if agent.life > 0
+        ]
+        for other_fighter in other_fighters:
             if this_fighter != other_fighter:
                 if calculate_distance(new_point, other_fighter.get_position()) < (radius + other_fighter.get_radius()):
                     return True
