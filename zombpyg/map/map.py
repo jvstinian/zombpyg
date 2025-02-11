@@ -357,14 +357,34 @@ class HallwayElevatorMap(Map):
         objectives = [
             ObjectiveLocation(int(w*4/5), int(h*2/5), int(w/5), int(h/5)),
         ]
+        rsw1 = (int(w*1/5)+ int(w*2/5))//2
+        rsw2 = (int(w*3/5)+ int(w*4/5))//2
+        rsw3 = (int(w*4/5)+ (w-1))//2
+        rsh1 = (int(h*1/5)+ int(h*2/5))//2
+        rsh2 = (int(h*3/5)+ int(h*4/5))//2
+        steps1 = (rsw2 - rsw1)//20
+        steps2 = (rsh2 - rsh1)//20
+        steps3 = (rsw3 - rsw2)//20
         resource_spawns = [
-            ResourceSpawnLocation(int(w*5/10), int(h*5/10), 10, 0.5, 200, 0.5, 2.0),
-            ResourceSpawnLocation(int(w*7/10), int(h*5/10), 10, 0.5, 200, 0.5, 2.0),
-            ResourceSpawnLocation(int(w*7/10), int(h*3/10), 10, 0.5, 200, 0.5, 2.0),
-            ResourceSpawnLocation(int(w*7/10), int(h*7/10), 10, 0.5, 200, 0.5, 2.0),
-            ResourceSpawnLocation(int(w*9/10), int(h*3/10), 10, 0.5, 200, 0.5, 2.0),
-            ResourceSpawnLocation(int(w*9/10), int(h*7/10), 10, 0.5, 200, 0.5, 2.0),
+            ResourceSpawnLocation(rsw1 + i*20, int(h*5/10), 10, 0.01, 20, 0.99, 0.1)
+            for i in range(steps1)
+        ] + [
+            ResourceSpawnLocation(rsw2, rsh1 + i*20, 10, 0.01, 20, 0.99, 0.1)
+            for i in range(steps2+1)
+        ] + [
+            ResourceSpawnLocation(rsw2 + i*20, rsh1, 10, 0.01, 20, 0.99, 0.1)
+            for i in range(1,steps3+1)
+        ] + [
+            ResourceSpawnLocation(rsw2 + i*20, rsh2, 10, 0.01, 20, 0.99, 0.1)
+            for i in range(1,steps3+1)
         ]
+        # resource_spawns = [
+        #     ResourceSpawnLocation(int(w*7/10), int(h*5/10), 10, 0.5, 200, 0.5, 2.0),
+        #     ResourceSpawnLocation(int(w*7/10), int(h*3/10), 10, 0.5, 200, 0.5, 2.0),
+        #     ResourceSpawnLocation(int(w*7/10), int(h*7/10), 10, 0.5, 200, 0.5, 2.0),
+        #     ResourceSpawnLocation(int(w*9/10), int(h*3/10), 10, 0.5, 200, 0.5, 2.0),
+        #     ResourceSpawnLocation(int(w*9/10), int(h*7/10), 10, 0.5, 200, 0.5, 2.0),
+        # ]
         return Map(
             (w, h),
             walls,
