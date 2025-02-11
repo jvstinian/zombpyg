@@ -239,9 +239,12 @@ class NarrowHallwayMap(Map):
                 exit_lower_w, exit_lower_h, exit_upper_w - exit_lower_w, exit_upper_h - exit_lower_h
             ),
         ]
+        resource_spawn_start = (second_hallway_lower_w + second_hallway_upper_w)//2
+        resource_spawn_end = (exit_lower_w + exit_upper_w)//2
+        resource_spawn_steps = (resource_spawn_end - resource_spawn_start)//20
         resource_spawns = [
-            ResourceSpawnLocation(int(w*(1+2*i)/20), int(h*5/10), 10, 0.5, 200, 0.5, 2.0)
-            for i in range(3, 9)
+            ResourceSpawnLocation(resource_spawn_start + i*20, (main_hallway_lower_h + main_hallway_upper_h)//2, 10, 0.01, 20, 0.99, 0.1)
+            for i in range(resource_spawn_steps+1)
         ]
         return Map(
             (w, h),
