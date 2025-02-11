@@ -24,7 +24,8 @@ class AgentReward(object):
             self, 
             life_coef=1.0, healing_capacity_coef=0.5, zombies_killed_coef=5.0,
             fratricide_coef=100.0, friendly_fire_coef=10.0, accuracy_coef=0.1,
-            ammo_coef=100.0, healing_of_others_coef=1.0
+            ammo_coef=100.0, healing_of_others_coef=1.0,
+            friendly_fire_avoided_coef=0.25,
         ):
             self.life_coef = life_coef
             self.healing_capacity_coef = healing_capacity_coef
@@ -34,6 +35,7 @@ class AgentReward(object):
             self.accuracy_coef = accuracy_coef
             self.ammo_coef = ammo_coef
             self.healing_of_others_coef = healing_of_others_coef
+            self.friendly_fire_avoided_coef = friendly_fire_avoided_coef
 
         def get_total_reward(self, agent):
             alive = (agent.life > 0)
@@ -46,6 +48,7 @@ class AgentReward(object):
             adj_accuracy = min(max((agent.attack_count - 10)/40.0, 0.0), 1.0) * accuracy
             ammo_level = agent.weapon.ammo / agent.weapon.max_ammo if (agent.weapon is not None and agent.weapon.is_firearm) else 0.0
             healing_of_others = agent.healing_of_others
+            friendly_fire_avoided = agent.friendly_fire_avoided
 
             return (
                 self.life_coef*life
@@ -53,6 +56,7 @@ class AgentReward(object):
                 + self.zombies_killed_coef*zombies_killed 
                 - self.fratricide_coef*fratricide 
                 - self.friendly_fire_coef*friendly_fire
+                - self.friendly_fire_avoided_coef*friendly_fire_avoided
                 + self.accuracy_coef*adj_accuracy
                 + self.ammo_coef*ammo_level
                 + self.healing_of_others_coef*healing_of_others
