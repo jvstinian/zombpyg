@@ -153,9 +153,15 @@ class SimpleHallwayMap(Map):
         objectives = [
             ObjectiveLocation(int(w*4/5), int(h*2/5), int(w/5), int(h/5)),
         ]
+        resource_spawn_start = int(3*w/10)
+        resource_spawn_end = int(9*w/10)
+        resource_spawn_steps = (resource_spawn_end - resource_spawn_start)//20
         resource_spawns = [
-            ResourceSpawnLocation(int(w*(1+2*i)/10), int(h*5/10), 10, 0.5, 200, 0.5, 2.0)
-            for i in range(2, 4)
+            ResourceSpawnLocation(resource_spawn_start + i*20, int(h/2), 10, 0.01, 20, 0.99, 0.1)
+            for i in range(resource_spawn_steps+1)
+        ] + [
+            ResourceSpawnLocation(int(w/2), int(h/2)-20, 10, 0.5, 50, 0.5, 0.5),
+            ResourceSpawnLocation(int(w/2), int(h/2)+20, 10, 0.5, 50, 0.5, 0.5),
         ]
         return Map(
             (w, h),
