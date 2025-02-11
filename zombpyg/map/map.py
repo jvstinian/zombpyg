@@ -368,10 +368,10 @@ class HallwayElevatorMap(Map):
 class TinySpace0Map(Map):
     @staticmethod
     def build_map(w, h):
-        w1 = w*1/5
-        w2 = w*4/5
-        h1 = h*2/5
-        h2 = h*3/5
+        w1 = int(w*1/5)
+        w2 = int(w*4/5)
+        h1 = int(h*2/5)
+        h2 = int(h*3/5)
         subbox_width = (w2 - w1) // 3
         walls = [
             # Wall(start=(0, 0), end=(0, h-1), width=1), # We don't even need the outer edges
@@ -392,9 +392,15 @@ class TinySpace0Map(Map):
         objectives = [
             ObjectiveLocation(w1+2*subbox_width, h1, subbox_width, h2-h1),
         ]
+
+        resource_spawn_start = w1 + (w2-w1)//6
+        resource_spawn_end = w2 - (w2-w1)//6
+        resource_spawn_steps = (resource_spawn_end - resource_spawn_start)//20
         resource_spawns = [
-            ResourceSpawnLocation(w1 + (w2-w1)//2, (h1 + h2)//2, 10, 0.25, 200, 0.75, 2.0),
+            ResourceSpawnLocation(resource_spawn_start + i*20, (h1 + h2)//2, 10, 0.01, 20, 0.99, 0.1)
+            for i in range(resource_spawn_steps+1)
         ]
+
         return Map(
             (w, h),
             walls,
