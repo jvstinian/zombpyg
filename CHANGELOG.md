@@ -1,3 +1,7 @@
+# 0.7.2
+
+Adding addional maps.  In some of the maps, a large number of locations have been added with smaller quantities of resources.
+
 # 0.7.1
 
 Player statistics tracking for melee weapon attacks has been fixed.
