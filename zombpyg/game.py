@@ -225,7 +225,7 @@ class Game:
         self.initialize_rewards()
 
     def get_feedback_size(self):
-        return (self.feedback_size, 1)
+        return (1, self.feedback_size, 1)
 
     def play_actions(self, action_ids, num_frames=1):
         assert num_frames == 1
@@ -270,10 +270,6 @@ class Game:
     def play_action(self, action_id, num_frames=1):
         rewards, observations, done, truncated = self.play_actions([action_id], num_frames=num_frames)
         return rewards[0], observations[0], done, truncated
-    
-    # This is used by the train method
-    def get_total_reward(self):
-        return self.agent_rewards[0].get_total_reward()
     
     # This is used by the train method
     # This might be useful for gym later.

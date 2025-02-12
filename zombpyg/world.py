@@ -122,10 +122,10 @@ class World(object):
         if self.resources.get((x, y), None) is not None:
             del self.resources[(x, y)]
 
-    def generate_agent(self, agent_builder, agent_id, weapon_id, spawns, max_attempts=3):
+    def generate_agent(self, agent_builder, agent_id, weapon_id, spawns, max_attempts=0):
         spawn = random.choices(spawns, k=1)[0]
         attempts = 0
-        while attempts < max_attempts:
+        while (max_attempts <= 0) or (attempts < max_attempts):
             x, y = spawn.get_spawn_location()
             radius = agent_builder.radius * 2
             
@@ -145,7 +145,7 @@ class World(object):
             )
             break
 
-        if attempts >= max_attempts:
+        if (max_attempts > 0) and (attempts >= max_attempts):
             raise RuntimeError(f"Could not create agent in {max_attempts} attempts")
 
         
