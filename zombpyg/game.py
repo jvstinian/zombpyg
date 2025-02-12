@@ -27,6 +27,7 @@ class AgentReward(object):
             ammo_coef=100.0, healing_of_others_coef=1.0,
             friendly_fire_avoided_coef=0.25,
             at_objective_coef=10.0,
+            checkpoints_coef=10.0,
         ):
             self.life_coef = life_coef
             self.healing_capacity_coef = healing_capacity_coef
@@ -38,6 +39,7 @@ class AgentReward(object):
             self.healing_of_others_coef = healing_of_others_coef
             self.friendly_fire_avoided_coef = friendly_fire_avoided_coef
             self.at_objective_coef = at_objective_coef
+            self.checkpoints_coef = checkpoints_coef
 
         def get_total_reward(self, agent):
             alive = (agent.life > 0)
@@ -52,6 +54,7 @@ class AgentReward(object):
             healing_of_others = agent.healing_of_others
             friendly_fire_avoided = agent.friendly_fire_avoided
             at_obj = agent.is_at_objective()
+            checkpoints_reached = agent.checkpoints_reached 
 
             return (
                 self.life_coef*life
@@ -64,6 +67,7 @@ class AgentReward(object):
                 + self.ammo_coef*ammo_level
                 + self.healing_of_others_coef*healing_of_others
                 + self.at_objective_coef * at_obj
+                + self.checkpoints_coef * checkpoints_reached
             )
 
     def __init__(self, agent, reward_config):
