@@ -473,7 +473,7 @@ class AgentBuilder(object):
         pass
 
     def get_feedback_size(self):
-        return 7 * len(self.sensor_specs)
+        return 8 * len(self.sensor_specs)
 
     def get_actions(self):
         actions_n = AgentActions.get_actions_n() # 4 + 5 + 3

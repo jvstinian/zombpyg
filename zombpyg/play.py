@@ -60,7 +60,7 @@ def render_game(game):
                 AgentActions.get_no_action_id()
             )
             termination = done or truncated
-        print(f"Total Reward: {game.get_total_reward()}")
+        print(f"Total Reward: {game.agent_rewards[0].get_total_reward()}")
 
 def main(): 
     parser = argparse.ArgumentParser(description="zombpyg")

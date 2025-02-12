@@ -23,7 +23,7 @@ class World(object):
         self.walls = map.walls
         self.objectives = map.objectives
         self.decorations = []
-        self.checkpoints = map.checkpoints
+        self.checkpoints = map.checkpoints if map.checkpoints is not None else []
         self.agents = []
         self.players = []
         self.zombies = []
@@ -39,7 +39,8 @@ class World(object):
         self.t = 0
         self.resources = {}
         self.decorations = []
-        self.checkpoints.reset()
+        for checkpoint in self.checkpoints:
+            checkpoint.reset()
         self.agents = []
         self.players = []
         self.zombies = []

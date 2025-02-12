@@ -433,7 +433,7 @@ class TinySpace0Map(Map):
         ]
         
         checkpoints = [
-            Checkpoint(resource_spawn_start + i*20, (h1 + h2)//2 - 20)
+            Checkpoint(resource_spawn_start + i*20, (h1 + h2)//2 - 20, 10)
             for i in range(resource_spawn_steps+1)
         ]
 
@@ -502,7 +502,7 @@ class TinySpace1Map(Map):
             ResourceSpawnLocation((w2 + w3)//2, (h2 + h3)//2 + 20, 10, 0.5, 200, 0.5, 2.0),
         ]
         checkpoints = [
-            Checkpoint(resource_spawn_start + i*20, (h2 + h3)//2 + 20)
+            Checkpoint(resource_spawn_start + i*20, (h2 + h3)//2 + 20, 10)
             for i in range(resource_spawn_steps+1)
         ]
         return Map(
