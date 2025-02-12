@@ -2,12 +2,13 @@ from zombpyg.core.wall import Wall
 from .objective import ObjectiveLocation
 from .spawns import SpawnLocation
 from .resourcespawns import ResourceSpawnLocation
+from .checkpoint import Checkpoint
 
 
 class Map(object):
     """A map for a world."""
     def __init__(
-        self, size, walls, player_spawns=None, zombie_spawns=None, objectives=None, resource_spawns=None
+        self, size, walls, player_spawns=None, zombie_spawns=None, objectives=None, resource_spawns=None, checkpoints=None
     ):
         self.size = size
         self.walls = walls
@@ -15,6 +16,7 @@ class Map(object):
         self.zombie_spawns = zombie_spawns
         self.objectives = objectives
         self.resource_spawns = resource_spawns
+        self.checkpoints = checkpoints
 
 class DemoMap(Map):
     @staticmethod
@@ -429,6 +431,11 @@ class TinySpace0Map(Map):
             ResourceSpawnLocation(resource_spawn_start + i*20, (h1 + h2)//2, 10, 0.01, 20, 0.99, 0.1)
             for i in range(resource_spawn_steps+1)
         ]
+        
+        checkpoints = [
+            Checkpoint(resource_spawn_start + i*20, (h1 + h2)//2 - 20)
+            for i in range(resource_spawn_steps+1)
+        ]
 
         return Map(
             (w, h),
@@ -437,6 +444,7 @@ class TinySpace0Map(Map):
             zombie_spawns=zombie_spawns,
             objectives=objectives,
             resource_spawns=resource_spawns,
+            checkpoints=checkpoints,
         )
 
 class TinySpace1Map(Map):
@@ -493,6 +501,10 @@ class TinySpace1Map(Map):
             ResourceSpawnLocation((w2 + w3)//2, (h2 + h3)//2 - 20, 10, 0.5, 200, 0.5, 2.0),
             ResourceSpawnLocation((w2 + w3)//2, (h2 + h3)//2 + 20, 10, 0.5, 200, 0.5, 2.0),
         ]
+        checkpoints = [
+            Checkpoint(resource_spawn_start + i*20, (h2 + h3)//2 + 20)
+            for i in range(resource_spawn_steps+1)
+        ]
         return Map(
             (w, h),
             walls,
@@ -500,6 +512,7 @@ class TinySpace1Map(Map):
             zombie_spawns=zombie_spawns,
             objectives=objectives,
             resource_spawns=resource_spawns,
+            checkpoints=checkpoints,
         )
 
 class MapFactory(object):
