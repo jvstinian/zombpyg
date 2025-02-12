@@ -26,6 +26,7 @@ class AgentReward(object):
             fratricide_coef=100.0, friendly_fire_coef=10.0, accuracy_coef=0.1,
             ammo_coef=100.0, healing_of_others_coef=1.0,
             friendly_fire_avoided_coef=0.25,
+            at_objective_coef=10.0,
         ):
             self.life_coef = life_coef
             self.healing_capacity_coef = healing_capacity_coef
@@ -36,6 +37,7 @@ class AgentReward(object):
             self.ammo_coef = ammo_coef
             self.healing_of_others_coef = healing_of_others_coef
             self.friendly_fire_avoided_coef = friendly_fire_avoided_coef
+            self.at_objective_coef = at_objective_coef
 
         def get_total_reward(self, agent):
             alive = (agent.life > 0)
@@ -49,6 +51,7 @@ class AgentReward(object):
             ammo_level = agent.weapon.ammo / agent.weapon.max_ammo if (agent.weapon is not None and agent.weapon.is_firearm) else 0.0
             healing_of_others = agent.healing_of_others
             friendly_fire_avoided = agent.friendly_fire_avoided
+            at_obj = agent.is_at_objective()
 
             return (
                 self.life_coef*life
@@ -60,6 +63,7 @@ class AgentReward(object):
                 + self.accuracy_coef*adj_accuracy
                 + self.ammo_coef*ammo_level
                 + self.healing_of_others_coef*healing_of_others
+                + self.at_objective_coef * at_obj
             )
 
     def __init__(self, agent, reward_config):
@@ -142,6 +146,9 @@ class Game:
         self.continue_without_agents = False
 
         self.agent_reward_configuration = agent_reward_configuration
+        if self.rules_id != "safehouse":
+            # Objectives are only relevant when the goal is to reach the safehouse
+            self.agent_reward_configuration["at_objective_coef"] = 0.0
 
         # Initialize world, players, agents
         if initialize_game:
