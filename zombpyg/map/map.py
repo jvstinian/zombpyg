@@ -368,16 +368,16 @@ class HallwayElevatorMap(Map):
         steps2 = (rsh2 - rsh1)//20
         steps3 = (rsw3 - rsw2)//20
         resource_spawns = [
-            ResourceSpawnLocation(rsw1 + i*20, int(h*5/10), 10, 0.01, 20, 0.99, 0.1)
+            ResourceSpawnLocation(rsw1 + i*20, int(h*5/10)-20, 10, 0.01, 20, 0.99, 0.1)
             for i in range(steps1)
         ] + [
-            ResourceSpawnLocation(rsw2, rsh1 + i*20, 10, 0.01, 20, 0.99, 0.1)
+            ResourceSpawnLocation(rsw2-20, rsh1 + i*20, 10, 0.01, 20, 0.99, 0.1)
             for i in range(steps2+1)
         ] + [
-            ResourceSpawnLocation(rsw2 + i*20, rsh1, 10, 0.01, 20, 0.99, 0.1)
+            ResourceSpawnLocation(rsw2 + i*20, rsh1-20, 10, 0.01, 20, 0.99, 0.1)
             for i in range(1,steps3+1)
         ] + [
-            ResourceSpawnLocation(rsw2 + i*20, rsh2, 10, 0.01, 20, 0.99, 0.1)
+            ResourceSpawnLocation(rsw2 + i*20, rsh2+20, 10, 0.01, 20, 0.99, 0.1)
             for i in range(1,steps3+1)
         ]
         # resource_spawns = [
@@ -387,6 +387,22 @@ class HallwayElevatorMap(Map):
         #     ResourceSpawnLocation(int(w*9/10), int(h*3/10), 10, 0.5, 200, 0.5, 2.0),
         #     ResourceSpawnLocation(int(w*9/10), int(h*7/10), 10, 0.5, 200, 0.5, 2.0),
         # ]
+        checkpoints = [
+            Checkpoint(rsw1 + i*20, int(h*5/10), 10)
+            for i in range(steps1)
+        ] + [
+            Checkpoint(rsw2, rsh1 + i*20, 10)
+            for i in range(steps2+1)
+        ] + [
+            Checkpoint(rsw2 + i*20, rsh1, 10)
+            for i in range(1,steps3+1)
+        ] + [
+            Checkpoint(rsw2 + i*20, rsh2, 10)
+            for i in range(1,steps3+1)
+        ] + [
+            Checkpoint(rsw3, rsh1 + i*20, 10)
+            for i in range(1, steps2)
+        ]
         return Map(
             (w, h),
             walls,
@@ -394,6 +410,7 @@ class HallwayElevatorMap(Map):
             zombie_spawns=zombie_spawns,
             objectives=objectives,
             resource_spawns=resource_spawns,
+            checkpoints=checkpoints,
         )
 
 class TinySpace0Map(Map):
