@@ -443,6 +443,11 @@ class Agent(Player, MoveableThing, RotatableThing, AttackingThing):
         super().draw(game)
         for sensor in self.sensors:
             sensor.draw(game)
+        
+    def is_at_objective(self):
+        if any([objective.contains(self.get_position()) for objective in self.world.get_objectives()]):
+            return True
+        return False
 
 class AgentBuilder(object):
     def __init__(
