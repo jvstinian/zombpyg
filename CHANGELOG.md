@@ -1,3 +1,7 @@
+# 0.8.0
+
+Adding support for configuring the reward calculator in the game and gym environment.
+
 # 0.7.2
 
 Adding addional maps.  In some of the maps, a large number of locations have been added with smaller quantities of resources.

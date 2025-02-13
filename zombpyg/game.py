@@ -19,41 +19,56 @@ from zombpyg.players.builder import PlayerBuilder
 #         self.n = len(actions)
 
 class AgentReward(object):
-    class AgentState(object):
-        def __init__(self, agent):
-            self.alive = (agent.life > 0)
-            self.life = agent.life
-            self.healing_capacity = agent.healing_capacity
-            self.zombies_killed = agent.zombies_killed
-            self.fratricide = agent.fratricide
-            self.friendly_fire = agent.friendly_fire
-            self.accuracy = 100 * agent.attack_hits / agent.attack_count if agent.attack_count > 0 else 0
-            self.adj_accuracy = min(max((agent.attack_count - 10)/40.0, 0.0), 1.0) * self.accuracy
-            self.ammo_level = agent.weapon.ammo / agent.weapon.max_ammo if (agent.weapon is not None and agent.weapon.is_firearm) else 0.0
-            self.healing_of_others = agent.healing_of_others
+    class RewardConfiguration(object):
+        def __init__(
+            self, 
+            life_coef=1.0, healing_capacity_coef=0.5, zombies_killed_coef=5.0,
+            fratricide_coef=100.0, friendly_fire_coef=10.0, accuracy_coef=0.1,
+            ammo_coef=100.0, healing_of_others_coef=1.0
+        ):
+            self.life_coef = life_coef
+            self.healing_capacity_coef = healing_capacity_coef
+            self.zombies_killed_coef = zombies_killed_coef
+            self.fratricide_coef = fratricide_coef
+            self.friendly_fire_coef = friendly_fire_coef
+            self.accuracy_coef = accuracy_coef
+            self.ammo_coef = ammo_coef
+            self.healing_of_others_coef = healing_of_others_coef
 
-        def get_total_reward(self):
+        def get_total_reward(self, agent):
+            alive = (agent.life > 0)
+            life = agent.life
+            healing_capacity = agent.healing_capacity
+            zombies_killed = agent.zombies_killed
+            fratricide = agent.fratricide
+            friendly_fire = agent.friendly_fire
+            accuracy = 100 * agent.attack_hits / agent.attack_count if agent.attack_count > 0 else 0
+            adj_accuracy = min(max((agent.attack_count - 10)/40.0, 0.0), 1.0) * accuracy
+            ammo_level = agent.weapon.ammo / agent.weapon.max_ammo if (agent.weapon is not None and agent.weapon.is_firearm) else 0.0
+            healing_of_others = agent.healing_of_others
+
             return (
-                self.life
-                + self.healing_capacity/2.0
-                + 5*self.zombies_killed 
-                - 100 * self.fratricide 
-                - 10 * self.friendly_fire
-                + self.adj_accuracy/10.0
-                + 100*self.ammo_level
-                + self.healing_of_others
+                self.life_coef*life
+                + self.healing_capacity_coef*healing_capacity
+                + self.zombies_killed_coef*zombies_killed 
+                - self.fratricide_coef*fratricide 
+                - self.friendly_fire_coef*friendly_fire
+                + self.accuracy_coef*adj_accuracy
+                + self.ammo_coef*ammo_level
+                + self.healing_of_others_coef*healing_of_others
             )
 
-    def __init__(self, agent):
-        self.agent_state = AgentReward.AgentState(agent)
+    def __init__(self, agent, reward_config):
+        self.reward_calculator = AgentReward.RewardConfiguration(**reward_config)
+        self.total_reward = self.reward_calculator.get_total_reward(agent)
 
     def update(self, agent):
-        prev_reward = self.agent_state.get_total_reward()
-        self.agent_state = AgentReward.AgentState(agent)
-        return self.agent_state.get_total_reward() - prev_reward
+        prev_reward = self.total_reward
+        self.total_reward = self.reward_calculator.get_total_reward(agent)
+        return self.total_reward - prev_reward
 
     def get_total_reward(self):
-        return self.agent_state.get_total_reward()
+        return self.total_reward
         
 class Game:
     """An instance of game controls the flow of the game.
@@ -71,6 +86,8 @@ class Game:
         player_specs="",
         initialize_game=False,
         enable_rendering=True,
+        fps=50,
+        agent_reward_configuration={},
         friendly_fire_guard=False,
         verbose=False
     ):
@@ -80,7 +97,7 @@ class Game:
         self.DISPLAYSURF = None
         self.fpsClock = None
         self.__initialize_renderer__()
-        self.fps = 50
+        self.fps = fps
         
         self.obj_radius = 10
         self.robot_sensor_length = 250
@@ -119,6 +136,8 @@ class Game:
         self.verbose = verbose
 
         self.continue_without_agents = False
+
+        self.agent_reward_configuration = agent_reward_configuration
 
         # Initialize world, players, agents
         if initialize_game:
@@ -188,7 +207,7 @@ class Game:
 
     def initialize_rewards(self):
         self.agent_rewards = list(
-            map(AgentReward, self.world.agents)
+            map(lambda agent: AgentReward(agent, self.agent_reward_configuration), self.world.agents)
         )
     
     def update_rewards(self):
