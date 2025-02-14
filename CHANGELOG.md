@@ -1,3 +1,14 @@
+# 0.8.2
+
+Adding a reward for an agent reaching the objective when playing with the goal of reaching the safehouse.
+
+# 0.8.1
+
+Adding friendly fire guards to weapons.
+Adding counters for the number of friendly fire incidents avoided to both the agent and existing players.
+Adding support for using friendly fire guards in the agent and player builders.
+Adding a flag for whether to use the friendly fire guards to the game and gym environment.
+
 # 0.8.0
 
 Adding support for configuring the reward calculator in the game and gym environment.
