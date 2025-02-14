@@ -50,6 +50,7 @@ class ZombpygGymEnv(object):
         enable_rendering=True,
         fps=50,
         agent_reward_configuration={},
+        friendly_fire_guard=False,
         verbose=False
     ):
         # We pass None for the DISPLAYSURF, and configure the rendering below.
@@ -65,6 +66,7 @@ class ZombpygGymEnv(object):
             enable_rendering=enable_rendering,
             fps=fps,
             agent_reward_configuration=agent_reward_configuration,
+            friendly_fire_guard=friendly_fire_guard,
             verbose=verbose,
         )
 
