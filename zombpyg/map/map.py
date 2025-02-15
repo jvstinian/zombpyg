@@ -311,6 +311,30 @@ class CatacombsMap(Map):
             for i in range(1, 3)
             for j in range(1, 3)
         ]
+        checkpoint_width_nodes = [(6*i + 1)*cell_width // 2 for i in range(0, 4)]
+        checkpoint_height_nodes = [(6*i + 1)*cell_height // 2 for i in range(0, 4)]
+        up_nodes = random.sample(range(0, 7), 3)
+        last_node = (0, 0)
+        checkpoints = []
+        for i in range(0, 7):
+            if i in up_nodes:
+                cw = checkpoint_width_nodes[last_node[0]]
+                ch0 = checkpoint_height_nodes[last_node[1]]
+                ch1 = checkpoint_height_nodes[last_node[1]+1]
+                steps = (ch1 - ch0) // 20
+                checkpoints.extend(
+                    [Checkpoint(cw, ch0 + i*20, 10) for i in range(steps)]
+                )
+                last_node = (last_node[0], last_node[1]+1)
+            else:
+                ch = checkpoint_height_nodes[last_node[1]]
+                cw0 = checkpoint_width_nodes[last_node[0]]
+                cw1 = checkpoint_width_nodes[last_node[0]+1]
+                steps = (cw1 - cw0) // 20
+                checkpoints.extend(
+                    [Checkpoint(cw0 + i*20, ch, 10) for i in range(steps)]
+                )
+                last_node = (last_node[0]+1, last_node[1])
         return Map(
             (w, h),
             walls,
@@ -318,6 +342,7 @@ class CatacombsMap(Map):
             zombie_spawns=zombie_spawns,
             objectives=objectives,
             resource_spawns=resource_spawns,
+            checkpoints=checkpoints,
         )
 
 class HallwayElevatorMap(Map):
