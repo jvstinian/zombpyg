@@ -32,7 +32,7 @@ def test_random_map_builder():
             {
                 "weight": 0.25,
                 "map_builder": {
-                    "tag": "SimpleMap",
+                    "tag": "SingleMap",
                     "parameters": {
                         "map_id": "tiny_space_v1",
                         "w": 640, 
@@ -43,7 +43,7 @@ def test_random_map_builder():
             {
                 "weight": 0.75,
                 "map_builder": {
-                    "tag": "SimpleMap",
+                    "tag": "SingleMap",
                     "parameters": {
                         "map_id": "tiny_space_v0",
                         "w": 640, 

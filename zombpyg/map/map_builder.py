@@ -2,6 +2,7 @@ from typing import List, Dict
 from abc import ABC, abstractmethod
 from enum import StrEnum
 import json
+import random
 from zombpyg.map.map import MapFactory
 
 
@@ -99,25 +100,37 @@ class RandomMapBuilder(MapBuilder):
     def from_list_of_dicts(cls, parameters: List[Dict]):
         return cls(
             [p.get("weight") for p in parameters],
-            [p.get("map_builder") for p in parameters],
+            [MapBuilderFactory.get_map_builder(p.get("map_builder")) for p in parameters],
         )
     
     def build_map(self, last_game_state: GameState):
-        next_index = random.choices(range(0, len(self.weights)), weights=self.weights)
+        next_index = random.choices(range(0, len(self.weights)), weights=self.weights, k=1)[0]
         if self.last_map_builder_index is None or (self.last_map_builder_index != next_index):
             self.last_map_builder_index = next_index
             map_builder = self.map_builders[self.last_map_builder_index]
+            return map_builder.build_map(last_game_state)
         else:
             # No change in map
             return False, None
 
     def get_render_width(self):
-        return max([mb.w for mb in self.map_builders])
+        return max([mb.get_render_width() for mb in self.map_builders])
     
     def get_render_height(self):
-        return max([mb.h for mb in self.map_builders])
+        return max([mb.get_render_height() for mb in self.map_builders])
 
 class MapBuilderFactory(object):
+    # @staticmethod
+    # def get_map_builder_from_json(jsonobj: str):
+    #     try:
+    #         obj = json.loads(jsonobj, object_hook=MapBuilder.decode_hook)
+    #         if not isinstance(obj, (MapBuilder,)):
+    #             raise ValueError(f"Expected parsed JSON to be of type MapBuilder, but has type {type(obj)} instead")
+    #     except Exception as ex:
+    #         raise ex
+    #     else:
+    #         return obj
+
     @staticmethod
     def get_map_builder(map_configuration: Dict):
         if "tag" in map_configuration:
