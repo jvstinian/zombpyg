@@ -23,6 +23,7 @@ class World(object):
         self.walls = map.walls
         self.objectives = map.objectives
         self.decorations = []
+        self.checkpoints = map.checkpoints if map.checkpoints is not None else []
         self.agents = []
         self.players = []
         self.zombies = []
@@ -38,6 +39,8 @@ class World(object):
         self.t = 0
         self.resources = {}
         self.decorations = []
+        for checkpoint in self.checkpoints:
+            checkpoint.reset()
         self.agents = []
         self.players = []
         self.zombies = []
@@ -51,6 +54,9 @@ class World(object):
     
     def get_walls(self):
         return self.walls
+    
+    def get_checkpoints(self):
+        return self.checkpoints
     
     def get_objectives(self):
         return self.objectives
@@ -77,9 +83,10 @@ class World(object):
         self.execute_agent_actions(actions)
         self.execute_fighter_actions()
 
-        # process resources
+        # process resources and checkpoints
         for robot in self.agents:
             robot.consume_nearby_resource()
+            robot.check_in_to_nearby_checkpoints()
             
         feedbacks = [agent.sensor_feedback() for agent in self.agents]
         
@@ -222,6 +229,7 @@ class World(object):
     def clean_dead_things(self):
         self.bullets = list(filter(lambda bullet: bullet.active, self.bullets))
         self.clean_dead_resource()
+        self.hide_visited_checkpoints()
         self.clean_dead_zombies()
         self.clean_dead_players()
         self.decorations = [decoration for decoration in self.decorations if decoration.life > 0]
@@ -234,6 +242,12 @@ class World(object):
 
         for resource in dead_resources:
             self.remove_resource(resource)
+
+    def hide_visited_checkpoints(self):
+        living_agents = [agent for agent in self.agents if agent.life > 0]
+        for checkpoint in self.checkpoints:
+            if (checkpoint.life > 0) and checkpoint.all_agents_checked_in(living_agents):
+                checkpoint.disable()
 
     def clean_dead_zombies(self):
         """Remove dead things, and add dead decorations."""
@@ -269,6 +283,9 @@ class World(object):
             objective.draw(game)
         for resource in self.resources.values():
             resource.draw(game)
+        for checkpoint in self.checkpoints:
+            if checkpoint.life > 0:
+                checkpoint.draw(game)
         for wall in self.walls:
             wall.draw(game)
         for decoration in self.decorations:

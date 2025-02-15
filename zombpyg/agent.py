@@ -110,6 +110,7 @@ class Agent(Player, MoveableThing, RotatableThing, AttackingThing):
         self.friendly_fire = 0
         self.friendly_fire_avoided = 0
         self.healing_of_others = 0
+        self.checkpoints_reached = 0
 
         self.world = world
 
@@ -338,16 +339,16 @@ class Agent(Player, MoveableThing, RotatableThing, AttackingThing):
     
     def sensor_feedback(self):
         thres = 2
-        feedbacks = numpy.ones((len(self.sensors), 7), dtype="float32") * thres
+        feedbacks = numpy.ones((len(self.sensors), 8), dtype="float32") * thres
         
         # Set state
-        feedbacks[:, 6] = numpy.zeros((len(self.sensors),), dtype="float32")
-        feedbacks[0, 6] = self.life / Player.MAX_LIFE
-        feedbacks[1, 6] = self.healing_capacity / Player.MAX_LIFE
+        feedbacks[:, 7] = numpy.zeros((len(self.sensors),), dtype="float32")
+        feedbacks[0, 7] = self.life / Player.MAX_LIFE
+        feedbacks[1, 7] = self.healing_capacity / Player.MAX_LIFE
         if self.weapon is not None:
-            feedbacks[2, 6] = self.weapon.get_weapon_id() / 64.0 # else keep 0
+            feedbacks[2, 7] = self.weapon.get_weapon_id() / 64.0 # else keep 0
         if self.weapon is not None and self.weapon.is_firearm:
-            feedbacks[3, 6] = self.weapon.ammo / self.weapon.max_ammo
+            feedbacks[3, 7] = self.weapon.ammo / self.weapon.max_ammo
         
         # resources
         ammo_distances, medical_distances = self.find_resources()
@@ -369,19 +370,26 @@ class Agent(Player, MoveableThing, RotatableThing, AttackingThing):
         for i in range(len(self.sensors)):
             feedbacks[i, 4] = objective_distances_by_sensor[i] / self.sensors[i].length
 
+        # checkpoints
+        checkpoint_distances_by_sensor = self.find_checkpoints()
+        for i in range(len(self.sensors)):
+            feedbacks[i, 5] = checkpoint_distances_by_sensor[i] / self.sensors[i].length
+
         distances = self.detect_wall()
         for i in range(len(self.sensors)):
-            feedbacks[i, 5] = distances[i] / self.sensors[i].length
-            if feedbacks[i, 0] > feedbacks[i, 5]:
+            feedbacks[i, 6] = distances[i] / self.sensors[i].length
+            if feedbacks[i, 0] > feedbacks[i, 6]:
                 feedbacks[i, 0] = thres
-            if feedbacks[i, 1] > feedbacks[i, 5]:
+            if feedbacks[i, 1] > feedbacks[i, 6]:
                 feedbacks[i, 1] = thres
-            if feedbacks[i, 2] > feedbacks[i, 5]:
+            if feedbacks[i, 2] > feedbacks[i, 6]:
                 feedbacks[i, 2] = thres
-            if feedbacks[i, 3] > feedbacks[i, 5]:
+            if feedbacks[i, 3] > feedbacks[i, 6]:
                 feedbacks[i, 3] = thres
-            if feedbacks[i, 4] > feedbacks[i, 5]:
+            if feedbacks[i, 4] > feedbacks[i, 6]:
                 feedbacks[i, 4] = thres
+            if feedbacks[i, 5] > feedbacks[i, 6]:
+                feedbacks[i, 5] = thres
         
         return feedbacks.flatten()
     
@@ -390,7 +398,48 @@ class Agent(Player, MoveableThing, RotatableThing, AttackingThing):
         
         for resource in resources:
             resource.use_by(self)
+    
+    def find_nearby_checkpoints(self):
+        consumption_angle = 60
+        checkpoints = self.world.get_checkpoints()
+        found_checkpoints = []
+        
+        for checkpoint in checkpoints:
+            angle, distance, _ = get_angle_and_distance_to_point(self.get_position(), self.orientation, checkpoint.get_position())
+            if distance >= self.r + checkpoint.r:
+                continue
+            rectified_angle = numpy.rad2deg(numpy.arctan2(checkpoint.r, distance))
+            if angle >= -consumption_angle-rectified_angle and angle <= consumption_angle+rectified_angle:
+                found_checkpoints.append(checkpoint)
+        
+        return found_checkpoints
+    
+    def check_in_to_nearby_checkpoints(self):
+        checkpoints = self.find_nearby_checkpoints()
+        
+        for checkpoint in checkpoints:
+            checkpoint.check_in(self)
+    
+    def find_checkpoints(self):
+        checkpoints= self.world.get_checkpoints()
+        checkpoint_distances = [2*sensor.length for sensor in self.sensors]
+        sensor_angles = list(map(lambda sensor: sensor.angle, self.sensors))
+        
+        for checkpoint in checkpoints:
+            angle, distance, _ = get_angle_and_distance_to_point(self.get_position(), self.orientation, checkpoint.get_position())
+            if distance >= self.max_sensor_length + checkpoint.r:
+                continue
+            
+            rectified_angle = numpy.rad2deg(numpy.arctan2(checkpoint.r, distance))
+            lb = bisect.bisect_left(sensor_angles, angle - rectified_angle)
+            ub = bisect.bisect_right(sensor_angles, angle + rectified_angle)
+            for idx in range(lb, ub):
+                if distance >= self.sensors[idx].length + checkpoint.r:
+                    continue
+                checkpoint_distances[idx] = min(checkpoint_distances[idx], distance)
 
+        return checkpoint_distances
+    
     def draw(self, game):
         super().draw(game)
         for sensor in self.sensors:
@@ -432,7 +481,7 @@ class AgentBuilder(object):
         pass
 
     def get_feedback_size(self):
-        return 7 * len(self.sensor_specs)
+        return 8 * len(self.sensor_specs)
 
     def get_actions(self):
         actions_n = AgentActions.get_actions_n() # 4 + 5 + 3
