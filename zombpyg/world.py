@@ -247,7 +247,7 @@ class World(object):
         living_agents = [agent for agent in self.agents if agent.life > 0]
         for checkpoint in self.checkpoints:
             if (checkpoint.life > 0) and checkpoint.all_agents_checked_in(living_agents):
-                checkpoint.life = 0
+                checkpoint.disable()
 
     def clean_dead_zombies(self):
         """Remove dead things, and add dead decorations."""
