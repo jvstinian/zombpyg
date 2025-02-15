@@ -28,3 +28,6 @@ class Checkpoint(CircularThing):
             return True
         return False
 
+    def disable(self):
+        self.life = 0
+
