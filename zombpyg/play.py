@@ -82,8 +82,16 @@ def main():
     pygame.init()
     pygame.key.set_repeat(100, int(1000/50))
     game = Game(
-        640, 480,
-        map_id=map_id,
+        # 640, 480,
+        # map_id=map_id,
+        map_builder_config={
+            "tag": "SingleMap",
+            "parameters": {
+                "map_id": map_id,
+                "w": 640, 
+                "h": 480
+            }
+        },
         initial_zombies=initial_zombies, minimum_zombies=minimum_zombies,
         rules_id=rules_id,
         player_specs=player_specs,

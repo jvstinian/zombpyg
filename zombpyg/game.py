@@ -3,6 +3,7 @@ import pygame
 from pygame.locals import *
 from itertools import cycle, islice
 from zombpyg.map.map import MapFactory
+from zombpyg.map.map_builder import MapBuilderFactory, GameState
 from zombpyg.rules.factory import RulesFactory
 from zombpyg.world import World
 from zombpyg.core.wall import Wall
@@ -89,8 +90,17 @@ class Game:
        to stop, importing map data, drawing each update, etc.
     """
     def __init__(
-        self, w, h,
-        map_id="demo",
+        self,
+        # w, h,
+        # map_id="demo",
+        map_builder_config={
+            "tag": "SingleMap",
+            "parameters": {
+                "map_id": "demo",
+                "w": 640, 
+                "h": 480
+            }
+        },
         rules_id="survival",
         initial_zombies=0, minimum_zombies=0,
         agent_ids = ['robot'],
@@ -103,11 +113,13 @@ class Game:
         friendly_fire_guard=False,
         verbose=False
     ):
+        self.map_builder = MapBuilderFactory.get_map_builder(map_builder_config)
         
-        self.w = w
-        self.h = h
+        self.w = self.map_builder.get_render_width() # w
+        self.h = self.map_builder.get_render_height() # h
         self.DISPLAYSURF = None
         self.fpsClock = None
+        # TODO: we do need render width and and height in the following
         self.__initialize_renderer__()
         self.fps = fps
         
@@ -123,11 +135,6 @@ class Game:
         # with length matching the length of agent_ids
         self.__process_weapon_name_inputs__(agent_weapons)
 
-        self.map = MapFactory.build_map(map_id, self.w, self.h)
-        self.initial_zombies = initial_zombies
-        self.minimum_zombies = minimum_zombies
-
-        self.world = World(self.map, 1.0/self.fps)
         self.agent_builder = AgentBuilder(
             self.obj_radius,
             Color.BLUE, 
@@ -137,7 +144,6 @@ class Game:
         self.zombie_builder = ZombieBuilder(self.obj_radius)
 
         self.rules_id = rules_id
-        self.rules = RulesFactory.get_rules(self.rules_id, self.world, self.map.objectives)
         
         self.feedback_size = self.agent_builder.get_feedback_size()
         # Decide whether to use gym interface
@@ -153,6 +159,11 @@ class Game:
         if self.rules_id != "safehouse":
             # Objectives are only relevant when the goal is to reach the safehouse
             self.agent_reward_configuration["at_objective_coef"] = 0.0
+        
+        self.initial_zombies = initial_zombies
+        self.minimum_zombies = minimum_zombies
+
+        self.last_game_state = GameState.UNINITIALIZED
 
         # Initialize world, players, agents
         if initialize_game:
@@ -235,6 +246,15 @@ class Game:
         )
 
     def reset(self):
+        # Map and world creation
+        # self.map = MapFactory.build_map(map_id, self.w, self.h)
+        update_map, mapm = self.map_builder.build_map(self.last_game_state)
+        if update_map:
+            self.map = mapm
+            self.world = World(self.map, 1.0/self.fps)
+            self.rules = RulesFactory.get_rules(self.rules_id, self.world, self.map.objectives)
+            self.last_game_state = GameState.INITIALIZED
+
         self.world.reset()
         self.agent_builder.reset()
         self.spawn_resources()
@@ -271,17 +291,21 @@ class Game:
                 for idx, agent in enumerate(self.world.agents):
                     if agent.life > 0:
                         rewards[idx] += 100.0
+                self.last_game_state = GameState.GAME_WON
             else:
                 if self.verbose:
                     print(f"GAME OVER.  {description}")
+                self.last_game_state = GameState.GAME_LOST
         elif all([agent.life <= 0 for agent in self.world.agents]) and not self.continue_without_agents:
             if self.verbose:
                 print("GAME OVER.  All agents dead.")
             done = True
+            self.last_game_state = GameState.GAME_LOST
         elif self.world.t >= 300:
             if self.verbose:
                 print("GAME OVER.  Reached 300 seconds, stopping.")
             truncated = True
+            self.last_game_state = GameState.TRUNCATED
 
         observations = [feedback.reshape((1, len(feedback), 1)) for feedback in feedbacks]
         return rewards, observations, done, truncated

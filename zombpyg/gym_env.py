@@ -55,8 +55,16 @@ class ZombpygGymEnv(object):
     ):
         # We pass None for the DISPLAYSURF, and configure the rendering below.
         self.game = Game(
-            640, 480,
-            map_id=map_id,
+            # 640, 480,
+            # map_id=map_id,
+            map_builder_config={
+                "tag": "SingleMap",
+                "parameters": {
+                    "map_id": map_id,
+                    "w": 640, 
+                    "h": 480
+                }
+            },
             rules_id=rules_id,
             initial_zombies=initial_zombies,
             minimum_zombies=minimum_zombies,

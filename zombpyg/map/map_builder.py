@@ -7,7 +7,8 @@ from zombpyg.map.map import MapFactory
 
 class GameState(StrEnum):
     UNINITIALIZED = "uninitialized"
-    TRUNCATED = "game_truncated"
+    INITIALIZED = "initialized"
+    TRUNCATED = "game_truncated" # TODO: Is this needed?
     GAME_LOST = "game_lost"
     GAME_WON = "game_won"
 
