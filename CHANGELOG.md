@@ -1,3 +1,11 @@
+# 0.8.4
+
+Updating reward calculations to take friendly fire incidents avoided and checkpoints reached into account.
+Adding support for configuring the reward calculator, enabling the friendly fire guard, and specifying the FPS
+in the multiagent environment.
+Adding checkpoints to the elevator map.
+Disabling the friendly fire guard in the game play script.
+
 # 0.8.3
 
 Adding checkpoints to provide a path to the safehouse for the agents.
