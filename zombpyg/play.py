@@ -1,7 +1,10 @@
+import sys
+import json
 import argparse
 import pygame
 from zombpyg.agent import AgentActions
 from zombpyg.game import Game
+from zombpyg.map.map_builder import MapBuilder
 
 def render_game(game):
     termination = False
@@ -66,6 +69,7 @@ def main():
     parser = argparse.ArgumentParser(description="zombpyg")
     parser.add_argument("-r", "--rules", dest="rules_id", metavar="RULES_ID", type=str, nargs=1, required=False, help="The rules id")
     parser.add_argument("-m", "--map", dest="map_id", metavar="MAP_ID", type=str, nargs=1, required=False, help="The map id")
+    parser.add_argument("--map-configuration", dest="map_configuration", metavar="MAP_CONFIGURATION", type=str, nargs=1, required=False, default=[None], help="JSON map configuration")
     parser.add_argument("-z", dest="initial_zombies", metavar="NUMBER", type=int, nargs=1, required=False, default=[5], help="The initial amount of zombies")
     parser.add_argument("-n", dest="minimum_zombies", metavar="NUMBER", type=int, nargs=1, required=False, default=[0], help="The minimum amount of zombies at all times")
     parser.add_argument("--players", dest="player_specs", metavar="PLAYER_TYPE:WEAPON:COUNT,...", type=str, nargs=1, required=False, help="The players specified as a comma-separated list of player_id:weapon_id:count")
@@ -74,24 +78,41 @@ def main():
     args = parser.parse_args()
     rules_id = args.rules_id[0] if args.rules_id is not None else "survival"
     map_id = args.map_id[0] if args.map_id is not None else "demo"
+    map_builder_config_json = args.map_configuration[0]
     initial_zombies = args.initial_zombies[0]
     minimum_zombies = args.minimum_zombies[0]
     player_specs = args.player_specs[0] if args.player_specs is not None else ""
     verbose = args.verbose
+    
+    map_builder_config = {
+        "tag": "SingleMap",
+        "parameters": {
+            "map_id": map_id,
+            "w": 640, 
+            "h": 480
+        }
+    }
+    if map_builder_config_json is not None:
+        try:
+            map_builder_config = json.loads(map_builder_config_json) # , object_hook=MapBuilder.decode_hook)
+        except Exception as ex:
+            print(f"Encountered error parsing map builder configuration: {str(ex)}", file=sys.stderr)
+            sys.exit(1)
     
     pygame.init()
     pygame.key.set_repeat(100, int(1000/50))
     game = Game(
         # 640, 480,
         # map_id=map_id,
-        map_builder_config={
-            "tag": "SingleMap",
-            "parameters": {
-                "map_id": map_id,
-                "w": 640, 
-                "h": 480
-            }
-        },
+        map_builder_config=map_builder_config,
+        # {
+        #     "tag": "SingleMap",
+        #     "parameters": {
+        #         "map_id": map_id,
+        #         "w": 640, 
+        #         "h": 480
+        #     }
+        # },
         initial_zombies=initial_zombies, minimum_zombies=minimum_zombies,
         rules_id=rules_id,
         player_specs=player_specs,
