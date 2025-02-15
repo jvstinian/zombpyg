@@ -1,3 +1,7 @@
+# 0.8.4
+
+Fixing the fighter collision logic to only include living fighters.
+
 # 0.8.3
 
 Adding checkpoints to provide a path to the safehouse for the agents.
