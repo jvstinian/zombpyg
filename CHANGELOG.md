@@ -1,6 +1,6 @@
 # 0.8.3
 
-Adding checkpoints.
+Adding checkpoints to provide a path to the safehouse for the agents.
 
 # 0.8.2
 
