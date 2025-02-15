@@ -1,3 +1,7 @@
+# 0.8.3
+
+Adding checkpoints.
+
 # 0.8.2
 
 Adding a reward for an agent reaching the objective when playing with the goal of reaching the safehouse.
