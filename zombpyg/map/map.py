@@ -312,11 +312,7 @@ class CatacombsMap(Map):
         path_height_nodes = [(6*i + 1)*cell_height // 2 for i in range(0, 4)]
         path_height_nodes.reverse()
         up_nodes = random.sample(range(0, 6), 3)
-        # resource_spawns = [
-        #     ResourceSpawnLocation(3*i*cell_width + (cell_width//2), 3*j*cell_height + (cell_height//2), 10, 0.5, 200, 0.5, 2.0)
-        #     for i in range(1, 3)
-        #     for j in range(1, 3)
-        # ]
+        
         # We consider resource spawns just off the crossroads.
         # We enumerate a shift in each direction at the crossroads.
         # For each crossroad on the path (excluding beginning and ending)
