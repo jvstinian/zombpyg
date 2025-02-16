@@ -27,6 +27,9 @@ class MultiagentZombpygEnv(object):
         agent_weapons="rifle",
         player_specs="",
         enable_rendering=True,
+        fps=50,
+        agent_reward_configuration={},
+        friendly_fire_guard=False,
         verbose=False
     ):
         self.game = Game(
@@ -39,6 +42,9 @@ class MultiagentZombpygEnv(object):
             agent_weapons = agent_weapons,
             player_specs=player_specs,
             enable_rendering=enable_rendering,
+            fps=fps,
+            agent_reward_configuration=agent_reward_configuration,
+            friendly_fire_guard=friendly_fire_guard,
             verbose=verbose,
         )
 

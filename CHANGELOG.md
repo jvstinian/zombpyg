@@ -1,3 +1,11 @@
+# 0.8.5
+
+Updating reward calculations to take friendly fire incidents avoided and checkpoints reached into account.
+Adding support for configuring the reward calculator, enabling the friendly fire guard, and specifying the FPS
+in the multiagent environment.
+Adding checkpoints to the elevator map.
+Disabling the friendly fire guard in the game play script.
+
 # 0.8.4
 
 Fixing the fighter collision logic to only include living fighters.
