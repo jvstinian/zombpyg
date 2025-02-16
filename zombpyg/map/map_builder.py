@@ -13,6 +13,14 @@ class GameState(StrEnum):
     GAME_LOST = "game_lost"
     GAME_WON = "game_won"
 
+# class WorldConfiguration(object):
+#     def __init__(self, map_id: str, w: int, h: int, initial_zombies: int, minimum_zombies: int):
+#         self.map_id = map_id
+#         self.w = w
+#         self.h = h
+#         self.initial_zombies = initial_zombies 
+#         self.minimum_zombies = minimum_zombies
+
 class MapBuilder(ABC):
     @staticmethod
     def valid_tags():
@@ -21,7 +29,7 @@ class MapBuilder(ABC):
     @staticmethod
     def decode_hook(jsonobj):
         if "tag" in jsonobj:
-            if (jsonobj["tag"] in ["SingleMap"]) and ("parameters" not in jsonobj):
+            if (jsonobj["tag"] in ["SingleMap", "RandomMap"]) and ("parameters" not in jsonobj):
                 raise ValueError(f"A MapBuilder with tag {jsonobj['tag']} must have key \"parameters\"")
             if jsonobj["tag"] == "SingleMap":
                 return SingleMapBuilder.from_dict(jsonobj["parameters"])
