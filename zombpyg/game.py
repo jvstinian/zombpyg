@@ -236,7 +236,6 @@ class Game:
 
     def reset(self):
         self.world.reset()
-        self.agent_builder.reset()
         self.spawn_resources()
         self.spawn_agents()
         self.spawn_players()

@@ -475,11 +475,6 @@ class AgentBuilder(object):
             weapon=weapon
         )
     
-    def reset(self):
-        # Previously we had reset the weapon here,
-        # but that is no longer necessary
-        pass
-
     def get_feedback_size(self):
         return 8 * len(self.sensor_specs)
 
