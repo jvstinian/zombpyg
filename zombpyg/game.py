@@ -271,7 +271,6 @@ class Game:
             self.last_game_state = GameState.INITIALIZED
 
         self.world.reset()
-        self.agent_builder.reset()
         self.spawn_resources()
         self.spawn_agents()
         self.spawn_players()
