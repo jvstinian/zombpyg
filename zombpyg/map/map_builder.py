@@ -13,15 +13,15 @@ class GameState(StrEnum):
     GAME_LOST = "game_lost"
     GAME_WON = "game_won"
 
-# class WorldConfiguration(object):
-#     def __init__(self, map_id: str, w: int, h: int, initial_zombies: int, minimum_zombies: int):
-#         self.map_id = map_id
-#         self.w = w
-#         self.h = h
-#         self.initial_zombies = initial_zombies 
-#         self.minimum_zombies = minimum_zombies
+class WorldConfiguration(object):
+    def __init__(self, game_map: str, initial_zombies: int, minimum_zombies: int):
+        self.game_map = game_map
+        # self.w = w
+        # self.h = h
+        self.initial_zombies = initial_zombies 
+        self.minimum_zombies = minimum_zombies
 
-class MapBuilder(ABC):
+class WorldConfigurationBuilder(ABC):
     @staticmethod
     def valid_tags():
         return ["SingleMap", "RandomMap"]
@@ -30,7 +30,7 @@ class MapBuilder(ABC):
     def decode_hook(jsonobj):
         if "tag" in jsonobj:
             if (jsonobj["tag"] in ["SingleMap", "RandomMap"]) and ("parameters" not in jsonobj):
-                raise ValueError(f"A MapBuilder with tag {jsonobj['tag']} must have key \"parameters\"")
+                raise ValueError(f"A WorldConfigurationBuilder with tag {jsonobj['tag']} must have key \"parameters\"")
             if jsonobj["tag"] == "SingleMap":
                 return SingleMapBuilder.from_dict(jsonobj["parameters"])
             elif jsonobj["tag"] == "RandomMap":
@@ -39,38 +39,29 @@ class MapBuilder(ABC):
                     raise ValueError("A negative weight was encountered in a RandomMapBuilder")
                 return mb
             else:
-                raise ValueError(f"GameRequest \"tag\" must be in {MapBuilder.valid_tags()}")
+                raise ValueError(f"GameRequest \"tag\" must be in {WorldConfigurationBuilder.valid_tags()}")
         else: # Simply pass the object through (used where objects are passed as parameters)
             return jsonobj
 
     @abstractmethod
-    def build_map(self, last_game_state: GameState):
+    def build_world_configuration(self, last_game_state: GameState) -> WorldConfiguration:
         pass
     
     @abstractmethod
-    def get_render_width(self):
+    def get_render_width(self) -> int:
         pass
     
     @abstractmethod
-    def get_render_height(self):
+    def get_render_height(self) -> int:
         pass
     
-    # @abstractmethod
-    # def get_initial_zombies(self):
-    #     pass
-    # 
-    # @abstractmethod
-    # def get_minimum_zombies(self):
-    #     pass
-
-class SingleMapBuilder(MapBuilder):
-    def __init__(self, map_id: str, w: int, h: int):
-    # initial_zombies: int, minimum_zombies: int
+class SingleMapBuilder(WorldConfigurationBuilder):
+    def __init__(self, map_id: str, w: int, h: int, initial_zombies: int, minimum_zombies: int):
         self.map_id = map_id
         self.w = w
         self.h = h
-        # self.initial_zombies = initial_zombies
-        # self.minimum_zombies = minimum_zombies
+        self.initial_zombies = initial_zombies
+        self.minimum_zombies = minimum_zombies
 
     @classmethod
     def from_dict(cls, parameters: Dict):
@@ -78,11 +69,14 @@ class SingleMapBuilder(MapBuilder):
             parameters.get("map_id"),
             parameters.get("w"),
             parameters.get("h"),
+            parameters.get("initial_zombies"),
+            parameters.get("minimum_zombies"),
         )
     
-    def build_map(self, last_game_state: GameState):
+    def build_world_configuration(self, last_game_state: GameState):
         if last_game_state == GameState.UNINITIALIZED:
-            return True, MapFactory.build_map(self.map_id, self.w, self.h)
+            game_map = MapFactory.build_map(self.map_id, self.w, self.h)
+            return True, WorldConfiguration(game_map, self.initial_zombies, self.minimum_zombies)
         else:
             return False, None
     
@@ -97,9 +91,9 @@ class SingleMapBuilder(MapBuilder):
 
     # def get_minimum_zombies(self):
     #     return self.minimum_zombies
-
-class RandomMapBuilder(MapBuilder):
-    def __init__(self, weights: List[float], map_builders: List[MapBuilder]):
+    
+class RandomMapBuilder(WorldConfigurationBuilder):
+    def __init__(self, weights: List[float], map_builders: List[WorldConfigurationBuilder]):
         self.weights = weights
         self.map_builders = map_builders
         self.last_map_builder_index = None
@@ -108,15 +102,15 @@ class RandomMapBuilder(MapBuilder):
     def from_list_of_dicts(cls, parameters: List[Dict]):
         return cls(
             [p.get("weight") for p in parameters],
-            [MapBuilderFactory.get_map_builder(p.get("map_builder")) for p in parameters],
+            [WorldConfigurationBuilderFactory.get_world_configuration_builder(p.get("map_builder")) for p in parameters],
         )
     
-    def build_map(self, last_game_state: GameState):
+    def build_world_configuration(self, last_game_state: GameState):
         next_index = random.choices(range(0, len(self.weights)), weights=self.weights, k=1)[0]
         if self.last_map_builder_index is None or (self.last_map_builder_index != next_index):
             self.last_map_builder_index = next_index
             map_builder = self.map_builders[self.last_map_builder_index]
-            return map_builder.build_map(last_game_state)
+            return map_builder.build_world_configuration(last_game_state)
         else:
             # No change in map
             return False, None
@@ -127,7 +121,7 @@ class RandomMapBuilder(MapBuilder):
     def get_render_height(self):
         return max([mb.get_render_height() for mb in self.map_builders])
 
-class MapBuilderFactory(object):
+class WorldConfigurationBuilderFactory(object):
     # @staticmethod
     # def get_map_builder_from_json(jsonobj: str):
     #     try:
@@ -140,10 +134,10 @@ class MapBuilderFactory(object):
     #         return obj
 
     @staticmethod
-    def get_map_builder(map_configuration: Dict):
+    def get_world_configuration_builder(map_configuration: Dict):
         if "tag" in map_configuration:
             if (map_configuration["tag"] in ["SingleMap", "RandomMap"]) and ("parameters" not in map_configuration):
-                raise ValueError(f"A MapBuilder with tag {map_configuration['tag']} must have key \"parameters\"")
+                raise ValueError(f"A WorldConfigurationBuilder with tag {map_configuration['tag']} must have key \"parameters\"")
             if map_configuration["tag"] == "SingleMap":
                 return SingleMapBuilder.from_dict(map_configuration["parameters"])
             if map_configuration["tag"] == "RandomMap":
@@ -152,7 +146,7 @@ class MapBuilderFactory(object):
                     raise ValueError("A negative weight was encountered in a RandomMapBuilder")
                 return mb
             else:
-                raise ValueError(f"GameRequest \"tag\" must be in {MapBuilder.valid_tags()}")
+                raise ValueError(f"GameRequest \"tag\" must be in {WorldConfigurationBuilder.valid_tags()}")
         else:
             raise ValueError("The map builder configuration must have a key \"tag\"")
 

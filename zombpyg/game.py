@@ -3,7 +3,7 @@ import pygame
 from pygame.locals import *
 from itertools import cycle, islice
 from zombpyg.map.map import MapFactory
-from zombpyg.map.map_builder import MapBuilderFactory, GameState
+from zombpyg.map.map_builder import WorldConfigurationBuilderFactory, GameState
 from zombpyg.rules.factory import RulesFactory
 from zombpyg.world import World
 from zombpyg.core.wall import Wall
@@ -91,16 +91,18 @@ class Game:
     """
     def __init__(
         self,
-        # w, h,
-        # map_id="demo",
-        map_builder_config={
-            "tag": "SingleMap",
-            "parameters": {
-                "map_id": "demo",
-                "w": 640, 
-                "h": 480
-            }
-        },
+        w, h,
+        map_id="demo",
+        # map_builder_config={
+        #     "tag": "SingleMap",
+        #     "parameters": {
+        #         "map_id": "demo",
+        #         "w": 640, 
+        #         "h": 480,
+        #         "initial_zombies": 0,
+        #         "minimum_zombies": 0,
+        #     }
+        # },
         rules_id="survival",
         initial_zombies=0, minimum_zombies=0,
         agent_ids = ['robot'],
@@ -113,10 +115,20 @@ class Game:
         friendly_fire_guard=False,
         verbose=False
     ):
-        self.map_builder = MapBuilderFactory.get_map_builder(map_builder_config)
+        map_builder_config={
+            "tag": "SingleMap",
+            "parameters": {
+                "map_id": map_id,
+                "w": w, 
+                "h": h,
+                "initial_zombies": initial_zombies,
+                "minimum_zombies": minimum_zombies,
+            }
+        }
+        self.world_configuration_builder = WorldConfigurationBuilderFactory.get_world_configuration_builder(map_builder_config)
         
-        self.w = self.map_builder.get_render_width() # w
-        self.h = self.map_builder.get_render_height() # h
+        self.w = self.world_configuration_builder.get_render_width() # w
+        self.h = self.world_configuration_builder.get_render_height() # h
         self.DISPLAYSURF = None
         self.fpsClock = None
         # TODO: we do need render width and and height in the following
@@ -160,8 +172,9 @@ class Game:
             # Objectives are only relevant when the goal is to reach the safehouse
             self.agent_reward_configuration["at_objective_coef"] = 0.0
         
-        self.initial_zombies = initial_zombies
-        self.minimum_zombies = minimum_zombies
+        # TODO
+        # self.initial_zombies = initial_zombies
+        # self.minimum_zombies = minimum_zombies
 
         self.last_game_state = GameState.UNINITIALIZED
 
@@ -248,10 +261,12 @@ class Game:
     def reset(self):
         # Map and world creation
         # self.map = MapFactory.build_map(map_id, self.w, self.h)
-        update_map, mapm = self.map_builder.build_map(self.last_game_state)
+        update_map, worldconfig = self.world_configuration_builder.build_world_configuration(self.last_game_state)
         if update_map:
-            self.map = mapm
+            self.map = worldconfig.game_map
             self.world = World(self.map, 1.0/self.fps)
+            self.initial_zombies = worldconfig.initial_zombies
+            self.minimum_zombies = worldconfig.minimum_zombies
             self.rules = RulesFactory.get_rules(self.rules_id, self.world, self.map.objectives)
             self.last_game_state = GameState.INITIALIZED
 
