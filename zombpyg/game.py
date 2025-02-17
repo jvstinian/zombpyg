@@ -3,7 +3,7 @@ import pygame
 from pygame.locals import *
 from itertools import cycle, islice
 from zombpyg.map.map import MapFactory
-from zombpyg.map.map_builder import WorldConfigurationBuilderFactory, GameState
+from zombpyg.map.world_config_builder import WorldConfigurationBuilderFactory, GameState
 from zombpyg.rules.factory import RulesFactory
 from zombpyg.world import World
 from zombpyg.core.wall import Wall

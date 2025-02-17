@@ -1,7 +1,7 @@
 # tests/map_builder.py
 from contextlib import contextmanager
 import pytest
-from zombpyg.map.map_builder import WorldConfigurationBuilderFactory, SingleMapBuilder, RandomMapBuilder
+from zombpyg.map.world_config_builder import WorldConfigurationBuilderFactory, SingleMapBuilder, RandomMapBuilder
 
 
 @contextmanager
