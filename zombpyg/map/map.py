@@ -1,3 +1,4 @@
+import random
 from zombpyg.core.wall import Wall
 from .objective import ObjectiveLocation
 from .spawns import SpawnLocation
@@ -306,11 +307,72 @@ class CatacombsMap(Map):
         objectives = [
             ObjectiveLocation(8*cell_width, 0*cell_height, 2*cell_width, 3*cell_height),
         ]
-        resource_spawns = [
-            ResourceSpawnLocation(3*i*cell_width + (cell_width//2), 3*j*cell_height + (cell_height//2), 10, 0.5, 200, 0.5, 2.0)
-            for i in range(1, 3)
-            for j in range(1, 3)
-        ]
+        
+        path_width_nodes = [(6*i + 1)*cell_width // 2 for i in range(0, 4)]
+        path_height_nodes = [(6*i + 1)*cell_height // 2 for i in range(0, 4)]
+        path_height_nodes.reverse()
+        up_nodes = random.sample(range(0, 6), 3)
+        
+        # We consider resource spawns just off the crossroads.
+        # We enumerate a shift in each direction at the crossroads.
+        # For each crossroad on the path (excluding beginning and ending)
+        # we identify the incoming and outgoing directions, and 
+        # put resource spawns in the other directions.
+        resource_spawns = []
+        four_directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]
+        prev_node = (0, 0)
+        for i in range(0,5): # We consider only the internal crossroads, so no need to consider the last index
+            exclude_locations = []
+            # Determine the indices for the current node and the directions to exclude
+            if i in up_nodes:
+                current_node = (prev_node[0], prev_node[1]+1)
+                exclude_locations = [(0,-1)]
+            else:
+                current_node = (prev_node[0]+1, prev_node[1])
+                exclude_locations = [(-1,0)]
+            if (i+1) in up_nodes:
+                exclude_locations.append((0,1))
+            else:
+                exclude_locations.append((1,0))
+            # The directions to consider
+            resource_locations = [direction for direction in four_directions if (direction not in exclude_locations)]
+            for loc in resource_locations: # Iterate over the possible directions
+                # We set up the node coordinates, but only to test if the direction is viable
+                test_coords = (current_node[0]+loc[0], current_node[1]+loc[1])
+                if (test_coords[0] >= 0) and (test_coords[0] < 4) and (test_coords[1] >=0) and (test_coords[1] < 4):
+                    # The direction represented by loc is viable
+                    cw = path_width_nodes[current_node[0]]
+                    ch = path_height_nodes[current_node[1]]
+                    # In the following, since the path_height_nodes are reverse ordered, we multiply 
+                    # the delta by -1 (i.e., "up" represents a smaller y-coordinate value).
+                    resource_spawns.append(
+                        ResourceSpawnLocation(cw + loc[0]*20, ch + (-1)*loc[1]*20, 10, 0.5, 200, 0.5, 2.0)
+                    )
+            prev_node = current_node
+        
+        last_node = (0, 0)
+        checkpoints = []
+        for i in range(0, 6):
+            if i in up_nodes:
+                cw = path_width_nodes[last_node[0]]
+                # Note that heights are reverse ordered
+                ch0 = path_height_nodes[last_node[1]]
+                ch1 = path_height_nodes[last_node[1]+1]
+                steps = (ch0 - ch1) // 20
+                checkpoints.extend(
+                    [Checkpoint(cw, ch0 - i*20, 10) for i in range(steps)]
+                )
+                last_node = (last_node[0], last_node[1]+1)
+            else:
+                ch = path_height_nodes[last_node[1]]
+                cw0 = path_width_nodes[last_node[0]]
+                cw1 = path_width_nodes[last_node[0]+1]
+                steps = (cw1 - cw0) // 20
+                checkpoints.extend(
+                    [Checkpoint(cw0 + i*20, ch, 10) for i in range(steps)]
+                )
+                last_node = (last_node[0]+1, last_node[1])
+
         return Map(
             (w, h),
             walls,
@@ -318,6 +380,7 @@ class CatacombsMap(Map):
             zombie_spawns=zombie_spawns,
             objectives=objectives,
             resource_spawns=resource_spawns,
+            checkpoints=checkpoints,
         )
 
 class HallwayElevatorMap(Map):

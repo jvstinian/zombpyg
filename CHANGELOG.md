@@ -1,3 +1,7 @@
+# 0.8.6
+
+Adding checkpoints to the catacombs map and updating the resource spawns to be consistent with the checkpoints.
+
 # 0.8.5
 
 Updating reward calculations to take friendly fire incidents avoided and checkpoints reached into account.
