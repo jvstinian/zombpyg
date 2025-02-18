@@ -1,6 +1,7 @@
 # 0.8.6
 
 Adding checkpoints to the catacombs map and updating the resource spawns to be consistent with the checkpoints.
+Removing reset method from agent builder.
 
 # 0.8.5
 
