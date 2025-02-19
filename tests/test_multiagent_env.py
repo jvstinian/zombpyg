@@ -7,10 +7,17 @@ from zombpyg.multiagent_env import MultiagentZombpygEnv
 @pytest.fixture(scope="function", name="env1p")
 def env1p_fixture():
     env = MultiagentZombpygEnv(
-        map_id="demo",
+        map_builder_config={
+            "tag": "SingleMap",
+            "parameters": {
+                "map_id": "demo",
+                "w": 640, 
+                "h": 480,
+                "initial_zombies": 1, 
+                "minimum_zombies": 0
+            }
+        },
         rules_id="extermination",
-        initial_zombies=1,
-        minimum_zombies=0, 
         agent_ids = [0],
         agent_weapons="rifle",
         player_specs="",
@@ -23,10 +30,17 @@ def env1p_fixture():
 @pytest.fixture(scope="function", name="env2p")
 def env2p_fixture():
     env = MultiagentZombpygEnv(
-        map_id="demo",
+        map_builder_config={
+            "tag": "SingleMap",
+            "parameters": {
+                "map_id": "demo",
+                "w": 640, 
+                "h": 480,
+                "initial_zombies": 1, 
+                "minimum_zombies": 0
+            }
+        },
         rules_id="extermination",
-        initial_zombies=1,
-        minimum_zombies=0, 
         agent_ids = [0, 1],
         agent_weapons="random",
         player_specs="",
