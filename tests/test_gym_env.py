@@ -7,11 +7,18 @@ from zombpyg.gym_env import ZombpygGymEnv
 
 def test_gym_env_observation():
     gym_env = ZombpygGymEnv(
-        map_id="demo",
+        map_builder_config={
+            "tag": "SingleMap",
+            "parameters": {
+                "map_id": "demo",
+                "w": 640, 
+                "h": 480,
+                "initial_zombies": 0, 
+                "minimum_zombies": 0
+            }
+        },
         rules_id="survival",
         player_specs="terminator:knife:0",
-        initial_zombies=0,
-        minimum_zombies=0, 
         verbose=False
     )
     observation, _ = gym_env.reset()
