@@ -91,20 +91,17 @@ class Game:
     """
     def __init__(
         self,
-        w, h,
-        map_id="demo",
-        # map_builder_config={
-        #     "tag": "SingleMap",
-        #     "parameters": {
-        #         "map_id": "demo",
-        #         "w": 640, 
-        #         "h": 480,
-        #         "initial_zombies": 0,
-        #         "minimum_zombies": 0,
-        #     }
-        # },
+        map_builder_config={
+            "tag": "SingleMap",
+            "parameters": {
+                "map_id": "demo",
+                "w": 640, 
+                "h": 480,
+                "initial_zombies": 0,
+                "minimum_zombies": 0,
+            }
+        },
         rules_id="survival",
-        initial_zombies=0, minimum_zombies=0,
         agent_ids = ['robot'],
         agent_weapons="random",
         player_specs="",
@@ -115,16 +112,16 @@ class Game:
         friendly_fire_guard=False,
         verbose=False
     ):
-        map_builder_config={
-            "tag": "SingleMap",
-            "parameters": {
-                "map_id": map_id,
-                "w": w, 
-                "h": h,
-                "initial_zombies": initial_zombies,
-                "minimum_zombies": minimum_zombies,
-            }
-        }
+        # map_builder_config={
+        #     "tag": "SingleMap",
+        #     "parameters": {
+        #         "map_id": map_id,
+        #         "w": w, 
+        #         "h": h,
+        #         "initial_zombies": initial_zombies,
+        #         "minimum_zombies": minimum_zombies,
+        #     }
+        # }
         self.world_configuration_builder = WorldConfigurationBuilderFactory.get_world_configuration_builder(map_builder_config)
         
         self.w = self.world_configuration_builder.get_render_width()
