@@ -1,7 +1,6 @@
 from typing import List, Dict
 from abc import ABC, abstractmethod
 from enum import StrEnum
-import json
 import random
 from zombpyg.map.map import MapFactory
 
