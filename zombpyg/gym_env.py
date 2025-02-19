@@ -41,9 +41,17 @@ class ZombpygGymEnv(object):
 
     def __init__(
         self,
-        map_id="demo",
+        map_builder_config={
+            "tag": "SingleMap",
+            "parameters": {
+                "map_id": "demo",
+                "w": 640, 
+                "h": 480,
+                "initial_zombies": 0, 
+                "minimum_zombies": 0
+            }
+        },
         rules_id="survival",
-        initial_zombies=0, minimum_zombies=0,
         # agent_id = 0,
         agent_weapon="rifle",
         player_specs="",
@@ -55,19 +63,8 @@ class ZombpygGymEnv(object):
     ):
         # We pass None for the DISPLAYSURF, and configure the rendering below.
         self.game = Game(
-            640, 480,
-            map_id=map_id,
-            # map_builder_config={
-            #     "tag": "SingleMap",
-            #     "parameters": {
-            #         "map_id": map_id,
-            #         "w": 640, 
-            #         "h": 480
-            #     }
-            # },
+            map_builder_config,
             rules_id=rules_id,
-            initial_zombies=initial_zombies,
-            minimum_zombies=minimum_zombies,
             agent_ids = [0],
             agent_weapons = [agent_weapon],
             player_specs=player_specs,

@@ -79,22 +79,22 @@ def main():
     minimum_zombies = args.minimum_zombies[0]
     player_specs = args.player_specs[0] if args.player_specs is not None else ""
     verbose = args.verbose
+        
+    map_builder_config={
+        "tag": "SingleMap",
+        "parameters": {
+            "map_id": map_id,
+            "w": 640, 
+            "h": 480,
+            "initial_zombies": initial_zombies, 
+            "minimum_zombies": minimum_zombies,
+        }
+    }
     
     pygame.init()
     pygame.key.set_repeat(100, int(1000/50))
     game = Game(
-        640, 480,
-        map_id=map_id,
-        # map_builder_config=map_builder_config,
-        # {
-        #     "tag": "SingleMap",
-        #     "parameters": {
-        #         "map_id": map_id,
-        #         "w": 640, 
-        #         "h": 480
-        #     }
-        # },
-        initial_zombies=initial_zombies, minimum_zombies=minimum_zombies,
+        map_builder_config,
         rules_id=rules_id,
         player_specs=player_specs,
         enable_rendering=True,
