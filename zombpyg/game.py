@@ -127,12 +127,11 @@ class Game:
         }
         self.world_configuration_builder = WorldConfigurationBuilderFactory.get_world_configuration_builder(map_builder_config)
         
-        self.w = self.world_configuration_builder.get_render_width() # w
-        self.h = self.world_configuration_builder.get_render_height() # h
+        self.w = self.world_configuration_builder.get_render_width()
+        self.h = self.world_configuration_builder.get_render_height()
         self.DISPLAYSURF = None
         self.fpsClock = None
-        # TODO: we do need render width and and height in the following
-        self.__initialize_renderer__()
+        self.__initialize_renderer__() # uses width and height
         self.fps = fps
         
         self.obj_radius = 10
@@ -172,10 +171,6 @@ class Game:
             # Objectives are only relevant when the goal is to reach the safehouse
             self.agent_reward_configuration["at_objective_coef"] = 0.0
         
-        # TODO
-        # self.initial_zombies = initial_zombies
-        # self.minimum_zombies = minimum_zombies
-
         self.last_game_state = GameState.UNINITIALIZED
 
         # Initialize world, players, agents
@@ -260,7 +255,6 @@ class Game:
 
     def reset(self):
         # Map and world creation
-        # self.map = MapFactory.build_map(map_id, self.w, self.h)
         update_map, worldconfig = self.world_configuration_builder.build_world_configuration(self.last_game_state)
         if update_map:
             self.map = worldconfig.game_map
@@ -268,7 +262,7 @@ class Game:
             self.initial_zombies = worldconfig.initial_zombies
             self.minimum_zombies = worldconfig.minimum_zombies
             self.rules = RulesFactory.get_rules(self.rules_id, self.world, self.map.objectives)
-            self.last_game_state = GameState.INITIALIZED
+        self.last_game_state = GameState.INITIALIZED
 
         self.world.reset()
         self.spawn_resources()
