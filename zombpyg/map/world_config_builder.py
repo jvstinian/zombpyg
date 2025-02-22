@@ -96,12 +96,16 @@ class RandomMapBuilder(WorldConfigurationBuilder):
             [WorldConfigurationBuilderFactory.get_world_configuration_builder(p.get("map_builder")) for p in parameters],
         )
     
+    # In the following, last_game_state is not used.
+    # Instead, when the random selection indicates a new map is to be used, we generate
+    # the underlying map using the UNINITIALIZED state.
     def build_world_configuration(self, last_game_state: GameState):
         next_index = random.choices(range(0, len(self.weights)), weights=self.weights, k=1)[0]
         if self.last_map_builder_index is None or (self.last_map_builder_index != next_index):
             self.last_map_builder_index = next_index
             map_builder = self.map_builders[self.last_map_builder_index]
-            return map_builder.build_world_configuration(last_game_state)
+            adjusted_game_state = GameState.UNINITIALIZED
+            return map_builder.build_world_configuration(adjusted_game_state)
         else:
             # No change in map
             return False, None
