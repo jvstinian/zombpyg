@@ -41,7 +41,7 @@ class ZombpygGymEnv(object):
 
     def __init__(
         self,
-        map_builder_config={
+        world_config={
             "tag": "SingleMap",
             "parameters": {
                 "map_id": "demo",
@@ -63,7 +63,7 @@ class ZombpygGymEnv(object):
     ):
         # We pass None for the DISPLAYSURF, and configure the rendering below.
         self.game = Game(
-            map_builder_config,
+            world_config,
             rules_id=rules_id,
             agent_ids = [0],
             agent_weapons = [agent_weapon],

@@ -80,7 +80,7 @@ def main():
     player_specs = args.player_specs[0] if args.player_specs is not None else ""
     verbose = args.verbose
         
-    map_builder_config={
+    world_config={
         "tag": "SingleMap",
         "parameters": {
             "map_id": map_id,
@@ -94,7 +94,7 @@ def main():
     pygame.init()
     pygame.key.set_repeat(100, int(1000/50))
     game = Game(
-        map_builder_config,
+        world_config,
         rules_id=rules_id,
         player_specs=player_specs,
         enable_rendering=True,

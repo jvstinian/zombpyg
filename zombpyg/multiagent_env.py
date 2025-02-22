@@ -19,7 +19,7 @@ class MultiagentZombpygEnv(object):
     reward_range = (-float('inf'), float('inf'))
 
     def __init__(self, 
-        map_builder_config={
+        world_config={
             "tag": "SingleMap",
             "parameters": {
                 "map_id": "demo",
@@ -40,7 +40,7 @@ class MultiagentZombpygEnv(object):
         verbose=False
     ):
         self.game = Game(
-            map_builder_config,
+            world_config,
             rules_id=rules_id,
             agent_ids = agent_ids,
             agent_weapons = agent_weapons,

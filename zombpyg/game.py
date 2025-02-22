@@ -91,7 +91,7 @@ class Game:
     """
     def __init__(
         self,
-        map_builder_config={
+        world_config={
             "tag": "SingleMap",
             "parameters": {
                 "map_id": "demo",
@@ -112,7 +112,7 @@ class Game:
         friendly_fire_guard=False,
         verbose=False
     ):
-        # map_builder_config={
+        # world_config={
         #     "tag": "SingleMap",
         #     "parameters": {
         #         "map_id": map_id,
@@ -122,7 +122,7 @@ class Game:
         #         "minimum_zombies": minimum_zombies,
         #     }
         # }
-        self.world_configuration_builder = WorldConfigurationBuilderFactory.get_world_configuration_builder(map_builder_config)
+        self.world_configuration_builder = WorldConfigurationBuilderFactory.get_world_configuration_builder(world_config)
         
         self.w = self.world_configuration_builder.get_render_width()
         self.h = self.world_configuration_builder.get_render_height()
