@@ -7,7 +7,7 @@ from zombpyg.gym_env import ZombpygGymEnv
 
 def test_gym_env_observation():
     gym_env = ZombpygGymEnv(
-        map_builder_config={
+        world_config={
             "tag": "SingleMap",
             "parameters": {
                 "map_id": "demo",

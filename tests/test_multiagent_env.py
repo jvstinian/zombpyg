@@ -7,7 +7,7 @@ from zombpyg.multiagent_env import MultiagentZombpygEnv
 @pytest.fixture(scope="function", name="env1p")
 def env1p_fixture():
     env = MultiagentZombpygEnv(
-        map_builder_config={
+        world_config={
             "tag": "SingleMap",
             "parameters": {
                 "map_id": "demo",
@@ -30,7 +30,7 @@ def env1p_fixture():
 @pytest.fixture(scope="function", name="env2p")
 def env2p_fixture():
     env = MultiagentZombpygEnv(
-        map_builder_config={
+        world_config={
             "tag": "SingleMap",
             "parameters": {
                 "map_id": "demo",
