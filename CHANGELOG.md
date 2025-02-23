@@ -1,3 +1,7 @@
+# 0.9.1
+
+Changing the namespace of the zombpyg gym environments.  The single-map version is v0 while a new version v1 has been added that supports world configurations.
+
 # 0.9.0
 
 We add support for world configurations which allow for multiple maps and game initial conditions.
