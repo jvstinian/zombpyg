@@ -19,10 +19,17 @@ class MultiagentZombpygEnv(object):
     reward_range = (-float('inf'), float('inf'))
 
     def __init__(self, 
-        map_id="demo",
+        world_config={
+            "tag": "SingleMap",
+            "parameters": {
+                "map_id": "demo",
+                "w": 640, 
+                "h": 480,
+                "initial_zombies": 0, 
+                "minimum_zombies": 0
+            }
+        },
         rules_id="survival",
-        initial_zombies=0,
-        minimum_zombies=0,
         agent_ids = [0],
         agent_weapons="rifle",
         player_specs="",
@@ -33,11 +40,8 @@ class MultiagentZombpygEnv(object):
         verbose=False
     ):
         self.game = Game(
-            640, 480,
-            map_id=map_id,
+            world_config,
             rules_id=rules_id,
-            initial_zombies=initial_zombies,
-            minimum_zombies=minimum_zombies,
             agent_ids = agent_ids,
             agent_weapons = agent_weapons,
             player_specs=player_specs,
