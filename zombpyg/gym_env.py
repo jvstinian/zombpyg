@@ -77,6 +77,41 @@ class ZombpygGymEnv(object):
 
         self.observation_space = Box(low=0.0, high=400.0, shape=self.game.get_feedback_size())
 
+    @classmethod
+    def using_single_map(
+        cls,
+        map_id="demo",
+        rules_id="survival",
+        initial_zombies=0, minimum_zombies=0,
+        agent_weapon="rifle",
+        player_specs="",
+        enable_rendering=True,
+        fps=50,
+        agent_reward_configuration={},
+        friendly_fire_guard=False,
+        verbose=False
+    ):
+        return cls(
+            world_config={
+                "tag": "SingleMap",
+                "parameters": {
+                    "map_id": map_id,
+                    "w": 640, 
+                    "h": 480,
+                    "initial_zombies": initial_zombies,
+                    "minimum_zombies": minimum_zombies
+                }
+            },
+            rules_id=rules_id,
+            agent_weapon=agent_weapon,
+            player_specs=player_specs,
+            enable_rendering=enable_rendering,
+            fps=fps,
+            agent_reward_configuration=agent_reward_configuration,
+            friendly_fire_guard=friendly_fire_guard,
+            verbose=verbose
+        )
+
     def get_observation(self):
         return self.game.get_current_feedback()
     
@@ -218,7 +253,7 @@ class ZombpygGymEnv(object):
 # TODO: Will keep this for now, but should we register here?
 register(
     id='zombpyg/Zombpyg-v0', 
-    entry_point='zombpyg.gym_env:ZombpygGymEnv', 
+    entry_point='zombpyg.gym_env:ZombpygGymEnv.using_single_map', 
     max_episode_steps=300*50,
     kwargs={
     }
