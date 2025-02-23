@@ -1,8 +1,6 @@
 # 0.9.0
 
 We add support for world configurations which allow for multiple maps and game initial conditions.
-The single-agent gym environment is still configured to use the single-map approach, using a class method
-to call the new constructor with suitable parameters.
 
 # 0.8.6
 

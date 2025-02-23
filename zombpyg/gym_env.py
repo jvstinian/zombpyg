@@ -253,7 +253,7 @@ class ZombpygGymEnv(object):
 # TODO: Will keep this for now, but should we register here?
 register(
     id='zombpyg/Zombpyg-v0', 
-    entry_point='zombpyg.gym_env:ZombpygGymEnv.using_single_map', 
+    entry_point='zombpyg.gym_env:ZombpygGymEnv', 
     max_episode_steps=300*50,
     kwargs={
     }
