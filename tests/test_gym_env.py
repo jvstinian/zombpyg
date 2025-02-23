@@ -27,5 +27,6 @@ def test_gym_env_observation():
     assert np.all(observation <= 2.0)
 
 def test_gym_env_registry():
-    assert "zombpyg/Zombpyg-v0" in gym.envs.registry.keys()
+    assert "jvstinian/Zombpyg-v0" in gym.envs.registry.keys()
+    assert "jvstinian/Zombpyg-v1" in gym.envs.registry.keys()
 
