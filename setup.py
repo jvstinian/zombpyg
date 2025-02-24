@@ -70,7 +70,7 @@ setup(
     # https://caremad.io/posts/2013/07/setup-vs-requirement/
     install_requires=[
         "numpy",
-        "gym",
+        "gymnasium",
         "pygame"
     ],
     # List additional groups of dependencies here (e.g. development
