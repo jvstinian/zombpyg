@@ -51,6 +51,7 @@ class Terminator(Player, MoveableThing, RotatableThing, AttackingThing):
         self.attack_hits = 0
         self.fratricide = 0
         self.friendly_fire = 0
+        self.friendly_fire_avoided = 0
 
         self.world = world
 

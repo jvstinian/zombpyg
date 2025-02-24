@@ -3,6 +3,7 @@ import pygame
 from pygame.locals import *
 from itertools import cycle, islice
 from zombpyg.map.map import MapFactory
+from zombpyg.map.world_config_builder import WorldConfigurationBuilderFactory, GameState
 from zombpyg.rules.factory import RulesFactory
 from zombpyg.world import World
 from zombpyg.core.wall import Wall
@@ -19,41 +20,68 @@ from zombpyg.players.builder import PlayerBuilder
 #         self.n = len(actions)
 
 class AgentReward(object):
-    class AgentState(object):
-        def __init__(self, agent):
-            self.alive = (agent.life > 0)
-            self.life = agent.life
-            self.healing_capacity = agent.healing_capacity
-            self.zombies_killed = agent.zombies_killed
-            self.fratricide = agent.fratricide
-            self.friendly_fire = agent.friendly_fire
-            self.accuracy = 100 * agent.attack_hits / agent.attack_count if agent.attack_count > 0 else 0
-            self.adj_accuracy = min(max((agent.attack_count - 10)/40.0, 0.0), 1.0) * self.accuracy
-            self.ammo_level = agent.weapon.ammo / agent.weapon.max_ammo if (agent.weapon is not None and agent.weapon.is_firearm) else 0.0
-            self.healing_of_others = agent.healing_of_others
+    class RewardConfiguration(object):
+        def __init__(
+            self, 
+            life_coef=1.0, healing_capacity_coef=0.5, zombies_killed_coef=5.0,
+            fratricide_coef=100.0, friendly_fire_coef=10.0, accuracy_coef=0.1,
+            ammo_coef=100.0, healing_of_others_coef=1.0,
+            friendly_fire_avoided_coef=0.25,
+            at_objective_coef=10.0,
+            checkpoints_coef=10.0,
+        ):
+            self.life_coef = life_coef
+            self.healing_capacity_coef = healing_capacity_coef
+            self.zombies_killed_coef = zombies_killed_coef
+            self.fratricide_coef = fratricide_coef
+            self.friendly_fire_coef = friendly_fire_coef
+            self.accuracy_coef = accuracy_coef
+            self.ammo_coef = ammo_coef
+            self.healing_of_others_coef = healing_of_others_coef
+            self.friendly_fire_avoided_coef = friendly_fire_avoided_coef
+            self.at_objective_coef = at_objective_coef
+            self.checkpoints_coef = checkpoints_coef
 
-        def get_total_reward(self):
+        def get_total_reward(self, agent):
+            alive = (agent.life > 0)
+            life = agent.life
+            healing_capacity = agent.healing_capacity
+            zombies_killed = agent.zombies_killed
+            fratricide = agent.fratricide
+            friendly_fire = agent.friendly_fire
+            accuracy = 100 * agent.attack_hits / agent.attack_count if agent.attack_count > 0 else 0
+            adj_accuracy = min(max((agent.attack_count - 10)/40.0, 0.0), 1.0) * accuracy
+            ammo_level = agent.weapon.ammo / agent.weapon.max_ammo if (agent.weapon is not None and agent.weapon.is_firearm) else 0.0
+            healing_of_others = agent.healing_of_others
+            friendly_fire_avoided = agent.friendly_fire_avoided
+            at_obj = agent.is_at_objective()
+            checkpoints_reached = agent.checkpoints_reached 
+
             return (
-                self.life
-                + self.healing_capacity/2.0
-                + 5*self.zombies_killed 
-                - 100 * self.fratricide 
-                - 10 * self.friendly_fire
-                + self.adj_accuracy/10.0
-                + 100*self.ammo_level
-                + self.healing_of_others
+                self.life_coef*life
+                + self.healing_capacity_coef*healing_capacity
+                + self.zombies_killed_coef*zombies_killed 
+                - self.fratricide_coef*fratricide 
+                - self.friendly_fire_coef*friendly_fire
+                - self.friendly_fire_avoided_coef*friendly_fire_avoided
+                + self.accuracy_coef*adj_accuracy
+                + self.ammo_coef*ammo_level
+                + self.healing_of_others_coef*healing_of_others
+                + self.at_objective_coef * at_obj
+                + self.checkpoints_coef * checkpoints_reached
             )
 
-    def __init__(self, agent):
-        self.agent_state = AgentReward.AgentState(agent)
+    def __init__(self, agent, reward_config):
+        self.reward_calculator = AgentReward.RewardConfiguration(**reward_config)
+        self.total_reward = self.reward_calculator.get_total_reward(agent)
 
     def update(self, agent):
-        prev_reward = self.agent_state.get_total_reward()
-        self.agent_state = AgentReward.AgentState(agent)
-        return self.agent_state.get_total_reward() - prev_reward
+        prev_reward = self.total_reward
+        self.total_reward = self.reward_calculator.get_total_reward(agent)
+        return self.total_reward - prev_reward
 
     def get_total_reward(self):
-        return self.agent_state.get_total_reward()
+        return self.total_reward
         
 class Game:
     """An instance of game controls the flow of the game.
@@ -62,27 +90,51 @@ class Game:
        to stop, importing map data, drawing each update, etc.
     """
     def __init__(
-        self, w, h,
-        map_id="demo",
+        self,
+        world_config={
+            "tag": "SingleMap",
+            "parameters": {
+                "map_id": "demo",
+                "w": 640, 
+                "h": 480,
+                "initial_zombies": 0,
+                "minimum_zombies": 0,
+            }
+        },
         rules_id="survival",
-        initial_zombies=0, minimum_zombies=0,
         agent_ids = ['robot'],
         agent_weapons="random",
         player_specs="",
         initialize_game=False,
         enable_rendering=True,
+        fps=50,
+        agent_reward_configuration={},
+        friendly_fire_guard=False,
         verbose=False
     ):
+        # world_config={
+        #     "tag": "SingleMap",
+        #     "parameters": {
+        #         "map_id": map_id,
+        #         "w": w, 
+        #         "h": h,
+        #         "initial_zombies": initial_zombies,
+        #         "minimum_zombies": minimum_zombies,
+        #     }
+        # }
+        self.world_configuration_builder = WorldConfigurationBuilderFactory.get_world_configuration_builder(world_config)
         
-        self.w = w
-        self.h = h
+        self.w = self.world_configuration_builder.get_render_width()
+        self.h = self.world_configuration_builder.get_render_height()
         self.DISPLAYSURF = None
         self.fpsClock = None
-        self.__initialize_renderer__()
-        self.fps = 50
+        self.__initialize_renderer__() # uses width and height
+        self.fps = fps
         
         self.obj_radius = 10
         self.robot_sensor_length = 250
+        
+        self.friendly_fire_guard = friendly_fire_guard
         
         self.check_terminate = True
         
@@ -91,30 +143,32 @@ class Game:
         # with length matching the length of agent_ids
         self.__process_weapon_name_inputs__(agent_weapons)
 
-        self.map = MapFactory.build_map(map_id, self.w, self.h)
-        self.initial_zombies = initial_zombies
-        self.minimum_zombies = minimum_zombies
-
-        self.world = World(self.map, 1.0/self.fps)
         self.agent_builder = AgentBuilder(
             self.obj_radius,
             Color.BLUE, 
-            self.robot_sensor_length
+            self.robot_sensor_length,
+            friendly_fire_guard=self.friendly_fire_guard
         )
         self.zombie_builder = ZombieBuilder(self.obj_radius)
 
         self.rules_id = rules_id
-        self.rules = RulesFactory.get_rules(self.rules_id, self.world, self.map.objectives)
         
         self.feedback_size = self.agent_builder.get_feedback_size()
         # Decide whether to use gym interface
         # self.action_space = ActionSpace(self.get_available_actions())
 
-        self.__process_player_specs__(player_specs)
+        self.__process_player_specs__(player_specs, self.friendly_fire_guard)
 
         self.verbose = verbose
 
         self.continue_without_agents = False
+
+        self.agent_reward_configuration = agent_reward_configuration
+        if self.rules_id != "safehouse":
+            # Objectives are only relevant when the goal is to reach the safehouse
+            self.agent_reward_configuration["at_objective_coef"] = 0.0
+        
+        self.last_game_state = GameState.UNINITIALIZED
 
         # Initialize world, players, agents
         if initialize_game:
@@ -128,7 +182,7 @@ class Game:
             self.DISPLAYSURF = pygame.display.set_mode((self.w, self.h), 0, 32)
             self.set_display(self.DISPLAYSURF)
  
-    def __process_player_specs__(self, player_specs):
+    def __process_player_specs__(self, player_specs, friendly_fire_guard):
         self.player_builders = []
         for player_spec in player_specs.split(','):
             player_spec_parts = player_spec.split(':')
@@ -140,7 +194,7 @@ class Game:
                 player_id = player_spec_parts[0]
                 player_count = int(player_spec_parts[2]) if part_count >= 3 else 1
                 self.player_builders.extend(
-                    [PlayerBuilder(player_id, weapon_id, self.obj_radius)] * player_count
+                    [PlayerBuilder(player_id, weapon_id, self.obj_radius, friendly_fire_guard=friendly_fire_guard)] * player_count
                 )
 
     def __process_weapon_name_inputs__(self, agent_weapons):
@@ -165,22 +219,26 @@ class Game:
         for player_builder in self.player_builders:
             self.world.generate_player(player_builder, self.map.player_spawns)
 
-    def spawn_zombies(self, count):
+    def spawn_zombies(self, count, initial_spawn=False):
         """Spawn N zombies in the world."""
+        zombie_spawns = self.map.zombie_spawns
+        if not initial_spawn: # exclude initial-only spawns
+            zombie_spawns = [spawn for spawn in zombie_spawns if not spawn.initial_spawn_only]
+
         for _ in range(count):
             self.world.generate_zombie(
-                self.zombie_builder, self.map.zombie_spawns
+                self.zombie_builder, zombie_spawns
             )
 
     def spawn_zombies_to_maintain_minimum(self):
         """maintain the flow of zombies if necessary."""
         zombies = [zombie for zombie in self.world.zombies if zombie.life > 0]
         if len(zombies) < self.minimum_zombies:
-            self.spawn_zombies(self.minimum_zombies - len(zombies))
+            self.spawn_zombies(self.minimum_zombies - len(zombies), initial_spawn=False)
 
     def initialize_rewards(self):
         self.agent_rewards = list(
-            map(AgentReward, self.world.agents)
+            map(lambda agent: AgentReward(agent, self.agent_reward_configuration), self.world.agents)
         )
     
     def update_rewards(self):
@@ -193,25 +251,35 @@ class Game:
         )
 
     def reset(self):
+        # Map and world creation
+        update_map, worldconfig = self.world_configuration_builder.build_world_configuration(self.last_game_state)
+        if update_map:
+            self.map = worldconfig.game_map
+            self.world = World(self.map, 1.0/self.fps)
+            self.initial_zombies = worldconfig.initial_zombies
+            self.minimum_zombies = worldconfig.minimum_zombies
+            self.rules = RulesFactory.get_rules(self.rules_id, self.world, self.map.objectives)
+        self.last_game_state = GameState.INITIALIZED
+
         self.world.reset()
-        self.agent_builder.reset()
         self.spawn_resources()
         self.spawn_agents()
         self.spawn_players()
-        self.spawn_zombies(self.initial_zombies)
+        self.spawn_zombies(self.initial_zombies, initial_spawn=True)
         self.initialize_rewards()
 
     def get_feedback_size(self):
-        return (self.feedback_size, 1)
+        return (1, self.feedback_size, 1)
 
-    def play_action(self, action_id, num_frames=1):
+    def play_actions(self, action_ids, num_frames=1):
         assert num_frames == 1
 
-        feedbacks = self.world.step([action_id])
+        feedbacks = self.world.step(action_ids)
         rewards = self.update_rewards()
-        reward = rewards[0]
-        if self.verbose and reward != 0.0:
-            print(f"Reward: {reward}")
+        if self.verbose and any([reward != 0.0 for reward in rewards]):
+            for agent_id, reward in zip(self.agent_ids, rewards):
+                if reward != 0.0:
+                    print(f"Reward for {agent_id}: {reward}")
 
         self.spawn_zombies_to_maintain_minimum()
        
@@ -224,24 +292,32 @@ class Game:
             if won:
                 if self.verbose:
                     print(f"WIN!  {description}")
-                reward += 1000.0
+                # Grant the winners reward to the survivors
+                for idx, agent in enumerate(self.world.agents):
+                    if agent.life > 0:
+                        rewards[idx] += 100.0
+                self.last_game_state = GameState.GAME_WON
             else:
                 if self.verbose:
                     print(f"GAME OVER.  {description}")
+                self.last_game_state = GameState.GAME_LOST
         elif all([agent.life <= 0 for agent in self.world.agents]) and not self.continue_without_agents:
             if self.verbose:
                 print("GAME OVER.  All agents dead.")
             done = True
+            self.last_game_state = GameState.GAME_LOST
         elif self.world.t >= 300:
             if self.verbose:
                 print("GAME OVER.  Reached 300 seconds, stopping.")
             truncated = True
+            self.last_game_state = GameState.TRUNCATED
 
-        return reward, feedbacks.reshape((1, len(feedbacks), 1)), done, truncated
+        observations = [feedback.reshape((1, len(feedback), 1)) for feedback in feedbacks]
+        return rewards, observations, done, truncated
     
-    # This is used by the train method
-    def get_total_reward(self):
-        return self.agent_rewards[0].get_total_reward()
+    def play_action(self, action_id, num_frames=1):
+        rewards, observations, done, truncated = self.play_actions([action_id], num_frames=num_frames)
+        return rewards[0], observations[0], done, truncated
     
     # This is used by the train method
     # This might be useful for gym later.

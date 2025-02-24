@@ -23,6 +23,7 @@ class World(object):
         self.walls = map.walls
         self.objectives = map.objectives
         self.decorations = []
+        self.checkpoints = map.checkpoints if map.checkpoints is not None else []
         self.agents = []
         self.players = []
         self.zombies = []
@@ -38,6 +39,8 @@ class World(object):
         self.t = 0
         self.resources = {}
         self.decorations = []
+        for checkpoint in self.checkpoints:
+            checkpoint.reset()
         self.agents = []
         self.players = []
         self.zombies = []
@@ -51,6 +54,9 @@ class World(object):
     
     def get_walls(self):
         return self.walls
+    
+    def get_checkpoints(self):
+        return self.checkpoints
     
     def get_objectives(self):
         return self.objectives
@@ -77,11 +83,12 @@ class World(object):
         self.execute_agent_actions(actions)
         self.execute_fighter_actions()
 
-        # process resources
+        # process resources and checkpoints
         for robot in self.agents:
             robot.consume_nearby_resource()
+            robot.check_in_to_nearby_checkpoints()
             
-        feedbacks = self.agents[0].sensor_feedback()
+        feedbacks = [agent.sensor_feedback() for agent in self.agents]
         
         self.clean_dead_things()
 
@@ -104,7 +111,14 @@ class World(object):
     
     def fighter_collides_with_others(self, this_fighter, new_point):
         radius = this_fighter.get_radius()
-        for other_fighter in (self.zombies + self.players + self.agents):
+        other_fighters = [
+            zombie for zombie in self.zombies if zombie.life > 0
+        ] + [
+            player for player in self.players if player.life > 0
+        ] + [
+            agent for agent in self.agents if agent.life > 0
+        ]
+        for other_fighter in other_fighters:
             if this_fighter != other_fighter:
                 if calculate_distance(new_point, other_fighter.get_position()) < (radius + other_fighter.get_radius()):
                     return True
@@ -122,10 +136,10 @@ class World(object):
         if self.resources.get((x, y), None) is not None:
             del self.resources[(x, y)]
 
-    def generate_agent(self, agent_builder, agent_id, weapon_id, spawns, max_attempts=3):
+    def generate_agent(self, agent_builder, agent_id, weapon_id, spawns, max_attempts=0):
         spawn = random.choices(spawns, k=1)[0]
         attempts = 0
-        while attempts < max_attempts:
+        while (max_attempts <= 0) or (attempts < max_attempts):
             x, y = spawn.get_spawn_location()
             radius = agent_builder.radius * 2
             
@@ -145,7 +159,7 @@ class World(object):
             )
             break
 
-        if attempts >= max_attempts:
+        if (max_attempts > 0) and (attempts >= max_attempts):
             raise RuntimeError(f"Could not create agent in {max_attempts} attempts")
 
         
@@ -222,6 +236,7 @@ class World(object):
     def clean_dead_things(self):
         self.bullets = list(filter(lambda bullet: bullet.active, self.bullets))
         self.clean_dead_resource()
+        self.hide_visited_checkpoints()
         self.clean_dead_zombies()
         self.clean_dead_players()
         self.decorations = [decoration for decoration in self.decorations if decoration.life > 0]
@@ -234,6 +249,12 @@ class World(object):
 
         for resource in dead_resources:
             self.remove_resource(resource)
+
+    def hide_visited_checkpoints(self):
+        living_agents = [agent for agent in self.agents if agent.life > 0]
+        for checkpoint in self.checkpoints:
+            if (checkpoint.life > 0) and checkpoint.all_agents_checked_in(living_agents):
+                checkpoint.disable()
 
     def clean_dead_zombies(self):
         """Remove dead things, and add dead decorations."""
@@ -269,6 +290,9 @@ class World(object):
             objective.draw(game)
         for resource in self.resources.values():
             resource.draw(game)
+        for checkpoint in self.checkpoints:
+            if checkpoint.life > 0:
+                checkpoint.draw(game)
         for wall in self.walls:
             wall.draw(game)
         for decoration in self.decorations:

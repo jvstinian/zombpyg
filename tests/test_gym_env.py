@@ -7,11 +7,18 @@ from zombpyg.gym_env import ZombpygGymEnv
 
 def test_gym_env_observation():
     gym_env = ZombpygGymEnv(
-        map_id="demo",
+        world_config={
+            "tag": "SingleMap",
+            "parameters": {
+                "map_id": "demo",
+                "w": 640, 
+                "h": 480,
+                "initial_zombies": 0, 
+                "minimum_zombies": 0
+            }
+        },
         rules_id="survival",
         player_specs="terminator:knife:0",
-        initial_zombies=0,
-        minimum_zombies=0, 
         verbose=False
     )
     observation, _ = gym_env.reset()
@@ -20,5 +27,6 @@ def test_gym_env_observation():
     assert np.all(observation <= 2.0)
 
 def test_gym_env_registry():
-    assert "zombpyg/Zombpyg-v0" in gymnasium.envs.registry.keys()
+    assert "jvstinian/Zombpyg-v0" in gymnasium.envs.registry.keys()
+    assert "jvstinian/Zombpyg-v1" in gymnasium.envs.registry.keys()
 

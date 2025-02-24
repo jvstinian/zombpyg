@@ -3,6 +3,7 @@ import pygame
 from zombpyg.agent import AgentActions
 from zombpyg.game import Game
 
+
 def render_game(game):
     termination = False
     while not termination:
@@ -60,7 +61,7 @@ def render_game(game):
                 AgentActions.get_no_action_id()
             )
             termination = done or truncated
-        print(f"Total Reward: {game.get_total_reward()}")
+        print(f"Total Reward: {game.agent_rewards[0].get_total_reward()}")
 
 def main(): 
     parser = argparse.ArgumentParser(description="zombpyg")
@@ -78,16 +79,26 @@ def main():
     minimum_zombies = args.minimum_zombies[0]
     player_specs = args.player_specs[0] if args.player_specs is not None else ""
     verbose = args.verbose
+        
+    world_config={
+        "tag": "SingleMap",
+        "parameters": {
+            "map_id": map_id,
+            "w": 640, 
+            "h": 480,
+            "initial_zombies": initial_zombies, 
+            "minimum_zombies": minimum_zombies,
+        }
+    }
     
     pygame.init()
     pygame.key.set_repeat(100, int(1000/50))
     game = Game(
-        640, 480,
-        map_id=map_id,
-        initial_zombies=initial_zombies, minimum_zombies=minimum_zombies,
+        world_config,
         rules_id=rules_id,
         player_specs=player_specs,
         enable_rendering=True,
+        friendly_fire_guard=False,
         verbose=verbose,
     )
     game.reset()
