@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from os import path
-from gym.spaces import Box
-from gym.spaces.discrete import Discrete
+from gymnasium.spaces import Box
+from gymnasium.spaces.discrete import Discrete
 from zombpyg.game import Game
 from zombpyg.agent import AgentActions
 

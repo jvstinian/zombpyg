@@ -230,7 +230,7 @@ class ZombpygGymEnv(object):
         """Completely unwrap this env.
 
         Returns:
-            gym.Env: The base non-wrapped gym.Env instance
+            gymnasium.Env: The base non-wrapped gym.Env instance
         """
         return self
 
