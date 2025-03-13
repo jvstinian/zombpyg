@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from os import path
-from gym.spaces import Box
-from gym.spaces.discrete import Discrete
+from gymnasium.spaces import Box
+from gymnasium.spaces.discrete import Discrete
 from zombpyg.game import Game
 from zombpyg.agent import AgentActions
 
@@ -33,12 +33,17 @@ class MultiagentZombpygEnv(object):
         agent_ids = [0],
         agent_weapons="rifle",
         player_specs="",
-        enable_rendering=True,
+        render_mode="human",
         fps=50,
         agent_reward_configuration={},
         friendly_fire_guard=False,
         verbose=False
     ):
+        if render_mode is not None and (render_mode not in self.metadata.get('render.modes', [])):
+            raise ValueError(f"In gymnasium environment, render_mode {render_mode} is not valid, must be one of {', '.join(self.metadata.get('render.modes', []))}")
+        self.render_mode = render_mode
+        enable_rendering = True if render_mode == "human" else False
+
         self.game = Game(
             world_config,
             rules_id=rules_id,
@@ -134,12 +139,12 @@ class MultiagentZombpygEnv(object):
         self.agents = self.possible_agents
         return self.get_observation()
 
-    def render(self, mode='human'):
+    def render(self):
         """Renders the environment.  Only 'human' is supported in this implementation.
         Args:
             mode (str): the mode to render with
         """
-        if mode == 'human':
+        if self.render_mode == 'human':
             self.game.draw()
             return None
         else:

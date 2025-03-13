@@ -19,6 +19,7 @@ def test_gym_env_observation():
         },
         rules_id="survival",
         player_specs="terminator:knife:0",
+        render_mode=None,
         verbose=False
     )
     observation, _ = gym_env.reset()

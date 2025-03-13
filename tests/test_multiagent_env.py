@@ -21,7 +21,7 @@ def env1p_fixture():
         agent_ids = [0],
         agent_weapons="rifle",
         player_specs="",
-        enable_rendering=False,
+        render_mode=None,
         verbose=False
     )
     return env
@@ -44,7 +44,7 @@ def env2p_fixture():
         agent_ids = [0, 1],
         agent_weapons="random",
         player_specs="",
-        enable_rendering=False,
+        render_mode=None,
         verbose=False
     )
     return env

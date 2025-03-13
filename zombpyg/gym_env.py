@@ -55,13 +55,17 @@ class ZombpygGymEnv(object):
         # agent_id = 0,
         agent_weapon="rifle",
         player_specs="",
-        enable_rendering=True,
+        render_mode="human",
         fps=50,
         agent_reward_configuration={},
         friendly_fire_guard=False,
         verbose=False
     ):
-        # We pass None for the DISPLAYSURF, and configure the rendering below.
+        if render_mode is not None and (render_mode not in self.metadata.get('render.modes', [])):
+            raise ValueError(f"In gymnasium environment, render_mode {render_mode} is not valid, must be one of {', '.join(self.metadata.get('render.modes', []))}")
+        self.render_mode = render_mode
+        enable_rendering = True if render_mode == "human" else False
+
         self.game = Game(
             world_config,
             rules_id=rules_id,
@@ -157,7 +161,7 @@ class ZombpygGymEnv(object):
         self.game.reset()
         return self.get_observation(), {}
 
-    def render(self, mode='human'):
+    def render(self):
         """Renders the environment.
 
         The set of supported modes varies per environment. (And some
@@ -194,7 +198,7 @@ class ZombpygGymEnv(object):
                 else:
                     super(MyEnv, self).render(mode=mode) # just raise an exception
         """
-        if mode == 'human':
+        if self.render_mode == 'human':
             self.game.draw()
             return None
         else:
@@ -230,7 +234,7 @@ class ZombpygGymEnv(object):
         """Completely unwrap this env.
 
         Returns:
-            gym.Env: The base non-wrapped gym.Env instance
+            gymnasium.Env: The base non-wrapped gym.Env instance
         """
         return self
 
