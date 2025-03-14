@@ -1,13 +1,9 @@
 # 0.10.0
 
-Switching from gym to gymnasium.  Changing the environments to take the render mode
-rather than a rendering flag as a constructor argument.
-The Game class still uses the rendering flag.
-
-# 0.9.2
-
-In the Game class, using the enable_rendering flag to determine whether to set up the pygame display surface.
-Improving setting of display parameters when initializing rendering in Game class.
+Switching from gym to gymnasium.
+Changing the environments to take the render mode rather than a rendering flag as a constructor argument.
+In the Game class, the `enable_rendering` flag is used to determine whether to set up the pygame display surface.
+The setting of display parameters when initializing rendering in the Game class has been improved.
 
 # 0.9.1
 
