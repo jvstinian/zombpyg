@@ -20,7 +20,7 @@
                       # was previously using "dependencies" but the packages 
                       # didn't appear to propagate to the output package
                       propagatedBuildInputs = with python-final; [
-                        numpy gym pygame
+                        numpy gymnasium pygame
                       ];
 
                       # Not including "nativeCheckInputs" as there are no additional dependencies for testing
@@ -54,7 +54,7 @@
 
           dev-python-packages = ps: with ps; [
               numpy 
-              gym 
+              gymnasium
               pygame
               zombpyg
           ];
