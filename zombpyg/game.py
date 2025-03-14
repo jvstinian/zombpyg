@@ -128,7 +128,8 @@ class Game:
         self.h = self.world_configuration_builder.get_render_height()
         self.DISPLAYSURF = None
         self.fpsClock = None
-        self.__initialize_renderer__() # uses width and height
+        if enable_rendering:
+            self.__initialize_renderer__() # uses width and height
         self.fps = fps
         
         self.obj_radius = 10
@@ -179,8 +180,8 @@ class Game:
             pygame.init()
             pygame.display.init()
             pygame.display.set_caption('zombpyg')
-            self.DISPLAYSURF = pygame.display.set_mode((self.w, self.h), 0, 32)
-            self.set_display(self.DISPLAYSURF)
+            DISPLAYSURF = pygame.display.set_mode((self.w, self.h), 0, 32)
+            self.set_display(DISPLAYSURF)
  
     def __process_player_specs__(self, player_specs, friendly_fire_guard):
         self.player_builders = []
