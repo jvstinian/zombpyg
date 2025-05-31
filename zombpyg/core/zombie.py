@@ -24,7 +24,7 @@ class Zombie(FightingThing, MoveableThing, RotatableThing, AttackingThing):
     peripheral_vision_angle = 45
 
     def __init__(self, x, y, radius, world, orientation=0):
-        life = random.randint(Zombie.MAX_LIFE / 2, Zombie.MAX_LIFE)
+        life = random.randint(Zombie.MAX_LIFE // 2, Zombie.MAX_LIFE)
         dead_decoration = DeadBody(radius, 'zombie remains', Color.BRONZE)
 
         super(Zombie, self).__init__(
