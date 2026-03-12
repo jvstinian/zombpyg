@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import gymnasium as gym
 from gymnasium.spaces.discrete import Discrete
 from gymnasium.spaces.box import Box
 from gymnasium.envs.registration import register
@@ -7,7 +8,7 @@ from zombpyg.game import Game
 from zombpyg.agent import AgentActions
 
 
-class ZombpygGymEnv(object):
+class ZombpygGymEnv(gym.Env):
     """The main OpenAI Gym class. It encapsulates an environment with
     arbitrary behind-the-scenes dynamics. An environment can be
     partially or fully observed.
@@ -61,6 +62,9 @@ class ZombpygGymEnv(object):
         friendly_fire_guard=False,
         verbose=False
     ):
+        # super().__init__()
+        # self.spec.nondeterministic = True
+
         if render_mode is not None and (render_mode not in self.metadata.get('render.modes', [])):
             raise ValueError(f"In gymnasium environment, render_mode {render_mode} is not valid, must be one of {', '.join(self.metadata.get('render.modes', []))}")
         self.render_mode = render_mode
@@ -144,7 +148,7 @@ class ZombpygGymEnv(object):
             
         return observation, reward, done, truncated, info
 
-    def reset(self):
+    def reset(self, seed=None, options=None):
         """Resets the environment to an initial state and returns an initial
         observation.
 
@@ -158,7 +162,8 @@ class ZombpygGymEnv(object):
             observation (object): the initial observation.
             info (dict): contains auxiliary diagnostic information
         """
-        self.game.reset()
+        super().reset(seed=seed)
+        self.game.reset()  # TODO
         return self.get_observation(), {}
 
     def render(self):
@@ -258,6 +263,7 @@ register(
     id='jvstinian/Zombpyg-v0', 
     entry_point=ZombpygGymEnv.using_single_map,
     max_episode_steps=300*50,
+    nondeterministic=True,
     kwargs={
     }
 )
@@ -266,6 +272,7 @@ register(
     id='jvstinian/Zombpyg-v1', 
     entry_point='zombpyg.gym_env:ZombpygGymEnv',
     max_episode_steps=300*50,
+    nondeterministic=True,
     kwargs={
     }
 )
