@@ -62,9 +62,6 @@ class ZombpygGymEnv(gym.Env):
         friendly_fire_guard=False,
         verbose=False
     ):
-        # super().__init__()
-        # self.spec.nondeterministic = True
-
         if render_mode is not None and (render_mode not in self.metadata.get('render.modes', [])):
             raise ValueError(f"In gymnasium environment, render_mode {render_mode} is not valid, must be one of {', '.join(self.metadata.get('render.modes', []))}")
         self.render_mode = render_mode
@@ -163,7 +160,7 @@ class ZombpygGymEnv(gym.Env):
             info (dict): contains auxiliary diagnostic information
         """
         super().reset(seed=seed)
-        self.game.reset()  # TODO
+        self.game.reset()
         return self.get_observation(), {}
 
     def render(self):
@@ -216,23 +213,6 @@ class ZombpygGymEnv(gym.Env):
         garbage collected or when the program exits.
         """
         self.game.close()
-
-    def seed(self, seed=None):
-        """Sets the seed for this env's random number generator(s).
-
-        Note:
-            Some environments use multiple pseudorandom number generators.
-            We want to capture all such seeds used in order to ensure that
-            there aren't accidental correlations between multiple generators.
-
-        Returns:
-            list<bigint>: Returns the list of seeds used in this env's random
-              number generators. The first value in the list should be the
-              "main" seed, or the value which a reproducer should pass to
-              'seed'. Often, the main seed equals the provided 'seed', but
-              this won't be true if seed=None, for example.
-        """
-        return
 
     @property
     def unwrapped(self):
