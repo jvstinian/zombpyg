@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import gymnasium as gym
 from gymnasium.spaces.discrete import Discrete
 from gymnasium.spaces.box import Box
 from gymnasium.envs.registration import register
@@ -7,7 +8,7 @@ from zombpyg.game import Game
 from zombpyg.agent import AgentActions
 
 
-class ZombpygGymEnv(object):
+class ZombpygGymEnv(gym.Env):
     """The main OpenAI Gym class. It encapsulates an environment with
     arbitrary behind-the-scenes dynamics. An environment can be
     partially or fully observed.
@@ -144,7 +145,7 @@ class ZombpygGymEnv(object):
             
         return observation, reward, done, truncated, info
 
-    def reset(self):
+    def reset(self, seed=None, options=None):
         """Resets the environment to an initial state and returns an initial
         observation.
 
@@ -158,6 +159,7 @@ class ZombpygGymEnv(object):
             observation (object): the initial observation.
             info (dict): contains auxiliary diagnostic information
         """
+        super().reset(seed=seed)
         self.game.reset()
         return self.get_observation(), {}
 
@@ -212,23 +214,6 @@ class ZombpygGymEnv(object):
         """
         self.game.close()
 
-    def seed(self, seed=None):
-        """Sets the seed for this env's random number generator(s).
-
-        Note:
-            Some environments use multiple pseudorandom number generators.
-            We want to capture all such seeds used in order to ensure that
-            there aren't accidental correlations between multiple generators.
-
-        Returns:
-            list<bigint>: Returns the list of seeds used in this env's random
-              number generators. The first value in the list should be the
-              "main" seed, or the value which a reproducer should pass to
-              'seed'. Often, the main seed equals the provided 'seed', but
-              this won't be true if seed=None, for example.
-        """
-        return
-
     @property
     def unwrapped(self):
         """Completely unwrap this env.
@@ -258,6 +243,7 @@ register(
     id='jvstinian/Zombpyg-v0', 
     entry_point=ZombpygGymEnv.using_single_map,
     max_episode_steps=300*50,
+    nondeterministic=True,
     kwargs={
     }
 )
@@ -266,6 +252,7 @@ register(
     id='jvstinian/Zombpyg-v1', 
     entry_point='zombpyg.gym_env:ZombpygGymEnv',
     max_episode_steps=300*50,
+    nondeterministic=True,
     kwargs={
     }
 )

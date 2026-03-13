@@ -1,3 +1,10 @@
+# 0.10.2
+
+Updating to gymnasium 1.2.2.
+The zombpyg gymnasium environment now derives from the gymnasium `Env` class as recommended by gymnasium.
+We also updated the `reset` method and removed the `seed` method.
+We specify the environment is nondeterministic to avoid issues with the environment checks.
+
 # 0.10.1
 
 Fixing an issue with floats rather than integers being used when generating random health levels.

@@ -1,7 +1,10 @@
 # tests/test_gym_env.py
 import pytest
+from tests.helpers import not_raises
 import numpy as np
+import gymnasium as gym
 import gymnasium.envs
+from gymnasium.utils.env_checker import check_env
 from zombpyg.gym_env import ZombpygGymEnv
 
 
@@ -30,4 +33,14 @@ def test_gym_env_observation():
 def test_gym_env_registry():
     assert "jvstinian/Zombpyg-v0" in gymnasium.envs.registry.keys()
     assert "jvstinian/Zombpyg-v1" in gymnasium.envs.registry.keys()
+
+def test_gym_make_env_v0():
+    env = gym.make("jvstinian/Zombpyg-v0", render_mode=None)
+    with not_raises(Exception):
+        check_env(env.unwrapped, skip_render_check=True)
+
+def test_gym_make_env_v1():
+    env = gym.make("jvstinian/Zombpyg-v1", render_mode=None)
+    with not_raises(Exception):
+        check_env(env.unwrapped, skip_render_check=True)
 

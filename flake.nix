@@ -1,7 +1,7 @@
 {
   inputs = {
     nixpkgs = {
-      url = "github:nixos/nixpkgs/nixos-25.05";
+      url = "github:nixos/nixpkgs/nixos-25.11";
     };
     flake-utils = {
       url = "github:numtide/flake-utils";
@@ -17,6 +17,10 @@
 
                       src = ./.;
 
+                      # The following are needed for nixos-25.11
+                      pyproject = true;
+                      build-system = with python-final; [ setuptools ];
+
                       # was previously using "dependencies" but the packages 
                       # didn't appear to propagate to the output package
                       propagatedBuildInputs = with python-final; [
@@ -25,7 +29,7 @@
 
                       # Not including "nativeCheckInputs" as there are no additional dependencies for testing
                       doCheck = true;
-		      # Including pytestCheckHook in nativeCheckInputs to run pytest. 
+                      # Including pytestCheckHook in nativeCheckInputs to run pytest. 
                       # If needed, arguments can be passed to pytest using pytestFlagsArray.  
                       # Alternatively, checkPhase can be explicitly provided.
                       # See https://github.com/NixOS/nixpkgs/blob/master/doc/languages-frameworks/python.section.md#using-pytestcheckhook 
